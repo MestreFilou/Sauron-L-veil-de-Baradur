@@ -5,7 +5,7 @@
       { "id": "comte_est", "joursCheval": 1, "joursPied": 1, "obstacle": null },
       { "id": "route_sarn", "joursCheval": 2, "joursPied": 3, "obstacle": null }
     ],
-    "volonteRegionale": 40, "sourcesMurmures": ["rumeur", "espion"], "murmuresBonus": 0, "reglesSpeciales": []
+    "volonteRegionale": 40, "defenseCombat": 10, "sourcesMurmures": ["rumeur", "espion"], "murmuresBonus": 0, "reglesSpeciales": []
   },
   {
     "id": "comte_est", "royaume": "eriador", "nom": "Le Comté · Marais et Bois-Clos", "terrain": "bocage",
@@ -14,7 +14,7 @@
       { "id": "pays_de_bouc", "joursCheval": 1, "joursPied": 1, "obstacle": "brandevin" },
       { "id": "bree", "joursCheval": 2, "joursPied": 3, "obstacle": null }
     ],
-    "volonteRegionale": 40, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
+    "volonteRegionale": 40, "defenseCombat": 10, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
   },
   {
     "id": "pays_de_bouc", "royaume": "eriador", "nom": "Pays de Bouc · Creux-de-Crique", "terrain": "bocage_clos",
@@ -22,7 +22,7 @@
       { "id": "comte_est", "joursCheval": 1, "joursPied": 1, "obstacle": "brandevin" },
       { "id": "vieille_foret", "joursCheval": 1, "joursPied": 1, "obstacle": null }
     ],
-    "volonteRegionale": 40, "terreurPlafond": 50, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
+    "volonteRegionale": 40, "defenseCombat": 15, "terreurPlafond": 50, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
   },
   {
     "id": "vieille_foret", "royaume": "eriador", "nom": "La Vieille Forêt", "terrain": "foret_ancienne",
@@ -48,7 +48,7 @@
       { "id": "chetwood", "joursCheval": 1, "joursPied": 1, "obstacle": null },
       { "id": "route_sarn", "joursCheval": 2, "joursPied": 4, "obstacle": null }
     ],
-    "volonteRegionale": 20, "terreurInitiale": 10, "sourcesMurmures": ["espion", "rumeur"], "murmuresBonus": 2, "reglesSpeciales": []
+    "volonteRegionale": 20, "defenseCombat": 10, "terreurInitiale": 10, "sourcesMurmures": ["espion", "rumeur"], "murmuresBonus": 2, "reglesSpeciales": []
   },
   {
     "id": "chetwood", "royaume": "eriador", "nom": "Bois de Chet · Marais aux Moucherons", "terrain": "bois_et_marais",

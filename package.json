@@ -14,6 +14,7 @@
     "build": "npm run build -w @sauron/client",
     "test": "vitest run",
     "test:watch": "vitest",
+    "banc": "vitest run -c vitest.banc.config.ts --silent=false",
     "typecheck": "tsc -p tsconfig.json && tsc -p client"
   },
   "devDependencies": {

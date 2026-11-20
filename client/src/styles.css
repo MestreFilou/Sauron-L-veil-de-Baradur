@@ -119,6 +119,7 @@ body.ombre .rum .txt{color:#a9c3d3}
 #vtext{width:100%;height:54px;resize:none;background:rgba(5,4,3,.65);border:1px solid #3a2e22;color:#efe2c8;font-family:'IM Fell English',serif;font-style:italic;font-size:16px;padding:8px 10px;outline:none;transition:border-color .3s, box-shadow .3s}
 #vtext:focus{border-color:var(--accent);box-shadow:0 0 14px -4px var(--accent)}
 #vtext::placeholder{color:#6f604c}
+#vtext.construit{height:auto;min-height:54px;cursor:pointer;user-select:none;line-height:1.35}
 .vfoot{display:flex;justify-content:space-between;align-items:center;margin:9px 16px 0;font-size:13px;font-style:italic;color:var(--texte-2)}
 .vfoot b{font-style:normal;font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;color:var(--accent)}
 .project{font-family:Cinzel,serif;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#fff0dd;background:linear-gradient(180deg,#3a1610,#1a0805);border:1px solid var(--accent);padding:8px 18px;cursor:pointer;box-shadow:0 0 14px -2px var(--accent)}
@@ -195,7 +196,7 @@ body.ombre .tabs button.on{color:var(--spectre)}
 .basmilieu{position:fixed;left:304px;right:372px;bottom:18px;z-index:4;display:flex;flex-direction:column;gap:14px;pointer-events:none}
 .basmilieu .panel,.basmilieu #voice,.basmilieu #orders{position:relative;left:auto;right:auto;bottom:auto;top:auto;pointer-events:auto}
 @media (max-width:1250px){.basmilieu{left:264px;right:330px}}
-@media (max-height:820px){#vtext{height:38px}}
+@media (max-height:820px){#vtext{height:38px}#vtext.construit{height:auto;min-height:38px}}
 
 /* ---------- Son (mécaniques 10.3 bis, 10.4) ---------- */
 .son{position:relative;display:flex;align-items:center}

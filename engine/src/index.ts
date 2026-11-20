@@ -3,7 +3,7 @@ export { REGLES } from './regles';
 export type { Regles } from './regles';
 export { creerRng, hacher } from './rng';
 export type { Rng } from './rng';
-export { indexerMonde, validerMonde, region, personnage, nazgulDef, regionsJouables } from './monde';
+export { indexerMonde, validerMonde, region, personnage, nazgulDef, regionsJouables, aRegle } from './monde';
 export type { Monde } from './monde';
 export { distance, voisinage, cheminNazgul, avancerNazgul } from './carte';
 export { statutRegion, paMax, plancherVisibilite, presents, estHeros } from './etat';

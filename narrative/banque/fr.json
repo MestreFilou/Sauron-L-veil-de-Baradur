@@ -1,5 +1,5 @@
 {
- "_note": "Banque de textes préécrits. Le jeu se joue entièrement avec elle ; Claude n'est qu'un complément optionnel. Variables : {qui} {lieu} {nombre} {compagnons} {jours}. Ajouter des variantes ne demande aucun code.",
+ "_note": "Banque de textes préécrits. Le jeu se joue entièrement avec elle ; Claude n’est qu’un complément optionnel. Variables : {qui} {lieu} {nombre} {compagnons} {jours} (murmures), {qui} {allie} (Voix), {qui} {verite} (duel), {allie} {lieu} (constructeur). Les clés de murmure vont du plus précis au plus général : « terreur.inquiete.bree », puis « terreur.inquiete », puis « terreur ». Ajouter des variantes ne demande aucun code ; npm test vérifie la cohérence.",
  "murmures": {
   "espion": {
    "presence": [
@@ -25,7 +25,162 @@
    ],
    "calme": [
     "Rien à {lieu}, Maître. Des bêtises de marché, des querelles de clôture.",
-    "{lieu} dort. Je n’ai rien entendu qui vaille votre or."
+    "Tout dort à {lieu}. Je n’ai rien entendu qui vaille votre or."
+   ],
+   "presence.groupe": [
+    "Ils sont plusieurs, Maître : {qui}{compagnons}, à {lieu}. Ils parlent bas et paient d’avance.",
+    "J’ai vu {qui}{compagnons} prendre une chambre à {lieu}. Ils ont demandé qu’on ne les dérange pas.",
+    "Une petite troupe à {lieu} : {qui}{compagnons}. Ils dorment tout habillés."
+   ],
+   "presence.hobbit": [
+    "Un semi-homme nommé {qui} traîne à {lieu}. Il sursaute dès qu’une porte grince.",
+    "{qui}, un des petits du Comté, est à {lieu}. Il cherche quelqu’un, ou il fuit quelqu’un.",
+    "J’ai partagé la table de {qui} à {lieu}. Il a des souliers de voyage et le regard d’un lièvre."
+   ],
+   "presence.rodeur": [
+    "Un Rôdeur à {lieu}, Maître. Celui qu’on appelle {qui}. Il ne boit pas, il écoute.",
+    "{qui} est à {lieu}. Il s’assoit dos au mur et voit tout le monde entrer.",
+    "Le grand homme sombre, {qui}, rôde autour de {lieu}. Il m’a regardé deux fois. Je n’aime pas ça."
+   ],
+   "presence.magicien": [
+    "Un vieillard en gris à {lieu}. On l’appelle {qui}. Les gens s’écartent sans savoir pourquoi.",
+    "{qui} est passé à {lieu}, Maître. Il a demandé des nouvelles d’un hobbit, et il avait l’air furieux.",
+    "Le magicien, {qui}, est à {lieu}. Je n’ai pas osé m’approcher. Personne n’ose."
+   ],
+   "presence.elfe": [
+    "Un Elfe à {lieu}, Maître. {qui}, disent-ils. La lumière n’est pas la même autour de lui.",
+    "On a vu {qui} à {lieu}. Un seigneur du peuple ancien. Les chevaux eux-mêmes baissent la tête.",
+    "{qui} à {lieu}. Je l’ai vu de loin. De plus près, je ne crois pas que j’aurais pu."
+   ],
+   "presence.gens": [
+    "{qui} est à {lieu}, comme toujours. Il parle trop et voit peu.",
+    "J’ai causé avec {qui}, à {lieu}. Il sait des choses, s’il a assez bu.",
+    "{qui} n’a pas bougé de {lieu}. Il a peur, ça se voit."
+   ],
+   "presence.ombre": [
+    "{qui} est à {lieu}, à votre service, à ce qu’il dit. Il dit beaucoup de choses.",
+    "Votre homme, {qui}, se tient à {lieu}. Il compte son argent plus souvent qu’il ne regarde la route.",
+    "{qui} attend à {lieu}. Il prétend qu’on le paie aussi ailleurs. Je le surveille."
+   ],
+   "absence.hobbit": [
+    "{qui} n’est pas à {lieu}. Les petits gens du coin jurent ne pas le connaître.",
+    "J’ai fouillé {lieu} pour trouver {qui}. Rien. Pas même une trace de pas.",
+    "Personne n’a vu {qui} à {lieu}. Et j’ai payé la tournée pour qu’on se souvienne."
+   ],
+   "absence.rodeur": [
+    "Le Rôdeur {qui} n’est pas à {lieu}. Il est venu, peut-être. Ces gens-là ne laissent rien.",
+    "Pas de {qui} à {lieu}, Maître. Les Rôdeurs vont et viennent comme le brouillard.",
+    "{qui} a quitté {lieu}, ou n’y est jamais venu. On ne sait jamais avec eux."
+   ],
+   "absence.magicien": [
+    "Le vieux {qui} n’est pas à {lieu}. On l’attendait, il n’est pas venu.",
+    "Personne n’a vu {qui} à {lieu}. L’aubergiste s’en inquiète, je ne sais pas pourquoi.",
+    "{qui} n’est pas à {lieu}. Ni ses feux ni sa pipe."
+   ],
+   "absence.elfe": [
+    "Aucun Elfe à {lieu}. {qui} n’y a pas mis les pieds.",
+    "{qui} ? Pas à {lieu}, Maître. Les Elfes ne s’arrêtent pas chez des gens comme nous.",
+    "Pas de {qui} à {lieu}. Les gens dorment mieux pour ça."
+   ],
+   "absence.gens": [
+    "{qui} n’est plus à {lieu}. Sa porte est fermée, ses volets aussi.",
+    "On cherche {qui} à {lieu}. Parti, ou caché.",
+    "{qui} a quitté {lieu}. Personne ne sait où, personne ne veut savoir."
+   ],
+   "absence.ombre": [
+    "{qui} n’est pas à {lieu}. Il a peut-être trouvé un meilleur payeur.",
+    "Pas trace de {qui} à {lieu}. Votre homme a disparu, Maître.",
+    "{qui} a quitté {lieu} sans prévenir personne. Ça ne lui ressemble pas."
+   ],
+   "terreur.inquiete": [
+    "À {lieu}, on ferme les volets avant la nuit. On ne parle plus aux étrangers.",
+    "Les gens de {lieu} regardent la route avec méfiance. Ils ont entendu des choses.",
+    "On barre les portes à {lieu}. Moi aussi, j’ai dû payer double pour entrer."
+   ],
+   "terreur.sous_ombre": [
+    "On s’en va de {lieu}, Maître. Ceux qui restent ne sortent plus.",
+    "À {lieu}, on fuit vers l’ouest ou on se terre. Les chiens hurlent la nuit.",
+    "La peur tient {lieu} à la gorge. Plus personne ne veut me parler, même pour de l’or."
+   ],
+   "terreur.ecrasee": [
+    "Il n’y a plus de vie à {lieu}. Seulement des yeux derrière les fentes des volets.",
+    "À {lieu}, les gens ne dorment plus. Ils attendent la fin, quelle qu’elle soit.",
+    "Tout le monde est à genoux à {lieu}, Maître. Ils feraient n’importe quoi pour que cela cesse."
+   ],
+   "terreur.corrompue": [
+    "À {lieu}, on parle de vous à voix basse, Maître, et ce n’est plus de la peur. C’est de l’attente.",
+    "Les gens de {lieu} me renseignent sans que je paie. Ils veulent être du bon côté.",
+    "À {lieu}, quelqu’un a peint un œil sur une porte. Personne ne l’a effacé."
+   ],
+   "terreur.inquiete.comte": [
+    "Même les petits gens de {lieu} ont peur, Maître. On a vu des cavaliers sur les chemins creux.",
+    "À {lieu}, les Hobbits ferment leurs portes rondes au crépuscule. On n’a jamais vu ça, disent-ils.",
+    "Les fermiers de {lieu} lâchent les chiens la nuit. Ils ne savent pas ce qu’ils craignent."
+   ],
+   "terreur.sous_ombre.comte": [
+    "Le Comté tremble autour de {lieu}. Les Hobbits ne vont plus à l’auberge.",
+    "À {lieu}, les familles partent chez des cousins plus loin. Les trous restent vides.",
+    "Plus de fêtes ni de marchés à {lieu}. Les Hobbits chuchotent qu’on a vu un Homme Noir renifler aux portes."
+   ],
+   "terreur.ecrasee.comte": [
+    "À {lieu}, les Hobbits ne sortent plus de leurs trous. Les champs pourrissent sur pied.",
+    "Le Comté n’est plus le Comté autour de {lieu}. On n’y entend plus rire personne.",
+    "À {lieu}, même les Touque ont peur. Ils ont barricadé les smials et éteint les feux."
+   ],
+   "terreur.inquiete.bree": [
+    "Au Poney, on parle bas. Les gens de {lieu} regardent la Grande Route comme on regarde un chien qui grogne.",
+    "Les veilleurs de la porte de {lieu} posent plus de questions qu’avant. On m’a fouillé.",
+    "À {lieu}, on se méfie des étrangers, et même des Rôdeurs. Surtout des Rôdeurs."
+   ],
+   "terreur.sous_ombre.bree": [
+    "La salle commune du Poney est presque vide. Les gens de {lieu} restent chez eux.",
+    "À {lieu}, des familles ont quitté la Colline pour Archet ou Combe. La porte ouest reste fermée.",
+    "On ne chante plus à {lieu}. Le vieux Poiredebeurre a l’air d’avoir dix ans de plus."
+   ],
+   "terreur.ecrasee.bree": [
+    "{lieu} n’est plus qu’un village de volets clos. Même la Grande Route l’évite.",
+    "À {lieu}, on a laissé la porte ouverte et personne ne garde plus rien. Ils attendent.",
+    "Le Poney Fringant a éteint ses lampes. Je n’avais jamais vu {lieu} aussi silencieux."
+   ],
+   "passage_porteur.frais": [
+    "Des petites gens sont passés à {lieu} il y a {jours}. L’un tenait la main sur sa poitrine comme sur une plaie.",
+    "Hier à peine, à {lieu}, un voyageur du Comté a refusé qu’on touche à son paquetage.",
+    "Ils sont passés à {lieu}, Maître, il y a {jours}. Ils ont repris la route avant l’aube."
+   ],
+   "passage_porteur.ancien": [
+    "Il y a {jours}, des semi-hommes ont dormi à {lieu}. Ils n’ont dit leur nom à personne.",
+    "Une servante de {lieu} se souvient d’un petit voyageur, il y a {jours}. Il gardait la main dans sa poche.",
+    "Ils ont traversé {lieu} il y a {jours}. La piste est vieille, mais je sais où elle va."
+   ],
+   "nazgul.un": [
+    "Un cavalier noir à {lieu}. Il a demandé Sacquet, et personne n’a osé mentir.",
+    "Un des vôtres à {lieu}, Maître. Les chevaux de l’écurie ont rompu leurs longes.",
+    "Un Homme Noir a traversé {lieu} au pas. Le froid est resté derrière lui."
+   ],
+   "nazgul.plusieurs": [
+    "{nombre} cavaliers noirs à {lieu}. On ne les regarde pas en face.",
+    "Ils sont {nombre} à {lieu}, Maître. Les gens se terrent dans les caves.",
+    "{nombre} Hommes Noirs ont traversé {lieu}. Ils demandaient après un certain Sacquet."
+   ],
+   "nazgul.nombreux": [
+    "{nombre} cavaliers à {lieu}. Je n’ai jamais vu autant d’ombres au même endroit.",
+    "Les Neuf, ou presque, à {lieu}. {nombre}, Maître. Je ne suis pas resté pour compter mieux.",
+    "{nombre} des vôtres à {lieu}. Il n’y a plus un bruit dans tout le pays."
+   ],
+   "calme.comte": [
+    "Rien à {lieu}, Maître. Des Hobbits qui parlent de champignons et de mariages.",
+    "{lieu} est tranquille. On y boit de la bière et on y médit des Sacquet.",
+    "Rien du côté de {lieu}, sinon un vieux fermier qui crie après ses voisins."
+   ],
+   "calme.bree": [
+    "Rien à {lieu}. Des marchands du Sud, des nains de passage, des querelles d’ivrognes.",
+    "À {lieu}, on parle du prix du tabac et de la pluie. Rien qui vaille votre or.",
+    "{lieu} dort sous sa colline. La Grande Route est vide."
+   ],
+   "calme.route": [
+    "Rien sur la route du côté de {lieu}. Des chariots, de la boue, des mendiants.",
+    "À {lieu}, rien que des voyageurs ordinaires. Je les ai tous regardés.",
+    "La route est calme autour de {lieu}. Trop calme pour la saison."
    ]
   },
   "crebain": {
@@ -51,7 +206,137 @@
    ],
    "calme": [
     "Rien à {lieu}. Vent, herbe, moutons.",
-    "{lieu} est tranquille. Les ailes reviennent bredouilles."
+    "Tranquille, à {lieu}. Les ailes reviennent bredouilles."
+   ],
+   "presence.groupe": [
+    "Croâ. Des marcheurs à {lieu}{compagnons}. Petits. Ils se cachent sous les arbres le jour.",
+    "Vu d’en haut : une troupe à {lieu}. Petits pas. Beaucoup de bagages.",
+    "Une file de marcheurs à {lieu}{compagnons}. Ils regardent le ciel. Ils nous craignent."
+   ],
+   "presence.hobbit": [
+    "Un petit marcheur à {lieu}. Seul. Il marche vite.",
+    "Croâ. Petit, pieds nus, à {lieu}. Il se cache quand l’ombre des ailes passe.",
+    "À {lieu}, un petit qui fume. La fumée sent l’herbe de l’ouest."
+   ],
+   "presence.rodeur": [
+    "Un grand marcheur à {lieu}. Manteau vert-gris. Il voit les ailes. Il les montre du doigt.",
+    "Croâ. Un homme long, sombre, à {lieu}. Il ne fait pas de feu.",
+    "À {lieu}, un grand qui marche sans laisser de traces. Les ailes l’ont perdu deux fois."
+   ],
+   "presence.magicien": [
+    "Un vieux en gris à {lieu}. Bâton. Cheval très vite. Les ailes n’aiment pas son regard.",
+    "Croâ ! Lumière sur la colline, à {lieu}. Un vieux. Les ailes ont eu peur.",
+    "À {lieu}, un vieux au grand chapeau. Il a regardé les ailes et elles sont tombées."
+   ],
+   "presence.elfe": [
+    "Un cavalier blanc à {lieu}. Il brille. Les ailes ne peuvent pas le regarder.",
+    "Croâ. À {lieu}, une lumière qui marche. Les ailes ont fui.",
+    "Un grand, à {lieu}, cheveux d’or, cheval blanc. Il chante. Les ailes détestent le chant."
+   ],
+   "presence.gens": [
+    "Un des gens d’ici à {lieu}. Il travaille la terre. Rien d’autre.",
+    "Croâ. À {lieu}, un vieux qui bêche et qui regarde la route.",
+    "Un habitant à {lieu}. Il nous jette des pierres."
+   ],
+   "presence.ombre": [
+    "Un homme louche à {lieu}. Il parle aux ailes. Il connaît le signe.",
+    "Croâ. À {lieu}, celui qui donne du pain aux ailes. Il sert la Main.",
+    "Un homme à {lieu}, regard de travers. Il attend quelqu’un."
+   ],
+   "absence.hobbit": [
+    "Pas de petits marcheurs à {lieu}. Les ailes ont tourné longtemps.",
+    "Croâ. À {lieu}, aucun petit. Rien que des moutons.",
+    "Les ailes ont fouillé {lieu}. Pas de petits pas, pas de petites fumées."
+   ],
+   "absence.rodeur": [
+    "Pas de grand marcheur à {lieu}. Vide.",
+    "Croâ. À {lieu}, personne qui marche comme un loup.",
+    "Les ailes n’ont pas vu le grand à {lieu}. Peut-être caché. Peut-être loin."
+   ],
+   "absence.magicien": [
+    "Pas de vieux en gris à {lieu}. Pas de lumière.",
+    "Croâ. À {lieu}, aucun bâton, aucun chapeau.",
+    "Les ailes n’ont pas vu le vieux à {lieu}. Les ailes sont contentes."
+   ],
+   "absence.elfe": [
+    "Pas de lumière à {lieu}. Pas de cavalier blanc.",
+    "Croâ. À {lieu}, aucun chant.",
+    "Les ailes ont fouillé {lieu}. Pas de peuple ancien."
+   ],
+   "absence.gens": [
+    "Maison vide à {lieu}. Pas de fumée.",
+    "Croâ. À {lieu}, le champ est vide. Celui qui bêchait est parti.",
+    "Personne à {lieu}. Porte ouverte."
+   ],
+   "absence.ombre": [
+    "Celui qui sert la Main n’est pas à {lieu}.",
+    "Croâ. À {lieu}, plus de pain pour les ailes.",
+    "L’homme louche a quitté {lieu}. Les ailes ne savent pas où."
+   ],
+   "terreur.inquiete": [
+    "Les gens de {lieu} rentrent tôt. Ils regardent derrière eux.",
+    "Croâ. À {lieu}, les portes se ferment quand le soleil baisse.",
+    "Moins de fumées à {lieu}. Ils ont peur de quelque chose."
+   ],
+   "terreur.sous_ombre": [
+    "Les gens de {lieu} ne sortent plus. Les champs sont vides.",
+    "Fumées éteintes à {lieu}. Ils se terrent.",
+    "Croâ. À {lieu}, des charrettes partent vers l’ouest. Beaucoup."
+   ],
+   "terreur.ecrasee": [
+    "Plus rien ne bouge à {lieu}. Même les bêtes se cachent.",
+    "Croâ ! À {lieu}, le silence. Les ailes aiment ce silence.",
+    "À {lieu}, les gens ne lèvent plus les yeux. Ni vers les ailes, ni vers rien."
+   ],
+   "terreur.corrompue": [
+    "À {lieu}, les gens laissent du pain pour les ailes. Ils savent qui elles servent.",
+    "Croâ. Tout est à la Main, à {lieu}. On le sent d’en haut.",
+    "À {lieu}, une ombre sur les champs. Elle ne bouge pas avec le soleil."
+   ],
+   "passage_porteur.frais": [
+    "Une piste fraîche à {lieu}, vers l’est. Des pas légers, pressés.",
+    "Des marcheurs ont couché à {lieu}. Les cendres sont tièdes.",
+    "Croâ ! Herbe couchée à {lieu}, ce matin. Petits pieds. Ils fuient le soleil levant."
+   ],
+   "passage_porteur.ancien": [
+    "Vieille piste à {lieu}, il y a {jours}. Pluie dessus.",
+    "Croâ. Un feu éteint à {lieu}, vieux de {jours}. Petits os de lapin.",
+    "Des pas à {lieu}, effacés. Il y a {jours}, peut-être."
+   ],
+   "nazgul.un": [
+    "Un cheval noir à {lieu}. Les ailes ne s’approchent pas.",
+    "Croâ. Une ombre à cheval, à {lieu}. Le froid monte jusqu’aux ailes.",
+    "À {lieu}, un cavalier noir. L’herbe se couche sous lui."
+   ],
+   "nazgul.plusieurs": [
+    "Chevaux noirs à {lieu}. Les ailes ne s’approchent pas.",
+    "Ombres à cheval sur {lieu}. {nombre}, peut-être.",
+    "Croâ. {nombre} cavaliers noirs à {lieu}. Ils se suivent sans parler."
+   ],
+   "nazgul.nombreux": [
+    "Beaucoup d’ombres à {lieu}. {nombre}. Les ailes ont fui.",
+    "Croâ ! {nombre} chevaux noirs à {lieu}. La terre gèle.",
+    "À {lieu}, tant de cavaliers noirs que les ailes ont perdu le compte."
+   ],
+   "calme.comte": [
+    "Rien à {lieu}. Champs, haies, moutons.",
+    "Croâ. {lieu} est vert et gras. Rien qui marche vers l’est.",
+    "Petites fumées à {lieu}, comme chaque jour. Rien."
+   ],
+   "calme.sauvage": [
+    "Rien à {lieu}. Vent, pierres, herbe.",
+    "Croâ. À {lieu}, des renards. Rien d’autre.",
+    "Les ailes reviennent de {lieu} bredouilles. Le pays est vide."
+   ],
+   "calme.riviere": [
+    "Rien à {lieu}. L’eau, le bruit de l’eau.",
+    "Croâ. À {lieu}, le gué est vide. L’eau est haute et froide.",
+    "Les ailes ont survolé {lieu}. Personne sur les rives."
+   ],
+   "calme.route": [
+    "Rien sur la route à {lieu}. Des chariots lents.",
+    "Croâ. À {lieu}, des marchands. Grands. Pas ceux qu’on cherche.",
+    "La route est vide du côté de {lieu}."
    ]
   },
   "rumeur": {
@@ -78,17 +363,167 @@
    ],
    "calme": [
     "Rien de neuf à {lieu}, sinon que la bière est moins bonne qu’avant.",
-    "{lieu} ? On s’y ennuie à mourir, à ce qu’on dit."
+    "Du côté de {lieu} ? On s’y ennuie à mourir, à ce qu’on dit."
+   ],
+   "presence.groupe": [
+    "On dit que {qui} est à {lieu}{compagnons}, mais on dit tant de choses après la troisième pinte.",
+    "À {lieu}, tout le monde parle de {qui}{compagnons}. Personne ne les a vus, mais tout le monde en parle.",
+    "Le cousin d’un ami jure avoir trinqué avec {qui}{compagnons}, à {lieu}. Ils auraient même chanté."
+   ],
+   "presence.hobbit": [
+    "Paraît que {qui} se cache à {lieu}. Un drôle de petit gars, qui a de l’or plein les poches.",
+    "On a vu {qui} à {lieu}, ou quelqu’un qui lui ressemblait. Les semi-hommes se ressemblent tous.",
+    "À {lieu}, on raconte que {qui} a payé sa bière en vieilles pièces. Des pièces de dragon, à ce qu’il paraît."
+   ],
+   "presence.rodeur": [
+    "Ce {qui}, le Rôdeur, il est à {lieu}, à ce qu’on dit. Méfie-toi de ces gens-là.",
+    "On murmure que {qui} est revenu à {lieu}. Il a la mine d’un loup et les bottes pleines de boue.",
+    "Un Rôdeur traîne à {lieu}. {qui}, qu’on l’appelle. On dit qu’il a tué un homme. On dit qu’il en a sauvé dix."
+   ],
+   "presence.magicien": [
+    "Le vieux {qui} serait à {lieu} ! Celui des feux d’artifice ! Ou alors un autre, avec le même chapeau.",
+    "On raconte que {qui} est passé à {lieu} comme un orage, et qu’il cherchait quelqu’un.",
+    "À {lieu}, il paraît que {qui} a fait sauter le chapeau d’un ivrogne rien qu’en le regardant."
+   ],
+   "presence.elfe": [
+    "Des Elfes à {lieu} ! {qui}, un grand seigneur. Ma tante l’a vu chanter sous les étoiles.",
+    "On dit que {qui} chevauche du côté de {lieu}. Un Elfe, sur un cheval blanc qui brille la nuit.",
+    "À {lieu}, on parle de {qui}, un Elfe qui ne dort jamais. Les vieux disent que c’est mauvais signe."
+   ],
+   "presence.gens": [
+    "{qui} est toujours à {lieu}, à radoter. Rien de neuf sous son toit.",
+    "On dit que {qui} a vu quelque chose à {lieu}. Il refuse d’en parler, ce qui veut tout dire.",
+    "À {lieu}, {qui} jure qu’il a reçu la visite d’un étranger. Personne ne le croit."
+   ],
+   "presence.ombre": [
+    "{qui} traîne à {lieu}, avec de l’argent qu’il n’a pas gagné honnêtement.",
+    "On dit que {qui} reçoit des visiteurs la nuit, à {lieu}. Des gens du Sud.",
+    "À {lieu}, on évite {qui}. Il a des amis qu’on n’aimerait pas rencontrer."
+   ],
+   "absence.hobbit": [
+    "{qui} ? Pas vu à {lieu}. Il est mort, ou parti chez les Elfes, ou les deux.",
+    "On le cherchait à {lieu}, ce {qui}. Envolé, à ce qu’il paraît.",
+    "À {lieu}, on dit que {qui} a disparu sous les yeux de tous. Comme Bilbon, le vieux fou."
+   ],
+   "absence.rodeur": [
+    "Le Rôdeur ? Il n’est plus à {lieu}. Ces gens-là ne restent jamais.",
+    "{qui} est parti de {lieu}, il paraît. Ou il n’y est jamais venu. Qui le sait ?",
+    "Personne n’a vu {qui} à {lieu} depuis des jours. On respire mieux."
+   ],
+   "absence.magicien": [
+    "{qui} ne viendra pas à {lieu}, cette année. On dit qu’il est mort. On dit qu’il est prisonnier. On dit n’importe quoi.",
+    "Pas de {qui} à {lieu}. Les enfants sont déçus : pas de feux d’artifice.",
+    "Le magicien, {qui} ? Disparu. À {lieu}, on parie qu’il ne reviendra jamais."
+   ],
+   "absence.elfe": [
+    "Des Elfes à {lieu} ? Non. On ne les voit plus, ils s’en vont tous vers la mer.",
+    "{qui} ? Jamais vu à {lieu}. Les Elfes, c’est pour les chansons.",
+    "On croyait voir {qui} à {lieu}. C’était un reflet dans l’eau."
+   ],
+   "absence.gens": [
+    "{qui} a quitté {lieu}, à ce qu’on dit. Il avait peur de quelque chose.",
+    "Personne n’a vu {qui} à {lieu} depuis deux jours. Sa femme dit qu’il est malade.",
+    "{qui} n’est plus à {lieu}. On dit qu’il est parti chez des cousins."
+   ],
+   "absence.ombre": [
+    "{qui} a filé de {lieu}, il paraît. Bon débarras.",
+    "On ne voit plus {qui} à {lieu}. Quelqu’un a dû lui faire peur.",
+    "Pas de {qui} à {lieu}. On dit qu’il doit de l’argent à des gens dangereux."
+   ],
+   "terreur.inquiete": [
+    "Paraît qu’à {lieu}, les gens dorment avec une hache sous l’oreiller.",
+    "On dit qu’à {lieu}, des bêtes ont été trouvées mortes, sans une blessure.",
+    "À {lieu}, on se signe en entendant un cheval passer la nuit. On ne sait plus pourquoi."
+   ],
+   "terreur.sous_ombre": [
+    "Des loups, des Hommes Noirs, des fantômes : à {lieu}, on ne sait plus ce qu’on craint, mais on a peur.",
+    "On dit que les gens de {lieu} s’en vont par familles entières. Les maisons restent ouvertes.",
+    "À {lieu}, il paraît que le lait tourne et que les enfants font tous le même rêve."
+   ],
+   "terreur.ecrasee": [
+    "Personne ne va plus du côté de {lieu}. Ceux qui y sont allés en reviennent muets.",
+    "On dit qu’à {lieu}, le soleil lui-même a l’air froid.",
+    "À {lieu}, les gens ne parlent plus. Ils regardent l’est, et ils attendent."
+   ],
+   "terreur.corrompue": [
+    "On dit qu’à {lieu}, les gens se sont mis à prier quelque chose, la nuit, vers l’est.",
+    "À {lieu}, il paraît qu’on a cessé d’avoir peur. C’est encore pire, je trouve.",
+    "Les marchands ne s’arrêtent plus à {lieu}. On y vend les voisins pour un sac de grain."
+   ],
+   "terreur.inquiete.comte": [
+    "Paraît qu’un Homme Noir a demandé le chemin de Cul-de-Sac, du côté de {lieu}. L’Ancien l’a envoyé promener.",
+    "À {lieu}, on dit que le Père Maggotte a lâché ses chiens sur un cavalier. Les chiens sont revenus la queue basse.",
+    "Les Hobbits de {lieu} parlent de Grandes Gens à cheval qui reniflent. On n’avait jamais vu ça dans le Comté."
+   ],
+   "terreur.sous_ombre.comte": [
+    "Au Dragon Vert, plus personne ne rit. Paraît qu’à {lieu}, on a vu une ombre sans visage.",
+    "À {lieu}, les Hobbits disent que les Hommes du dehors viennent manger les enfants. Les mères y croient.",
+    "On raconte qu’à {lieu}, les Shiriffes eux-mêmes refusent de sortir après le coucher du soleil."
+   ],
+   "terreur.ecrasee.comte": [
+    "Le Comté est maudit, voilà ce qu’on dit à {lieu}. Les arbres eux-mêmes ont peur.",
+    "À {lieu}, plus une pipe allumée, plus une chanson. Le Thain ne répond plus.",
+    "On raconte qu’à {lieu}, les Hobbits ont muré leurs portes. Les rondes comme les autres."
+   ],
+   "terreur.inquiete.bree": [
+    "Au Poney, on dit que des Hommes Noirs sont venus demander après des voyageurs du Comté. Prosper en a perdu sa voix.",
+    "À {lieu}, on raconte que la porte ouest a été forcée une nuit, et que le gardien n’a rien vu.",
+    "Paraît qu’à {lieu}, on a trouvé des chevaux morts de peur dans leur écurie."
+   ],
+   "terreur.sous_ombre.bree": [
+    "On dit qu’à {lieu}, des chambres du Poney ont été retournées en pleine nuit. Les lits lacérés.",
+    "À {lieu}, plus personne ne va sur la Grande Route après midi. Même les nains font le détour.",
+    "Paraît que les gens de {lieu} parlent de quitter la Colline. Des Hommes et des Hobbits, ensemble."
+   ],
+   "terreur.ecrasee.bree": [
+    "Le Poney est fermé, voilà ce qu’on dit de {lieu}. Le Poney ! Fermé !",
+    "À {lieu}, on dit qu’un vent froid souffle dans les rues même quand l’air est immobile.",
+    "Paraît qu’il n’y a plus que des ombres à {lieu}. Les gens sont là, mais ce ne sont plus que des ombres."
+   ],
+   "passage_porteur.frais": [
+    "Des semi-hommes sont passés à {lieu} il y a {jours}. L’un d’eux a disparu sous les yeux de tous, puis il est revenu !",
+    "À {lieu}, un petit gars aurait fait un tour de magie. Envolé, puis revenu. Il buvait trop, sans doute.",
+    "Il y a {jours}, à {lieu}, des voyageurs du Comté sont partis avant le chant du coq. Sans payer leur dû, dit-on."
+   ],
+   "passage_porteur.ancien": [
+    "On parle encore de ces petites gens qui sont passés à {lieu}, il y a {jours}. Ils avaient l’air pressés et tristes.",
+    "Il y a {jours}, à {lieu}, des Hobbits ont demandé la route de l’est. Drôle d’idée, pour des Hobbits.",
+    "Paraît que des voyageurs ont dormi à {lieu}, il y a {jours}. L’un d’eux parlait dans son sommeil, d’un anneau."
+   ],
+   "nazgul.un": [
+    "On a vu un Homme Noir du côté de {lieu}. Il renifle comme un chien.",
+    "Un cavalier tout en noir, à {lieu}, monté sur un cheval qui ne mange pas.",
+    "À {lieu}, un cavalier noir s’est arrêté devant une porte, a sifflé, et il est reparti."
+   ],
+   "nazgul.plusieurs": [
+    "Des cavaliers noirs à {lieu}, {nombre}, ou plus, montés sur des chevaux qui ne mangent pas.",
+    "On dit qu’ils sont {nombre} à {lieu}, à se répondre la nuit par des cris.",
+    "{nombre} Hommes Noirs à {lieu}, à ce qu’on dit. Mais on en voit partout, maintenant."
+   ],
+   "nazgul.nombreux": [
+    "On dit qu’ils sont {nombre} à {lieu}. {nombre} ! Comme dans les vieilles histoires.",
+    "Paraît que tous les cavaliers noirs se retrouvent à {lieu}. Des fantômes, je te dis.",
+    "{nombre} cavaliers à {lieu}, à ce qu’on raconte. Ceux qui les ont vus n’en dorment plus."
+   ],
+   "calme.comte": [
+    "Rien de neuf à {lieu}, sinon que la bière est moins bonne qu’avant.",
+    "À {lieu}, on ne parle que du départ de M. Sacquet. Vendu Cul-de-Sac aux Sacquet de Besace, figure-toi !",
+    "On s’ennuie à {lieu}. Le Père Maggotte a encore chassé des chapardeurs de champignons."
+   ],
+   "calme.bree": [
+    "Du côté de {lieu} ? On s’y ennuie à mourir, à ce qu’on dit.",
+    "Rien à {lieu}, sinon des nains qui passent vers l’ouest et ne disent pas pourquoi.",
+    "À {lieu}, on parle surtout du prix du foin et du mariage de la fille du charron."
    ]
   },
   "nazgul": {
    "presence": [
-    "Des vies chaudes à {lieu}{compagnons}. L’une d’elles brille plus qu’elle ne devrait.",
+    "Des vies chaudes à {lieu}. L’une d’elles brille plus qu’elle ne devrait.",
     "À {lieu}, des esprits qui tremblent. {qui}, peut-être. Le nom n’a pas d’odeur."
    ],
    "absence": [
     "Nulle aura de {qui} à {lieu}. Le froid ne trouve rien.",
-    "{lieu} est vide de ce que nous cherchons."
+    "Rien à {lieu} de ce que nous cherchons."
    ],
    "terreur": [
     "La peur suinte de {lieu}. Elle nous nourrit.",
@@ -104,7 +539,142 @@
    ],
    "calme": [
     "Rien à {lieu}. Seulement des ombres ordinaires.",
-    "{lieu} ne garde aucune trace. Le froid passe et ne trouve rien."
+    "Aucune trace à {lieu}. Le froid passe et ne trouve rien."
+   ],
+   "presence.groupe": [
+    "Des vies chaudes à {lieu}. Plusieurs. L’une d’elles brille plus qu’elle ne devrait.",
+    "À {lieu}, un nœud d’esprits qui tremblent. Ils se tiennent serrés comme des agneaux.",
+    "Le froid sent une petite troupe à {lieu}. Au milieu, quelque chose d’or."
+   ],
+   "presence.hobbit": [
+    "À {lieu}, un esprit petit, tiède, apeuré. {qui}, peut-être. Le nom n’a pas d’odeur.",
+    "Une petite flamme à {lieu}. Elle vacille quand nous pensons à elle.",
+    "À {lieu}, un esprit simple et têtu. Il a peur. La peur a son odeur."
+   ],
+   "presence.rodeur": [
+    "À {lieu}, un esprit dur, ancien de sang. Il sait ce que nous sommes.",
+    "Le sang de l’Ouistrenesse à {lieu}. {qui}. Il nous a déjà vus, il nous attend.",
+    "À {lieu}, une volonté qui ne plie pas. Un héritier. Il garde quelque chose de brisé."
+   ],
+   "presence.magicien": [
+    "Une flamme blanche à {lieu}. Elle brûle le regard. Le froid recule.",
+    "À {lieu}, un Feu caché sous la cendre grise. {qui}. Nous l’avons déjà senti.",
+    "À {lieu}, un des Messagers. Sa main porte quelque chose de chaud, et de rouge."
+   ],
+   "presence.elfe": [
+    "À {lieu}, une lumière qui vit dans les deux mondes. Elle nous voit comme nous la voyons.",
+    "Un Seigneur de l’Ouest à {lieu}. {qui}. Il est plus terrible ici que dans le monde des vivants.",
+    "À {lieu}, quelque chose de blanc et d’ancien. Nos chevaux refusent d’avancer."
+   ],
+   "presence.gens": [
+    "À {lieu}, un esprit ordinaire, lourd de peurs ordinaires.",
+    "Une vie terne à {lieu}. Elle sait peu de chose. Elle dira tout.",
+    "À {lieu}, un esprit qui craque déjà. Un seul regard suffira."
+   ],
+   "presence.ombre": [
+    "À {lieu}, un esprit déjà gâté. Il nous appartient à moitié.",
+    "Celui qui sert à {lieu}. {qui}. Son âme a le goût de l’or et de la peur.",
+    "À {lieu}, un esprit qui ment à tous, même à lui. Utile."
+   ],
+   "absence.hobbit": [
+    "Nulle petite flamme à {lieu}. Le froid ne trouve rien.",
+    "À {lieu}, aucun esprit de semi-homme. Ils sont ailleurs.",
+    "Rien à {lieu} de ce que nous cherchons."
+   ],
+   "absence.rodeur": [
+    "Pas de sang de l’Ouest à {lieu}. L’héritier est ailleurs.",
+    "À {lieu}, nulle volonté dure. Le chemin est libre.",
+    "Le froid a fouillé {lieu}. Le Rôdeur n’y est pas."
+   ],
+   "absence.magicien": [
+    "Pas de flamme blanche à {lieu}. Le Messager est loin.",
+    "À {lieu}, rien ne brûle. Le Gris n’y est pas.",
+    "Le froid passe à {lieu} sans rencontrer de feu."
+   ],
+   "absence.elfe": [
+    "À {lieu}, nulle lumière de l’Ouest. Nos chevaux avancent.",
+    "Pas de Seigneur Elfe à {lieu}. Le monde des ombres y est à nous.",
+    "Le froid ne sent aucun Premier-Né à {lieu}."
+   ],
+   "absence.gens": [
+    "À {lieu}, la vie que nous cherchions s’est enfuie.",
+    "Rien à {lieu}. L’esprit est parti, la peur est restée.",
+    "Le froid ne trouve pas {qui} à {lieu}."
+   ],
+   "absence.ombre": [
+    "À {lieu}, celui qui sert ne répond plus. Il est parti.",
+    "Le froid cherche son serviteur à {lieu}, et ne le trouve pas.",
+    "{qui} n’est pas à {lieu}. Il nous fuit, peut-être."
+   ],
+   "terreur.inquiete": [
+    "La peur commence à suinter de {lieu}. Une odeur fine, comme la pluie qui vient.",
+    "À {lieu}, les cœurs battent plus vite au crépuscule. Ils nous sentent.",
+    "Les rêves de {lieu} sont devenus noirs. C’est un commencement."
+   ],
+   "terreur.sous_ombre": [
+    "La peur suinte de {lieu}. Elle nous nourrit.",
+    "À {lieu}, les cœurs battent vite. Ils nous sentent.",
+    "À {lieu}, la peur est épaisse comme un brouillard. Nous y marchons sans être vus."
+   ],
+   "terreur.ecrasee": [
+    "À {lieu}, tout n’est plus qu’un cri muet. Le froid y est roi.",
+    "À {lieu}, les esprits sont à genoux. Il suffit de les ramasser.",
+    "Plus aucune volonté à {lieu}. Le terrain est prêt pour l’Ombre."
+   ],
+   "terreur.corrompue": [
+    "Tout est à nous, à {lieu}. Les esprits y tournent vers l’est comme des fleurs vers le soleil.",
+    "À {lieu}, l’Ombre a pris racine. Le froid y est chez lui.",
+    "À {lieu}, même les rêves obéissent."
+   ],
+   "passage_porteur.frais": [
+    "La TRACE. À {lieu}, il y a {jours}. L’or froid a laissé sa morsure dans l’air.",
+    "Le Précieux est passé par {lieu}. Son sillage brûle encore.",
+    "À {lieu}, l’air vibre encore. Il est passé. Il est proche."
+   ],
+   "passage_porteur.ancien": [
+    "Une trace ancienne à {lieu}, vieille de {jours}. Faible. Mais c’est LUI.",
+    "À {lieu}, un écho, il y a {jours}. L’Anneau est passé, et il s’est éloigné.",
+    "Le froid se souvient de {lieu}, il y a {jours}. Une piste qui s’efface, mais qui mène quelque part."
+   ],
+   "nazgul.un": [
+    "Le lien est clair : un des nôtres à {lieu}.",
+    "À {lieu}, un frère des Neuf. Il chasse seul.",
+    "Un seul des Neuf veille à {lieu}. Le lien est tendu."
+   ],
+   "nazgul.plusieurs": [
+    "Le lien est clair : {nombre} des nôtres à {lieu}.",
+    "À {lieu}, le froid compte {nombre} des Neuf.",
+    "{nombre} des Neuf se tiennent à {lieu}. Nos pensées s’y rejoignent."
+   ],
+   "nazgul.nombreux": [
+    "Nous sommes {nombre} à {lieu}. La terre y gèle.",
+    "À {lieu}, {nombre} des Neuf. Le monde des vivants s’y amincit.",
+    "Le lien rassemble {nombre} des nôtres à {lieu}. Rien ne nous y résistera."
+   ],
+   "calme.comte": [
+    "Rien à {lieu}. Des esprits gras et sans rêves.",
+    "À {lieu}, seulement des petites vies qui dorment. Rien d’or.",
+    "Le froid traverse {lieu} sans rien accrocher."
+   ],
+   "calme.bree": [
+    "Rien à {lieu}. Des esprits ordinaires, rien que des peurs d’argent.",
+    "À {lieu}, la foule et ses petites pensées. Rien qui brille.",
+    "Le froid traverse {lieu} et ne trouve rien qui vaille."
+   ],
+   "calme.sauvage": [
+    "Rien à {lieu}. Seulement des ombres ordinaires.",
+    "Aucune trace à {lieu}. Le froid passe et ne trouve rien.",
+    "À {lieu}, les pierres se souviennent, mais elles ne disent rien de l’Anneau."
+   ],
+   "calme.riviere": [
+    "À {lieu}, l’eau parle une langue que nous n’aimons pas. Rien d’autre.",
+    "Rien à {lieu}. L’eau garde ses secrets.",
+    "Le froid longe {lieu} et ne trouve que le bruit de l’eau."
+   ],
+   "calme.route": [
+    "Rien à {lieu}. Des marchands, des mendiants, de la poussière.",
+    "À {lieu}, le froid ne sent rien que des esprits pressés.",
+    "Rien sur la route à {lieu}."
    ]
   },
   "agent": {
@@ -117,7 +687,7 @@
     "Pas trace de {qui} à {lieu}, je le jure sur ma vie."
    ],
    "terreur": [
-    "{lieu} tremble, Maître, comme vous l’avez voulu.",
+    "Tout tremble à {lieu}, Maître, comme vous l’avez voulu.",
     "Les gens de {lieu} ont peur. Ils parleront à qui paiera."
    ],
    "passage_porteur": [
@@ -130,7 +700,132 @@
    ],
    "calme": [
     "Rien à {lieu}. J’ouvre l’œil.",
-    "{lieu} est calme. Trop calme, peut-être."
+    "Calme, à {lieu}. Trop calme, peut-être."
+   ],
+   "presence.groupe": [
+    "Votre serviteur a vu {qui}{compagnons} à {lieu}, de ses yeux, ce soir même.",
+    "{qui} est à {lieu}{compagnons}. Je les ai suivis jusqu’à la porte.",
+    "J’ai compté, Maître : {qui}{compagnons}, à {lieu}. Ils repartent à l’aube, je crois."
+   ],
+   "presence.hobbit": [
+    "{qui} est à {lieu}. Seul, Maître. Je l’ai vu comme je vous vois.",
+    "Le petit {qui} se cache à {lieu}. Je sais quelle porte.",
+    "J’ai entendu {qui} parler à {lieu}. Il a peur, et il garde la main sur sa poche."
+   ],
+   "presence.rodeur": [
+    "Le Rôdeur {qui} est à {lieu}, Maître. Il m’a vu. Je ne crois pas qu’il ait compris.",
+    "{qui} est à {lieu}. Il aiguise une épée cassée. C’est étrange, une épée cassée.",
+    "Grand-Pas, {qui}, est à {lieu}. Je me tiens loin de lui, comme vous l’avez ordonné."
+   ],
+   "presence.magicien": [
+    "Le magicien {qui} est à {lieu}. Je n’ose pas approcher, Maître, pardonnez-moi.",
+    "{qui} est arrivé à {lieu}. Il pose des questions sur moi, je crois.",
+    "Le Gris, {qui}, est à {lieu}. Il a regardé ma maison. Il sait peut-être."
+   ],
+   "presence.elfe": [
+    "Un Elfe, {qui}, à {lieu}. Je n’ai pas pu le regarder longtemps, Maître.",
+    "{qui} est à {lieu}. Ses yeux brûlent. Je me suis caché.",
+    "Le seigneur elfe {qui} chevauche autour de {lieu}. Il cherche, lui aussi."
+   ],
+   "presence.gens": [
+    "{qui} est à {lieu}. Il parle beaucoup quand je lui paie à boire.",
+    "J’ai {qui} à l’œil, à {lieu}. Il ne bouge pas.",
+    "{qui} est à {lieu}, Maître. Il ne se doute de rien."
+   ],
+   "presence.ombre": [
+    "{qui} est à {lieu}. Il sert, lui aussi, mais il sert deux maîtres. Je le jure.",
+    "J’ai vu {qui} à {lieu}. Il a de l’argent du Sud, beaucoup trop.",
+    "{qui} est à {lieu}. Il se croit plus malin que moi."
+   ],
+   "absence.hobbit": [
+    "{qui} n’est plus à {lieu}. Je l’aurais su.",
+    "Pas trace de {qui} à {lieu}, je le jure sur ma vie.",
+    "{qui} a quitté {lieu}, Maître. La chambre est vide, le lit est froid."
+   ],
+   "absence.rodeur": [
+    "Le Rôdeur n’est pas à {lieu}. Je respire mieux, Maître.",
+    "{qui} n’est pas revenu à {lieu}. Je guette.",
+    "Pas de {qui} à {lieu}. Il est parti vers l’est, je crois."
+   ],
+   "absence.magicien": [
+    "Le magicien n’est pas à {lieu}. On l’attend, il ne vient pas.",
+    "{qui} n’est pas venu à {lieu}. L’aubergiste en a pâli.",
+    "Pas de {qui} à {lieu}, Maître. Ni hier, ni aujourd’hui."
+   ],
+   "absence.elfe": [
+    "Aucun Elfe à {lieu}, Maître.",
+    "{qui} n’est pas à {lieu}. Les Elfes nous laissent en paix.",
+    "Pas de {qui} à {lieu}. Je l’aurais senti, croyez-moi."
+   ],
+   "absence.gens": [
+    "{qui} n’est plus à {lieu}. Il a fui, je crois.",
+    "Pas de {qui} à {lieu}. Je cherche encore.",
+    "{qui} a quitté {lieu}. Quelqu’un l’a prévenu."
+   ],
+   "absence.ombre": [
+    "{qui} n’est pas à {lieu}. Il a peut-être trouvé un autre maître.",
+    "Pas de {qui} à {lieu}. Je ne le regrette pas, Maître.",
+    "{qui} a quitté {lieu} de nuit. Je ne sais pas où il va."
+   ],
+   "terreur.inquiete": [
+    "Les gens de {lieu} ont peur. Ils parleront à qui paiera.",
+    "À {lieu}, on commence à trembler, Maître, comme vous l’avez voulu.",
+    "On ferme les portes à {lieu}. Moi, je laisse la mienne ouverte. Je n’ai rien à craindre."
+   ],
+   "terreur.sous_ombre": [
+    "Tout tremble à {lieu}, Maître, comme vous l’avez voulu.",
+    "À {lieu}, les gens partent. Ceux qui restent me demandent conseil, à moi !",
+    "La peur a pris {lieu}. Je ramasse ce qu’elle laisse tomber."
+   ],
+   "terreur.ecrasee": [
+    "Les gens de {lieu} sont à genoux, Maître. Ils n’attendent qu’un ordre.",
+    "À {lieu}, plus personne ne résiste. Dites-moi ce que vous voulez d’eux.",
+    "La peur a tout écrasé à {lieu}. C’est le moment, Maître."
+   ],
+   "terreur.corrompue": [
+    "Tout vous appartient à {lieu}, Maître. Les gens me saluent bas, maintenant.",
+    "À {lieu}, j’ai trois nouveaux yeux à votre service. Ils viennent d’eux-mêmes.",
+    "À {lieu}, on dénonce son voisin avant qu’il vous dénonce. C’est un plaisir à voir."
+   ],
+   "passage_porteur.frais": [
+    "Ceux que vous cherchez ont traversé {lieu} il y a {jours}. Ils allaient vers l’est.",
+    "Un semi-homme qui se fait appeler Sous-la-Colline est passé à {lieu}, il y a {jours}.",
+    "Ils étaient à {lieu} il y a {jours}, Maître. L’un d’eux a joué avec quelque chose dans sa poche."
+   ],
+   "passage_porteur.ancien": [
+    "Ils sont passés à {lieu} il y a {jours}. J’ai trouvé un mouchoir brodé d’un S.",
+    "Il y a {jours}, à {lieu}, des petits ont acheté des vivres pour longtemps. Pour une longue route.",
+    "La piste de {lieu} a {jours}, Maître. Mais je sais par où ils sont sortis."
+   ],
+   "nazgul.un": [
+    "Un Cavalier de la Main à {lieu}. J’ai baissé les yeux.",
+    "Un de vos Cavaliers est passé à {lieu}, Maître. Il ne m’a pas regardé. Merci.",
+    "Un Cavalier attend à {lieu}. Tout le monde se terre, sauf moi."
+   ],
+   "nazgul.plusieurs": [
+    "Les Cavaliers de la Main sont à {lieu}, {nombre}. Tout le monde se terre.",
+    "{nombre} de vos Cavaliers à {lieu}, Maître. J’ai baissé les yeux.",
+    "{nombre} Cavaliers à {lieu}. Je leur ai montré le chemin, comme il se doit."
+   ],
+   "nazgul.nombreux": [
+    "{nombre} Cavaliers à {lieu}, Maître ! La Main est grande.",
+    "Ils sont {nombre} à {lieu}. Je n’ai jamais rien vu de si beau ni de si terrible.",
+    "{nombre} de vos Cavaliers à {lieu}. Les gens ne respirent plus."
+   ],
+   "calme.comte": [
+    "Rien à {lieu}. J’ouvre l’œil.",
+    "{lieu} est calme. Trop calme, peut-être. Les Hobbits cachent bien leurs affaires.",
+    "Rien à {lieu}, Maître. Des Hobbits qui mangent six fois par jour."
+   ],
+   "calme.bree": [
+    "Rien à {lieu}. J’ouvre l’œil.",
+    "Calme, à {lieu}. Trop calme, peut-être.",
+    "Rien de neuf à {lieu}, Maître. Je garde la porte à l’œil."
+   ],
+   "calme.route": [
+    "Rien sur la route de {lieu}, Maître.",
+    "À {lieu}, rien que des marchands. Je les ai tous vus passer.",
+    "Rien à {lieu}. J’attends."
    ]
   }
  },
@@ -140,6 +835,32 @@
   " Un autre jure qu’ils allaient dans l’autre sens.",
   " Le nom a été mal entendu."
  ],
+ "deformationsParType": {
+  "presence": [
+   " Mais le témoin n’est pas sûr du nombre.",
+   " Le nom a été mal entendu.",
+   " Un autre jure qu’ils allaient dans l’autre sens."
+  ],
+  "absence": [
+   " Le témoin confond peut-être les jours.",
+   " Mais il ne connaissait l’homme que de nom."
+  ],
+  "terreur": [
+   " La peur grossit les choses, d’une bouche à l’autre.",
+   " Mais d’autres disent que ce n’est rien."
+  ],
+  "passage_porteur": [
+   " Le témoin ne sait plus si c’était hier ou avant-hier.",
+   " Un autre jure qu’ils ont pris la route du sud."
+  ],
+  "nazgul": [
+   " Mais le témoin n’est pas sûr du nombre.",
+   " D’autres parlent de simples brigands."
+  ],
+  "calme": [
+   " Un détail ne colle pas, mais le témoin n’en démord pas."
+  ]
+ },
  "compagnons": {
   "0": "",
   "1": " avec un compagnon",
@@ -160,36 +881,112 @@
   "huit",
   "neuf"
  ],
+ "categories": {
+  "frodon": "hobbit",
+  "sam": "hobbit",
+  "merry": "hobbit",
+  "pippin": "hobbit",
+  "aragorn": "rodeur",
+  "gandalf": "magicien",
+  "saroumane": "magicien",
+  "elrond": "elfe",
+  "glorfindel": "elfe",
+  "prosper": "gens",
+  "l_ancien": "gens",
+  "maggotte": "gens",
+  "gros_bolger": "gens",
+  "bill_fougeron": "ombre",
+  "sudiste": "ombre"
+ },
+ "zones": {
+  "comte_ouest": "comte",
+  "comte_est": "comte",
+  "pays_de_bouc": "comte",
+  "vieille_foret": "foret",
+  "bree": "bree",
+  "galgals": "sauvage",
+  "chetwood": "sauvage",
+  "montauvent": "sauvage",
+  "terres_solitaires": "sauvage",
+  "trollshaws": "sauvage",
+  "gue_bruinen": "riviere",
+  "fondcombe": "riviere",
+  "route_sarn": "route",
+  "tharbad": "route",
+  "isengard": "lointain",
+  "rohan": "lointain",
+  "mordor": "lointain"
+ },
+ "lieux": {
+  "comte_ouest": "Hobbitebourg",
+  "comte_est": "le Marais du Comté",
+  "pays_de_bouc": "le Pays de Bouc",
+  "vieille_foret": "la Vieille Forêt",
+  "galgals": "les Hauts des Galgals",
+  "bree": "Bree",
+  "chetwood": "le Bois de Chet",
+  "montauvent": "le Mont Venteux",
+  "terres_solitaires": "les Terres Solitaires",
+  "trollshaws": "le Bois aux Trolls",
+  "gue_bruinen": "le Gué de Bruinen",
+  "fondcombe": "Fondcombe",
+  "route_sarn": "la Route du Sud",
+  "tharbad": "Tharbad",
+  "isengard": "l’Isengard",
+  "rohan": "le Rohan",
+  "mordor": "le Mordor"
+ },
  "voix": {
   "paranoia": {
    "reussite": [
     "{qui} se surprend à regarder ses compagnons autrement. Qui, parmi eux, l’a déjà trahi en pensée ?",
     "Une pensée froide s’installe chez {qui} : on lui ment, on le surveille. Il croit l’avoir eue seul.",
-    "{qui} se tait plus longtemps qu’à l’ordinaire. Le doute a trouvé une prise."
+    "{qui} se tait plus longtemps qu’à l’ordinaire. Le doute a trouvé une prise.",
+    "{qui} compte les regards échangés dans son dos. Il y en a trop. Il y en a toujours eu trop."
    ],
    "echec": [
     "{qui} chasse une pensée qui n’était pas la sienne, et se rapproche de ceux qu’il aime.",
-    "Quelque chose a voulu l’isoler. {qui} le sent, et serre plus fort la main de ses amis."
+    "Quelque chose a voulu l’isoler. {qui} le sent, et serre plus fort la main de ses amis.",
+    "{qui} hausse les épaules. Des idées noires, la fatigue, la route. Cela passera."
+   ],
+   "retour": [
+    "{qui} se redresse d’un coup. Ce doute venait de dehors, d’un œil qui cherche. Il le dira aux autres.",
+    "La pensée avait un goût de fer et de cendre. {qui} comprend qu’on lui parle, et il sait d’où.",
+    "{qui} sent le froid d’un regard posé sur lui. Il ne doute plus de ses amis : il doute de la nuit."
    ]
   },
   "annatar": {
    "reussite": [
     "{qui} rêve de ce qu’il pourrait avoir. Il ne sait pas encore qu’il a déjà dit oui.",
-    "Une promesse douce comme du miel. {qui} l’accepte sans savoir de qui elle vient."
+    "Une promesse douce comme du miel. {qui} l’accepte sans savoir de qui elle vient.",
+    "{qui} se répète qu’il ne doit rien à personne. Il doit déjà quelque chose à quelqu’un."
    ],
    "echec": [
     "{qui} entend la promesse, et reconnaît la main qui la tend. Il la repousse avec horreur.",
-    "Trop belle, la promesse. {qui} devine qui la fait."
+    "Trop belle, la promesse. {qui} devine qui la fait.",
+    "{qui} se détourne. Rien de ce qu’on lui offre ne vaut ce qu’il a déjà."
+   ],
+   "retour": [
+    "La voix était belle, et c’est ce qui l’a trahie. {qui} sait maintenant que l’Ennemi achète les cœurs.",
+    "{qui} a vu, derrière le visage qui promettait, un œil sans paupière. Il ne l’oubliera pas.",
+    "{qui} serre les poings. On a voulu l’acheter. Il préviendra les siens de ce que vaut cette monnaie."
    ]
   },
   "fer": {
    "reussite": [
     "{qui} obéit avant même de comprendre l’ordre.",
-    "La volonté de {qui} plie comme un roseau. Il fera ce qu’on lui dit."
+    "La volonté de {qui} plie comme un roseau. Il fera ce qu’on lui dit.",
+    "{qui} se lève, les yeux vides. Quelque chose a décidé à sa place."
    ],
    "echec": [
     "{qui} serre les dents. L’ordre glisse sur lui comme l’eau sur la pierre.",
-    "{qui} refuse. Une volonté étrangère vient de heurter la sienne, et elle a reculé."
+    "{qui} refuse. Une volonté étrangère vient de heurter la sienne, et elle a reculé.",
+    "{qui} titube, puis se reprend. L’ordre est passé près, très près."
+   ],
+   "retour": [
+    "{qui} a senti la main de fer sur sa nuque, et l’a rejetée. Il sait maintenant qui commande dans l’ombre.",
+    "L’ordre est tombé, et {qui} y a reconnu la voix du Maître des Anneaux. Il ne se taira pas.",
+    "{qui} tremble, mais debout. Il a vu l’Œil de près, et l’Œil a reculé."
    ]
   }
  },
@@ -198,26 +995,741 @@
    "paranoia": {
     "reussite": [
      "Frodon regarde Sam dormir et se demande, pour la première fois, ce que Sam ferait pour l’Anneau.",
-     "Gandalf n’est pas venu. Frodon se répète que ce n’est rien. Il n’y croit plus tout à fait."
+     "Gandalf n’est pas venu. Frodon se répète que ce n’est rien. Il n’y croit plus tout à fait.",
+     "Merry savait. Pippin savait. Depuis combien de temps se moquent-ils de lui ? Frodon garde la main sur sa poche."
+    ],
+    "echec": [
+     "Frodon pense à Sam, qui a sauté dans la barque sans réfléchir. Non. Pas Sam. Jamais Sam.",
+     "Une ombre de soupçon passe, et Frodon la laisse passer. Ses amis sont venus d’eux-mêmes.",
+     "Frodon rit tout bas : ses amis l’ont espionné, oui, mais pour ne pas le laisser partir seul."
+    ],
+    "retour": [
+     "Ce n’était pas sa pensée. Frodon le sait, comme il sait que l’Anneau est lourd ce soir. Quelqu’un écoute.",
+     "Frodon sent un regard au fond de lui, rouge et sans paupière. Il réveille Sam, et il ne lui cache rien.",
+     "La voix ressemblait à celle des Cavaliers quand il passe l’Anneau. Frodon comprend qui la lui envoie."
     ]
    },
    "annatar": {
     "reussite": [
-     "Frodon pense au Comté, et à ce qu’il pourrait faire pour le protéger s’il gardait l’Anneau. Juste un peu."
+     "Frodon pense au Comté, et à ce qu’il pourrait faire pour le protéger s’il gardait l’Anneau. Juste un peu.",
+     "Et si Bilbon avait eu raison de le garder si longtemps ? Frodon caresse l’or, et l’idée ne le quitte pas.",
+     "Rien ne l’obligerait à le donner à Elrond. Frodon se surprend à préférer cette pensée aux autres."
+    ],
+    "echec": [
+     "Frodon se souvient des mots de Gandalf : ne pas s’en servir. Jamais. La promesse se défait comme une fumée.",
+     "Garder l’Anneau ? Frodon frissonne. C’est ce qu’aurait voulu Gollum.",
+     "Frodon repousse la pensée. Il ne veut rien, sinon que ce fardeau quitte ses mains."
+    ],
+    "retour": [
+     "La promesse avait la voix de l’Anneau lui-même. Frodon comprend que c’est Lui qui parle à travers l’or.",
+     "Frodon voit, un instant, un trône de fer au bout de la promesse. Il sait qui l’a mis là.",
+     "On lui a offert le Comté. Frodon sait maintenant ce que l’Ennemi en ferait."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "La main de Frodon cherche l’Anneau avant qu’il ne l’ait voulu. Il fait ce qu’on attend de lui.",
+     "Frodon obéit. Il se dit que c’était son idée. Ce n’était pas son idée.",
+     "Quelque chose tire Frodon par le cœur, et il suit, comme un chien en laisse."
+    ],
+    "echec": [
+     "Frodon se raidit, la main crispée sur sa poche. Non. Il ne le fera pas.",
+     "L’ordre résonne, et Frodon pense au Comté, aux champs, à Sam. Il reste où il est.",
+     "Frodon vacille au bord de l’obéissance, puis recule d’un pas. Il est plus têtu qu’il ne croyait."
+    ],
+    "retour": [
+     "Frodon a entendu l’ordre et il en a reconnu le maître. Il sait désormais que l’Œil le cherche, lui.",
+     "Le Commandement s’est brisé sur lui. Frodon tremble, mais il a vu d’où il venait. Il le dira à Grand-Pas.",
+     "Frodon sent une volonté immense, et pourtant il a tenu. Il sait maintenant que la Tour n’est pas toute-puissante."
     ]
    }
   },
-  "bill_fougeron": {
+  "sam": {
+   "paranoia": {
+    "reussite": [
+     "Sam observe Grand-Pas aiguiser son épée. Un homme qui sourit si peu, ça cache quelque chose, voilà ce que pense Sam.",
+     "M. Frodon garde des choses pour lui, ces jours-ci. Sam se demande s’il a encore sa confiance.",
+     "Sam ne dort que d’un œil. Ce Grand-Pas pourrait bien être un des leurs, un espion de l’Ennemi."
+    ],
+    "echec": [
+     "Sam secoue la tête. Il a promis à M. Gandalf, et ce n’est pas une idée de travers qui va lui faire oublier sa promesse.",
+     "Une mauvaise pensée, voilà tout. Sam pense au jardin de Cul-de-Sac et elle s’en va.",
+     "Sam se méfie de tout le monde, sauf de M. Frodon. Et ça, ça ne changera pas."
+    ],
+    "retour": [
+     "Sam fronce les sourcils. Cette idée-là ne venait pas de lui. On essaie de lui retourner la tête, et il va le dire.",
+     "Ça sentait l’Homme Noir, cette pensée. Sam se lève et va s’asseoir tout contre M. Frodon.",
+     "Sam a l’impression qu’on l’a regardé de l’intérieur. Il n’aime pas ça du tout, et il compte bien prévenir Grand-Pas."
+    ]
+   },
    "annatar": {
     "reussite": [
-     "Bill Fougeron ricane dans l’ombre de sa haie. L’argent du Sud n’était qu’un début."
+     "Sam voit un jardin, immense, qui fleurit sous ses mains. Samsagace le Fort. Il n’en dira rien à personne.",
+     "Rosie, une maison à lui, un verger. Sam y pense plus qu’il ne devrait. Ce serait si simple.",
+     "Sam se dit qu’il mérite bien un peu de repos, après tout. Juste un peu. Il n’a pas l’habitude de penser ainsi."
+    ],
+    "echec": [
+     "Un jardin pour tout un royaume ? Sam renifle. Un jardinier n’a besoin que d’un jardin à sa mesure.",
+     "Sam ne veut rien pour lui. Il veut ramener M. Frodon à la maison, voilà tout.",
+     "Sam rit tout bas. On ne promet pas de la terre à un Gamegie, il sait ce qu’elle coûte."
+    ],
+    "retour": [
+     "Ces promesses-là, Sam les connaît : ce sont celles des contes, avant que le dragon mange tout le monde. Il sait qui parle.",
+     "Sam a vu le jardin devenir cendre au fond de la promesse. Il sait de quel côté est venue cette voix.",
+     "On a voulu l’acheter, lui, Sam Gamegie. Il en est presque flatté. Puis il a peur, et il le dit à M. Frodon."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Sam obéit, et il ne comprend pas pourquoi ses jambes marchent toutes seules.",
+     "Sam se tait. Il voudrait parler, mais quelque chose lui tient la langue.",
+     "Sam fait ce qu’on lui dit, les yeux pleins d’eau. Il se sent comme un poney qu’on mène par la bride."
+    ],
+    "echec": [
+     "Sam plante ses pieds dans la terre comme un vieux chêne. Il ne bougera pas d’ici.",
+     "Un Gamegie ne se laisse pas commander comme ça. Sam serre les poings et l’ordre s’en va.",
+     "Sam vacille, puis pense à M. Frodon. L’ordre ne pèse plus rien."
+    ],
+    "retour": [
+     "Sam a tenu bon, et il a vu, l’espace d’un instant, une tour noire et un œil. Il en parlera, même si on se moque de lui.",
+     "Sam est blême, mais debout. Celui qui a voulu le commander, il sait maintenant qui c’est.",
+     "Sam a repoussé quelque chose d’énorme, sans savoir comment. Il sait seulement que c’était l’Ennemi, et que l’Ennemi a reculé."
+    ]
+   }
+  },
+  "merry": {
+   "paranoia": {
+    "reussite": [
+     "Merry repense à Creux-de-Crique. Frodon ne leur a jamais vraiment pardonné, c’est sûr. Il le leur fera payer.",
+     "Grand-Pas les mène où il veut, et personne ne pose de questions. Merry commence à en poser, en silence.",
+     "Merry se demande si Frodon ne les sacrifierait pas, le moment venu, pour sauver son précieux fardeau."
+    ],
+    "echec": [
+     "Merry chasse l’idée d’un revers de main. Il a monté toute une conspiration pour ne pas laisser Frodon seul. Ce n’est pas pour douter maintenant.",
+     "Une idée sombre, puis Pippin fait une plaisanterie idiote, et Merry rit. L’idée est partie.",
+     "Merry se méfie des inconnus. Pas de ses amis."
+    ],
+    "retour": [
+     "Merry fronce les sourcils. Une pensée aussi laide ne vient pas d’un Brandebouc. On essaie de les diviser.",
+     "Merry sent un froid qui n’est pas celui de la nuit. Il réveille Pippin et ils montent la garde ensemble.",
+     "Cette voix, Merry l’a déjà entendue dans les Galgals. Il sait qu’elle vient de l’Ennemi."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Merry se voit maître du Pays de Bouc, puis de bien plus. Il ne serait plus le petit cousin qu’on emmène.",
+     "Merry rêve d’être celui qui sauve tout le monde. Il ne se demande pas qui lui a soufflé ce rêve.",
+     "Être utile, enfin. Merry accepte l’idée comme on accepte une main tendue dans le noir."
+    ],
+    "echec": [
+     "Merry n’a pas besoin qu’on lui promette quoi que ce soit. Il est déjà là où il doit être.",
+     "Seigneur du Pays de Bouc ? Merry hausse les épaules. Il l’est déjà, à peu de chose près.",
+     "Merry sourit à la promesse comme on sourit aux contes de grand-mère, et l’oublie."
+    ],
+    "retour": [
+     "Merry a reconnu la ruse : une voix qui flatte, c’est une voix qui ment. Il en parle aux autres dès l’aube.",
+     "Merry sent que la promesse venait de très loin à l’est. Il sait qui la lui a faite.",
+     "Merry serre son poignard des Galgals. On a voulu l’acheter. Grand-Pas doit le savoir."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Merry obéit, l’esprit vide, et se demande ensuite ce qui lui a pris.",
+     "La volonté de Merry cède d’un coup. Il fait ce qu’on lui dit, sans un mot.",
+     "Merry se lève et part. Ses amis l’appellent. Il ne les entend pas."
+    ],
+    "echec": [
+     "Merry serre les dents. Non. Pas lui, pas cette fois.",
+     "L’ordre frappe et Merry chancelle, mais ses pieds restent où ils sont.",
+     "Merry pense aux poneys, aux cartes, à tout ce qu’il a préparé. Il ne lâchera pas maintenant."
+    ],
+    "retour": [
+     "Merry a senti la main de l’Ennemi, et il l’a repoussée. Il tremble, mais il sait maintenant à quoi elle ressemble.",
+     "Merry a reconnu ce froid : celui du tertre, celui des Hommes Noirs. Il prévient tout le monde.",
+     "Merry tient bon, et dans le choc il a vu l’Œil. Il ne le dira pas à Pippin. Il le dira à Grand-Pas."
+    ]
+   }
+  },
+  "pippin": {
+   "paranoia": {
+    "reussite": [
+     "Pippin se demande si les autres ne le trouvent pas encombrant. Ils parlent sans lui, parfois. Souvent.",
+     "Pippin se dit que Frodon ne lui fait pas confiance. Personne ne lui fait jamais confiance.",
+     "Grand-Pas le regarde de travers depuis le Poney. Pippin en est sûr : il veut se débarrasser de lui."
+    ],
+    "echec": [
+     "Pippin a une idée noire, puis une idée de déjeuner, et la seconde l’emporte.",
+     "Ses amis le taquinent, mais ils l’aiment. Pippin le sait, et la pensée s’en va.",
+     "Pippin bâille. Il pensera à tout ça demain. Il n’y pensera pas demain."
+    ],
+    "retour": [
+     "Pippin sursaute. Quelqu’un lui a parlé, dans sa tête ! Il le raconte aussitôt à tout le monde, et pour une fois, on l’écoute.",
+     "Pippin a peur, terriblement peur. Cette voix était froide comme une main de Cavalier. Il ne la cache pas.",
+     "Pippin comprend que ce doute ne venait pas de lui. Il se colle à Merry et ne le lâche plus."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Pippin rêve de chants qu’on écrirait sur lui, Peregrin le Brave. Il dit oui sans savoir à qui.",
+     "Une aventure, une vraie, rien que pour lui. Pippin accepte la promesse comme on accepte une deuxième part de gâteau.",
+     "Pippin se dit qu’il pourrait voir des choses que personne n’a vues. Il en a très envie. Beaucoup trop envie."
+    ],
+    "echec": [
+     "Pippin trouve la promesse trop belle. Même lui sait que les plus belles pommes cachent des vers.",
+     "Pippin pense à la ferme des Touque et à ses sœurs. Il ne veut rien d’autre, finalement.",
+     "Pippin hésite, puis se souvient que les contes finissent mal pour ceux qui disent oui trop vite."
+    ],
+    "retour": [
+     "Pippin a entendu la voix qui promettait, et il a vu l’ombre derrière. Il court le dire à Grand-Pas.",
+     "Pippin sait maintenant qu’il y a quelqu’un, très loin, qui veut des gens comme lui. Il en a des frissons.",
+     "Pour une fois, Pippin n’a pas été bête. Il a reconnu le piège, et il en parle à voix haute."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Pippin obéit comme dans un rêve, et le rêve n’est pas à lui.",
+     "Pippin se tait d’un coup, au milieu d’une phrase. Il ne la finira pas.",
+     "Pippin fait ce qu’on lui dit. Après, il ne se souviendra que d’un grand froid."
+    ],
+    "echec": [
+     "Pippin secoue la tête comme un chien mouillé. L’ordre tombe à côté.",
+     "Pippin a failli obéir. Il ne sait pas ce qui l’a retenu. La main de Merry, peut-être.",
+     "L’ordre résonne, et Pippin se met à chanter, très fort, pour ne plus l’entendre."
+    ],
+    "retour": [
+     "Pippin a résisté, et il a vu un œil de feu. Il hurle, réveille tout le camp, et cette fois on le croit.",
+     "Pippin a repoussé l’ordre sans comprendre comment. Il sait qui l’a donné, et il le dit à tout le monde.",
+     "Pippin pleure de peur, mais il a tenu. Il raconte tout, et ses amis le regardent autrement."
     ]
    }
   },
   "aragorn": {
    "paranoia": {
+    "reussite": [
+     "Aragorn se demande si les hobbits ne seraient pas plus en sûreté sans lui. Les Hommes ont déjà failli, une fois.",
+     "Gandalf ne vient pas. Aragorn se demande, pour la première fois, si le Magicien ne l’a pas mené à sa perte.",
+     "Aragorn regarde Frodon et voit Isildur, l’Anneau au doigt. Il ne sait plus lequel des deux il craint."
+    ],
     "echec": [
-     "Grand-Pas sent le Regard comme un vent froid. Il a connu pire. Il ne dira rien aux hobbits, pas encore."
+     "Grand-Pas sent le Regard comme un vent froid. Il a connu pire. Il ne dira rien aux hobbits, pas encore.",
+     "Aragorn écarte la pensée comme on écarte une branche. Il a juré de les mener à Fondcombe.",
+     "Le doute ne trouve pas de prise. Aragorn a douté de tout, sauf de son serment."
+    ],
+    "retour": [
+     "Aragorn reconnaît cette voix : elle a parlé à Isildur, jadis. Il double la garde et prévient les hobbits.",
+     "Aragorn sent l’Œil se détourner de lui, brûlé. Il sait maintenant que la Tour regarde vers l’ouest.",
+     "Le doute avait l’odeur du Mordor. Aragorn sourit sombrement : l’Ennemi le craint donc assez pour lui parler."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Aragorn voit une couronne et une Reine elfe à ses côtés. Il se dit que la route est longue. Elle pourrait être plus courte.",
+     "Arwen, sans attendre d’être roi. Aragorn chasse l’image, mais elle revient. Elle revient toujours.",
+     "Aragorn pense à Narsil reforgée, à Gondor à ses pieds. Il ne demande pas qui lui offre cette vision."
+    ],
+    "echec": [
+     "Aragorn n’a jamais rien voulu qu’il n’ait dû mériter. La promesse se brise sur cette humilité.",
+     "Une couronne offerte n’est pas une couronne. Aragorn le sait depuis l’enfance.",
+     "Aragorn rejette l’offre sans même s’y attarder. Les héritiers d’Isildur ont appris à se méfier de l’or."
+    ],
+    "retour": [
+     "Aragorn a reconnu Annatar, le Seigneur des Dons. Il sait que l’Ennemi est éveillé, et qu’il achète.",
+     "Aragorn sent derrière la promesse la même main qui a forgé l’Anneau. Il le dira à Elrond.",
+     "On lui a offert ce qu’il désire le plus. Aragorn en conclut que l’Ennemi le connaît. Il en avertit les siens."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Aragorn, l’héritier d’Isildur, plie le genou devant une volonté plus vieille que son sang.",
+     "Aragorn obéit. Quelque part au fond de lui, un roi hurle de rage.",
+     "Le Dúnadan fait ce qu’on lui ordonne, le visage de pierre."
+    ],
+    "echec": [
+     "Aragorn soutient le choc sans un mot. Il a passé sa vie à ne pas céder.",
+     "L’ordre se brise contre la volonté du Rôdeur comme une vague contre un roc.",
+     "Aragorn serre la garde de Narsil brisée. L’ordre n’a plus de prise."
+    ],
+    "retour": [
+     "Aragorn a repoussé l’Œil, et dans le contrecoup il a entrevu la Tour. Il sait ce que cherche l’Ennemi.",
+     "Le fils d’Arathorn se relève, blême. L’Ennemi a voulu le commander, et l’Ennemi a échoué. Il le fera savoir.",
+     "Aragorn a regardé l’Œil en face, et l’Œil a cligné. Il ne l’oubliera pas."
+    ]
+   }
+  },
+  "gandalf": {
+   "paranoia": {
+    "reussite": [
+     "Gandalf se demande ce que Saroumane a déjà livré à la Tour. Tout, peut-être. Il se méfie même du vent.",
+     "Gandalf pense à Prosper, à sa lettre perdue, et se demande si l’oubli était bien un oubli.",
+     "Le Magicien se surprend à soupçonner Elrond lui-même. Il chasse l’idée. Elle laisse une cendre."
+    ],
+    "echec": [
+     "Gandalf sourit dans sa barbe. On ne sème pas le doute dans un esprit qui a vu le Valinor.",
+     "Le Gris écarte la pensée d’un souffle, comme une fumée de pipe.",
+     "Gandalf connaît cette ruse, et il l’a déjà vue échouer."
+    ],
+    "retour": [
+     "Gandalf a senti la main de l’Ennemi dans sa propre pensée. Sa colère est froide : il préviendra le Conseil.",
+     "Le Magicien rit, un rire terrible. Sauron cherche donc à diviser ? Il a peur. Gandalf le fera savoir.",
+     "Gandalf a reconnu la voix de Gorthaur. Il sait qu’elle tâtonne, et qu’elle n’a pas trouvé l’Anneau."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Gandalf pense à ce qu’il pourrait faire avec l’Anneau, pour le bien de tous. La pensée le terrifie, et elle ne part pas.",
+     "Une seule fois, se dit Gandalf, pour abattre l’Ennemi. Puis il le rendrait. Il le rendrait.",
+     "Narya pèse plus lourd ce soir. Gandalf se demande ce qu’un plus grand anneau ferait de sa flamme."
+    ],
+    "echec": [
+     "Gandalf rejette l’offre avec une violence qui surprend jusqu’aux pierres. Il sait ce qu’il deviendrait.",
+     "Le Magicien n’a besoin de rien. Ce qu’il a, il ne le possède pas.",
+     "La promesse s’éteint dans la flamme de Narya."
+    ],
+    "retour": [
+     "Gandalf a reconnu le Seigneur des Dons. Il sait que Sauron le croit corruptible, et il en avertira Elrond.",
+     "La promesse a montré à Gandalf ce que l’Ennemi croit de lui. C’est une arme, désormais, entre ses mains.",
+     "Gandalf a vu l’Œil derrière la promesse. Il sait que la Tour veut l’Anneau, et qu’elle ne sait pas où il est."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Gandalf le Gris, Mithrandir, Olórin, plie. Pour la première fois depuis des âges.",
+     "La flamme de Narya vacille, et le Magicien obéit.",
+     "Gandalf fait ce qu’on lui ordonne, et quelque chose meurt dans son regard."
+    ],
+    "echec": [
+     "Gandalf ne cède pas. Il est un serviteur du Feu Secret, et l’ordre fond comme neige.",
+     "Le Magicien lève les yeux, et l’ordre se dissipe.",
+     "Gandalf reste debout, le bâton planté dans la terre. Il n’a pas bougé d’un pouce."
+    ],
+    "retour": [
+     "Gandalf a renvoyé l’ordre à celui qui l’a lancé. Il sait maintenant où regarde la Tour.",
+     "Le Gris a soutenu le Regard, et il a vu dans l’Œil ce que l’Œil cachait. Le Conseil Blanc le saura.",
+     "Gandalf se redresse. L’Ennemi a montré sa main trop tôt."
+    ]
+   }
+  },
+  "elrond": {
+   "paranoia": {
+    "reussite": [
+     "Elrond regarde Glorfindel et se demande ce qu’il ferait de l’Anneau. Ce qu’ils feraient tous.",
+     "Elrond doute de l’héritier d’Isildur. Il a vu Isildur refuser de jeter l’Anneau.",
+     "Elrond se demande si Gandalf ne lui cache pas quelque chose. Les Istari ont toujours eu leurs secrets."
+    ],
+    "echec": [
+     "Elrond a vu trois âges du monde. Le doute qu’on lui souffle est jeune et maladroit.",
+     "Le Semi-Elfe écarte la pensée. Imladris a résisté à pire.",
+     "Elrond reconnaît la vieille ruse et la laisse mourir."
+    ],
+    "retour": [
+     "Elrond a senti l’Ennemi toucher Imladris. Il réunit les siens et double les veilles.",
+     "Elrond se souvient de la voix d’Annatar à Eregion. Il sait qu’elle est revenue.",
+     "Le Seigneur de Fondcombe sait maintenant que l’Œil cherche des failles. Il les fera fermer."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Elrond pense à Arwen, qui pourrait ne jamais partir vers la Mer. Il pourrait la garder, avec l’Anneau.",
+     "Elrond rêve d’une Imladris éternelle, que rien ne fanerait. La promesse est douce comme un chant d’autrefois.",
+     "Vilya pourrait être plus forte encore. Elrond s’attarde sur l’idée plus longtemps qu’il ne devrait."
+    ],
+    "echec": [
+     "Elrond se souvient de ce qu’ont coûté les dons d’Annatar. Il ne répondra pas.",
+     "Le Semi-Elfe rejette l’offre sans colère, comme on rejette une saison qui ne viendra plus.",
+     "Elrond n’a rien à gagner que l’Ombre puisse donner."
+    ],
+    "retour": [
+     "Elrond a reconnu le Seigneur des Dons. Il le dira au Conseil, et le Conseil se réunira.",
+     "Elrond sait maintenant que l’Ennemi achète. Il préviendra Galadriel.",
+     "Elrond a entendu la voix d’Eregion. Il sait que l’Ennemi est éveillé, et qu’il cherche."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Elrond plie, et l’eau du Bruinen tremble avec lui.",
+     "Le Seigneur d’Imladris obéit. La vallée tout entière en frissonne.",
+     "Elrond fait ce que l’Ombre commande, et Vilya pâlit à son doigt."
+    ],
+    "echec": [
+     "Elrond ne bouge pas. Fondcombe ne bouge pas.",
+     "L’ordre se perd dans le bruit des cascades d’Imladris.",
+     "Elrond lève la main, et l’ordre se brise."
+    ],
+    "retour": [
+     "Elrond a repoussé l’Œil, et il a vu ce qu’il voulait. Il le dira à Mithrandir.",
+     "Le Semi-Elfe a soutenu le Regard comme il a soutenu la guerre de la Dernière Alliance. Il sait ce qui vient.",
+     "Elrond sait désormais que l’Œil regarde vers le Gué. Il éveille les eaux."
+    ]
+   }
+  },
+  "glorfindel": {
+   "paranoia": {
+    "reussite": [
+     "Glorfindel se demande si Elrond ne l’a pas envoyé seul pour l’éloigner. L’idée est absurde. Elle reste.",
+     "Glorfindel se surprend à douter des Hommes qui accompagnent le Porteur. Les Hommes ont toujours failli.",
+     "Le Seigneur elfe regarde la route et se demande si elle n’est pas un piège tendu par les siens."
+    ],
+    "echec": [
+     "Glorfindel rit. Il a combattu un Balrog et connu la mort. Le doute ne lui fait plus rien.",
+     "La pensée glisse sur Glorfindel comme la pluie sur une armure.",
+     "Glorfindel ne doute pas. Il est revenu des Cavernes de Mandos pour cela."
+    ],
+    "retour": [
+     "Glorfindel sent l’Ombre dans sa pensée, et il la repousse avec mépris. Il saura où chasser, maintenant.",
+     "Glorfindel a reconnu la voix de l’Ennemi. Il éperonne son cheval vers le Gué.",
+     "Le Seigneur elfe sait maintenant que les Neuf ne sont pas seuls : la Tour regarde avec eux."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Glorfindel songe à Gondolin, qu’il aurait pu sauver. Avec l’Anneau, il pourrait sauver tout le reste.",
+     "Glorfindel pense à la gloire du Premier Âge. La promesse lui en rend un éclat.",
+     "Glorfindel s’attarde sur un rêve de victoire sans fin. Il ne demande pas d’où il vient."
+    ],
+    "echec": [
+     "Glorfindel a tout perdu une fois. On ne promet rien à celui qui n’a plus peur de perdre.",
+     "La promesse se défait dans la lumière qui entoure Glorfindel.",
+     "Glorfindel ne veut que ce qu’il fait déjà."
+    ],
+    "retour": [
+     "Glorfindel a reconnu Annatar. Il le dira à Elrond, et la chasse sera plus dure.",
+     "Glorfindel a vu l’Œil derrière la promesse, et l’Œil a vu sa lumière. Ils se connaissent, maintenant.",
+     "La promesse a trahi l’Ennemi. Glorfindel sait que la Tour veut le Porteur, et elle sait qu’il le sait."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Glorfindel plie, et sa lumière s’éteint pour un temps.",
+     "Le Seigneur elfe obéit. Son cheval blanc hennit de terreur.",
+     "Glorfindel fait ce que la Tour ordonne. Le monde des ombres en est plus sombre."
+    ],
+    "echec": [
+     "Glorfindel se dresse, et l’ordre fond dans sa lumière.",
+     "Le Seigneur elfe ne répond même pas.",
+     "L’ordre frappe Glorfindel et rebondit, comme une flèche sur un bouclier."
+    ],
+    "retour": [
+     "Glorfindel a renvoyé le Commandement à l’Œil, et dans l’éclair il a vu les Neuf. Il sait où les trouver.",
+     "Glorfindel a vu la Tour, et la Tour l’a vu. Il chevauche plus vite.",
+     "Le Seigneur elfe sourit. L’Ennemi a voulu commander à quelqu’un qui est déjà revenu de la mort."
+    ]
+   }
+  },
+  "prosper": {
+   "paranoia": {
+    "reussite": [
+     "Prosper se demande si Nob ne vole pas dans la caisse. Et Bob. Et tout le monde, d’ailleurs.",
+     "Prosper regarde ses clients et se dit que la moitié sont des espions. Il n’a pas tort, mais il se trompe de moitié.",
+     "Prosper soupçonne Grand-Pas de vouloir ruiner son auberge. Il ne le laissera plus entrer."
+    ],
+    "echec": [
+     "Prosper a trop à faire pour se méfier de qui que ce soit. Nob ! Bob ! Où sont-ils encore ?",
+     "Une idée noire traverse Prosper, puis il oublie. Il oublie tout, Prosper.",
+     "Prosper se dit que ses gens sont de braves gens, et il n’en démord pas."
+    ],
+    "retour": [
+     "Prosper pâlit. Quelque chose de mauvais lui a parlé dans sa propre tête. Il en parle à tout le monde à Bree.",
+     "Prosper sent le froid des Hommes Noirs dans sa pensée. Il ferme son auberge et barre les portes.",
+     "Prosper se souvient de la lettre de Gandalf. Il comprend que quelqu’un, très loin, voudrait qu’il l’oublie encore."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Prosper rêve d’une auberge deux fois plus grande, d’une Grande Route deux fois plus fréquentée. Il dit oui.",
+     "De l’or, beaucoup d’or, et plus d’ennuis. Prosper accepte sans même comprendre la question.",
+     "Prosper se dit que ce serait bien, pour une fois, d’être du côté de ceux qui gagnent."
+    ],
+    "echec": [
+     "Prosper n’aime pas les gens qui promettent trop. Ils partent toujours sans payer.",
+     "Prosper hausse les épaules. Le Poney lui suffit.",
+     "Une promesse ? Prosper en a entendu mille, au comptoir. Il n’y croit plus."
+    ],
+    "retour": [
+     "Prosper a eu peur de la promesse, très peur. Il en parle à Grand-Pas, et Grand-Pas ne rit pas.",
+     "Prosper comprend que ce marché-là avait un prix terrible. Il le dit à qui veut l’entendre.",
+     "Prosper sait maintenant que quelqu’un achète les gens de Bree. Il prévient ses voisins."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Prosper obéit, et il oublie ensuite qu’on lui a demandé quoi que ce soit. Comme d’habitude.",
+     "Prosper fait ce qu’on lui dit. Il a toujours fait ce qu’on lui disait, au fond.",
+     "Prosper se tait, pour la première fois de sa vie."
+    ],
+    "echec": [
+     "Prosper est trop occupé pour obéir à qui que ce soit. L’ordre se perd dans le vacarme du Poney.",
+     "Prosper sursaute, renverse une chope, et oublie l’ordre en ramassant les morceaux.",
+     "Prosper secoue la tête. Il n’a rien entendu. Il n’entend jamais rien."
+    ],
+    "retour": [
+     "Prosper a senti une main glacée sur son épaule. Il hurle, et tout Bree le sait avant la nuit.",
+     "Prosper a reconnu la voix des Cavaliers. Il le raconte à toute la salle commune.",
+     "Prosper a eu si peur qu’il n’a pas obéi. Il sait maintenant qui le cherche, et il le dit."
+    ]
+   }
+  },
+  "bill_fougeron": {
+   "paranoia": {
+    "reussite": [
+     "Bill se dit que le Sudiste le paie trop peu. Ou qu’il le vendra le premier. Il aiguise son couteau.",
+     "Bill soupçonne tout Bree de vouloir sa peau. Il n’a pas tort, mais il le soupçonne plus fort.",
+     "Bill regarde ses voisins et compte ceux qui le dénonceraient. Tous."
+    ],
+    "echec": [
+     "Bill ne fait confiance à personne. Une idée de plus ne change rien.",
+     "Bill crache par terre. Il sait déjà qui le trahira.",
+     "Bill hausse les épaules. On ne rend pas méfiant un homme qui l’est déjà."
+    ],
+    "retour": [
+     "Bill a senti la voix, et il a eu peur. Il comprend qu’il sert un maître qui le surveille, lui aussi.",
+     "Bill comprend que celui qui le paie a des yeux partout. Il n’en dit rien, mais il ne dort plus.",
+     "Bill a reconnu le froid des Cavaliers. Il se demande s’il n’a pas choisi le mauvais camp. Trop tard."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Bill Fougeron ricane dans l’ombre de sa haie. L’argent du Sud n’était qu’un début.",
+     "Bill rêve de Bree à ses pieds, et de Grand-Pas pendu à la porte. Il dit oui avant la fin.",
+     "Bill Fougeron se dit qu’il est temps de monter en grade. Il ne demande pas au service de qui."
+    ],
+    "echec": [
+     "Bill se méfie d’une promesse qu’il n’a pas eu à voler. Il la refuse, par principe.",
+     "Bill flaire le piège. Il ne fait jamais confiance à un marchand trop généreux.",
+     "Bill hausse les épaules. On le paie déjà. Il n’a pas besoin de rêves."
+    ],
+    "retour": [
+     "Bill a vu ce qu’il y avait derrière la promesse, et même lui en a eu froid dans le dos.",
+     "Bill comprend qu’on l’achète pour moins que rien. Il en parle trop, un soir, au comptoir.",
+     "Bill sait maintenant à qui il a vendu son âme. Il le dit à voix basse, et Bree l’entend."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Bill obéit comme un chien battu. Il a l’habitude.",
+     "Bill fait ce qu’on lui dit, et il en tire même un certain plaisir.",
+     "Bill Fougeron se lève et part, sans un mot. Il sait qu’on ne discute pas."
+    ],
+    "echec": [
+     "Bill grogne. Il n’obéit qu’à ceux qui paient d’avance.",
+     "Bill se recroqueville et fait semblant de ne pas avoir entendu.",
+     "Bill a trop bu pour obéir à qui que ce soit, ce soir."
+    ],
+    "retour": [
+     "Bill a eu si peur qu’il s’est enfui. Il raconte partout qu’un Homme Noir lui a parlé dans la tête.",
+     "Bill a senti l’Œil, et il a compris qu’il ne serait jamais qu’un outil. Il en devient bavard.",
+     "Bill a résisté, et il ne sait pas comment. Il sait seulement qui l’a voulu, et il le crie à la taverne."
+    ]
+   }
+  },
+  "sudiste": {
+   "paranoia": {
+    "reussite": [
+     "Le Sudiste se demande si Bill ne le vend pas à la Tour. Il décide de vendre Bill le premier.",
+     "Le Sudiste soupçonne Isengard de l’espionner lui-même. Il cache ses lettres.",
+     "Le Sudiste regarde chaque voyageur comme un messager de l’Isengard venu le punir."
+    ],
+    "echec": [
+     "Le Sudiste a l’habitude de la méfiance. Elle lui sert de manteau.",
+     "Le Sudiste chasse l’idée. Il a un travail à faire.",
+     "Le Sudiste se méfie de tous, depuis toujours. Rien de neuf."
+    ],
+    "retour": [
+     "Le Sudiste a reconnu l’Œil dans sa pensée. Il comprend que la Tour le sait double. Il prévient l’Isengard.",
+     "Le Sudiste sent une seconde main sur lui, plus lourde que celle de son maître. Il en écrit à Orthanc.",
+     "Le Sudiste sait maintenant que la Tour regarde Bree. Son maître le saura aussi."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Le Sudiste se dit qu’un serviteur de la Tour gagne plus qu’un serviteur d’Orthanc. Il fait ses comptes, et il dit oui.",
+     "Le Sudiste rêve de servir le plus fort des deux. Il croit qu’il vient de le trouver.",
+     "Le Sudiste accepte la promesse et se promet de trahir Saroumane, le moment venu."
+    ],
+    "echec": [
+     "Le Sudiste a un maître, et ce maître est jaloux. Il refuse.",
+     "Le Sudiste a peur d’Orthanc plus que de toute promesse.",
+     "Le Sudiste hésite, puis se souvient du palantír. Saroumane voit loin. Il refuse."
+    ],
+    "retour": [
+     "Le Sudiste a compris que la Tour veut lui acheter Isengard. Il le fera savoir à son maître.",
+     "Le Sudiste a vu l’Œil derrière la promesse. Saroumane voudra savoir que l’Œil regarde Bree.",
+     "Le Sudiste en sait trop, maintenant. Il fuit vers le sud, avec un message."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Le Sudiste obéit. Il a toujours su qu’il y avait un maître au-dessus de son maître.",
+     "Le Sudiste plie et fait ce qu’on lui dit. Orthanc est loin, la Tour est partout.",
+     "Le Sudiste se met en route, le regard vide."
+    ],
+    "echec": [
+     "Le Sudiste résiste par peur de Saroumane. Une peur en chasse une autre.",
+     "L’ordre se heurte à une autre volonté, plus proche. Le Sudiste ne bouge pas.",
+     "Le Sudiste se cache dans sa chambre et attend que le froid passe."
+    ],
+    "retour": [
+     "Le Sudiste a résisté, et il a compris. Il écrira à Orthanc que la Tour s’éveille.",
+     "Le Sudiste a vu la Tour dans sa pensée. Il fuit Bree avant l’aube.",
+     "Le Sudiste sait maintenant que la Tour le connaît. Il préviendra l’Isengard."
+    ]
+   }
+  },
+  "l_ancien": {
+   "paranoia": {
+    "reussite": [
+     "L’Ancien se dit que M. Frodon a entraîné son Sam dans une folie. Il ne le lui pardonnera pas.",
+     "L’Ancien soupçonne les Sacquet de Besace d’avoir tout manigancé. Il n’en démord plus.",
+     "L’Ancien regarde ses voisins de travers. L’un d’eux a parlé aux Hommes Noirs, c’est sûr."
+    ],
+    "echec": [
+     "L’Ancien grommelle et retourne à ses pommes de terre. Les mauvaises pensées, c’est pour les gens du dehors.",
+     "L’Ancien a connu M. Bilbon, et il connaît M. Frodon. Ce sont de braves gens, même s’ils sont un peu fêlés.",
+     "L’Ancien chasse l’idée comme on chasse une limace du potager."
+    ],
+    "retour": [
+     "L’Ancien sent quelque chose de froid dans sa tête, comme quand le Cavalier a reniflé à sa porte. Il le dit à tout le Comté.",
+     "L’Ancien comprend qu’on veut le monter contre M. Frodon. Il sait qui, maintenant.",
+     "L’Ancien a reconnu la voix du Cavalier. Il ferme sa porte et prévient le Rang du Biais."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "L’Ancien pense à Cul-de-Sac, et au jardin qui pourrait lui revenir. Ce serait juste, après tant d’années.",
+     "L’Ancien rêve de voir les Sacquet de Besace chassés. Il dit oui, pour ça, rien que pour ça.",
+     "L’Ancien se dit qu’il mérite bien un peu de repos, et une belle maison pour son Sam."
+    ],
+    "echec": [
+     "L’Ancien se méfie des belles paroles. Ça vient du dehors, et rien de bon ne vient du dehors.",
+     "L’Ancien a son trou et son potager. Il ne lui faut rien d’autre.",
+     "L’Ancien ricane. On ne fait pas pousser des choux avec des promesses."
+    ],
+    "retour": [
+     "L’Ancien a senti que la promesse venait du même endroit que les Cavaliers. Il le répète partout au Dragon Vert.",
+     "L’Ancien comprend qu’on veut l’acheter. Il en parle aux Shiriffes.",
+     "L’Ancien sait qu’il y a du mauvais derrière tout ça. Il le dit, il le redit, et le Comté l’écoute."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "L’Ancien obéit, et il ne sait plus pourquoi il a fait ce qu’il a fait.",
+     "L’Ancien se tait, lui qui ne se tait jamais.",
+     "L’Ancien fait ce qu’on lui dit, la mine sombre, comme on obéit au mauvais temps."
+    ],
+    "echec": [
+     "L’Ancien n’obéit à personne, sauf à sa femme, et elle est morte.",
+     "L’Ancien se gratte la tête. Il a dû rêver.",
+     "L’Ancien bougonne et reste où il est."
+    ],
+    "retour": [
+     "L’Ancien a reconnu le froid du Cavalier. Il court le dire au Thain lui-même.",
+     "L’Ancien a résisté, et il sait qui a voulu le commander. Tout Hobbitebourg le saura.",
+     "L’Ancien a peur, mais il n’a pas obéi. Il le raconte à qui veut l’entendre."
+    ]
+   }
+  },
+  "maggotte": {
+   "paranoia": {
+    "reussite": [
+     "Maggotte se demande si les jeunes Brandebouc n’ont pas volé ses champignons cette fois encore. Et s’ils l’avaient vendu, lui ?",
+     "Le Père Maggotte regarde ses voisins et se dit qu’ils ont parlé aux Cavaliers.",
+     "Maggotte soupçonne M. Frodon de lui avoir menti. Il n’aime pas les menteurs."
+    ],
+    "echec": [
+     "Maggotte siffle ses chiens et oublie la pensée. Ses chiens ne mentent pas.",
+     "Le Père Maggotte n’a pas le temps pour ces bêtises. Il y a la moisson.",
+     "Maggotte a aidé M. Frodon, et il recommencerait."
+    ],
+    "retour": [
+     "Maggotte a senti le même froid que devant le Cavalier. Il lâche ses chiens et prévient le Marais.",
+     "Le Père Maggotte comprend qu’on veut lui retourner la tête. Il sait qui, et il le dit.",
+     "Maggotte a reconnu la voix de l’Homme Noir. Il ferme sa ferme et prévient ses voisins."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Maggotte rêve de champs qui s’étendraient jusqu’au Brandevin. Il dit oui, en pensant à ses champignons.",
+     "Le Père Maggotte se dit qu’une ferme plus grande, ça ne se refuse pas.",
+     "Maggotte accepte, et il ne sait pas ce qu’il a accepté."
+    ],
+    "echec": [
+     "Maggotte se méfie des étrangers qui promettent. Ses chiens aussi.",
+     "Le Père Maggotte a sa terre. Elle lui suffit.",
+     "Maggotte fait la grimace. On ne lui vend rien, à lui."
+    ],
+    "retour": [
+     "Maggotte a compris d’où venait la promesse. Il le dit au Marais tout entier.",
+     "Le Père Maggotte sent que le Cavalier n’est pas venu seul, que quelque chose le commande. Il prévient tout le monde.",
+     "Maggotte sait qu’on a voulu l’acheter. Il lâche les chiens chaque nuit."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Maggotte obéit, et ses chiens gémissent.",
+     "Le Père Maggotte fait ce qu’on lui dit, le visage gris.",
+     "Maggotte se tait, et ses chiens aussi."
+    ],
+    "echec": [
+     "Maggotte plante sa fourche dans la terre et ne bouge pas.",
+     "Le Père Maggotte n’obéit qu’à lui-même, et encore.",
+     "Maggotte grogne comme un de ses chiens et l’ordre recule."
+    ],
+    "retour": [
+     "Maggotte a reconnu l’ordre du Cavalier. Il prévient tous les fermiers du Marais.",
+     "Le Père Maggotte a tenu bon, et il sait qui a voulu le plier. Tout le Comté le saura.",
+     "Maggotte a résisté, et il est fier, et il a peur. Il le raconte partout."
+    ]
+   }
+  },
+  "gros_bolger": {
+   "paranoia": {
+    "reussite": [
+     "Fredegar se demande si Frodon ne l’a pas laissé à Creux-de-Crique pour servir d’appât.",
+     "Fredegar se dit qu’ils l’ont abandonné, tous. Ils savaient ce qui viendrait.",
+     "Fredegar soupçonne Merry d’avoir tout prévu sans lui. Il est seul, et c’était voulu."
+    ],
+    "echec": [
+     "Fredegar a promis de garder la maison. Il la gardera.",
+     "Fredegar a peur, mais pas de ses amis.",
+     "Fredegar chasse l’idée en mangeant un morceau de fromage. Ça marche toujours."
+    ],
+    "retour": [
+     "Fredegar a senti une présence froide dans la maison. Il court prévenir le Pays de Bouc.",
+     "Fredegar a reconnu la voix des Hommes Noirs. Il sonne le Cor de Bouc.",
+     "Fredegar comprend qu’on essaie de le monter contre ses amis. Il sait qui, et il a très peur."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Fredegar rêve de rester au chaud, loin de tout, pour toujours. Il dit oui à qui le lui promet.",
+     "Fredegar se dit qu’il n’a pas à être courageux. On lui promet qu’il n’aura plus jamais à l’être.",
+     "Fredegar accepte la promesse, et il se sent tout de suite mieux. C’est ce qui devrait l’inquiéter."
+    ],
+    "echec": [
+     "Fredegar refuse sans comprendre pourquoi. Quelque chose sonne faux.",
+     "Fredegar a trop peur pour dire oui à qui que ce soit.",
+     "Fredegar pense à Frodon, et il ne veut rien d’autre que le revoir."
+    ],
+    "retour": [
+     "Fredegar a vu l’ombre derrière la promesse. Il s’enfuit de Creux-de-Crique et prévient les Brandebouc.",
+     "Fredegar comprend que quelqu’un veut entrer dans la maison, et dans sa tête. Il donne l’alerte.",
+     "Fredegar sait qui a promis. Il le dit à tout le Pays de Bouc."
+    ]
+   },
+   "fer": {
+    "reussite": [
+     "Fredegar obéit en tremblant. Il a toujours fait ce qu’on lui disait.",
+     "Fredegar se tait. Il n’a jamais été très bavard, de toute façon.",
+     "Fredegar fait ce qu’on lui ordonne, les larmes aux yeux."
+    ],
+    "echec": [
+     "Fredegar se cache sous les couvertures et l’ordre ne le trouve pas.",
+     "Fredegar est trop terrifié pour obéir. C’est sa peur qui le sauve.",
+     "Fredegar résiste, à sa grande surprise."
+    ],
+    "retour": [
+     "Fredegar a résisté, et il a vu les Cavaliers dans sa tête. Il sonne le Cor, et le Pays de Bouc se réveille.",
+     "Fredegar sait qui a voulu le commander. Il le dira à Merry, s’il le revoit.",
+     "Fredegar a eu si peur qu’il a couru jusqu’au Pont. Tout le monde sait, maintenant."
     ]
    }
   }
@@ -255,36 +1767,1171 @@
   },
   "victoire": [
    "L’esprit de {qui} cède. Il fera ce que veut la Tour.",
-   "{qui} se tait, vaincu, et n’en saura jamais rien."
+   "{qui} se tait, vaincu, et n’en saura jamais rien.",
+   "Il ne reste de la volonté de {qui} qu’un champ de cendres. La Tour y plante son ordre.",
+   "{qui} s’agenouille dans le monde des ombres. Dans le monde des vivants, il croit seulement qu’il a décidé."
   ],
   "defaite": [
    "{qui} rejette l’Ombre. Dans le contrecoup, il arrache à Sauron une vérité : « {verite} »",
-   "Retour de flamme. {qui} a vu dans l’Œil plus que l’Œil ne voulait montrer : « {verite} »"
-  ]
+   "Retour de flamme. {qui} a vu dans l’Œil plus que l’Œil ne voulait montrer : « {verite} »",
+   "L’Œil recule, et dans l’éclair {qui} a lu une pensée de la Tour : « {verite} »",
+   "{qui} a gagné. Il emporte avec lui un éclat de l’Œil, une vérité qu’il ne devait pas connaître : « {verite} »"
+  ],
+  "temps": {
+   "premiere": {
+    "ecraser": {
+     "gagnee": [
+      "La Tour s’abat d’un seul coup sur l’esprit de {qui}. Le premier mur cède.",
+      "Le Regard frappe {qui} de plein fouet, avant même qu’il ait compris qu’on l’attaquait."
+     ],
+     "perdue": [
+      "La Tour frappe la première, et frappe dans le vide : {qui} n’est plus là où l’Œil le cherchait.",
+      "{qui} encaisse le premier choc sans plier. L’Œil a mal mesuré la pierre."
+     ]
+    },
+    "insinuer": {
+     "gagnee": [
+      "Un mot, un seul, glissé au bon endroit. {qui} vacille dès l’ouverture.",
+      "L’Ombre entre par une fissure que {qui} ignorait avoir."
+     ],
+     "perdue": [
+      "{qui} sent la première approche et ferme la porte avant que le mot n’entre.",
+      "La fissure que cherchait l’Œil n’existe pas encore. {qui} tient."
+     ]
+    },
+    "feindre": {
+     "gagnee": [
+      "La Tour fait mine de reculer. {qui} s’avance, et c’est déjà une erreur.",
+      "Une faiblesse offerte, une main tendue. {qui} la saisit, et la main se referme."
+     ],
+     "perdue": [
+      "La feinte ne trompe pas {qui}. Mais l’Œil ne s’est pas découvert.",
+      "{qui} ne mord pas à l’appât. La Tour se retire sans grand dommage."
+     ]
+    }
+   },
+   "seconde": {
+    "ecraser": {
+     "gagnee": [
+      "La Tour revient, plus lourde. {qui} plie sous le second assaut.",
+      "Le feu de l’Œil brûle ce qui restait debout. {qui} recule."
+     ],
+     "perdue": [
+      "Le second assaut se brise. {qui} a appris où l’Œil frappe.",
+      "{qui} se redresse sous la masse de la Tour, et la Tour vacille."
+     ]
+    },
+    "insinuer": {
+     "gagnee": [
+      "L’Œil retourne le couteau dans la plaie ouverte. {qui} ne sait plus ce qu’il pense lui-même.",
+      "Un doute de plus, puis un autre. L’esprit de {qui} se fend comme du bois sec."
+     ],
+     "perdue": [
+      "{qui} voit venir le mensonge et le retourne contre la Tour.",
+      "La fissure se referme. {qui} connaît ses propres faiblesses, et il les garde."
+     ]
+    },
+    "feindre": {
+     "gagnee": [
+      "Une fausse retraite. {qui} y croit, et s’avance trop loin dans l’Ombre.",
+      "La Tour s’efface, et {qui}, emporté par son propre élan, tombe dans le vide."
+     ],
+     "perdue": [
+      "{qui} devine la feinte et ne bouge pas. La Tour a perdu du temps, pas du sang.",
+      "La ruse est éventée. L’Œil se retire avant d’être blessé."
+     ]
+    }
+   },
+   "decisive": {
+    "ecraser": {
+     "gagnee": [
+      "La Tour jette tout son poids dans le dernier coup. L’esprit de {qui} se brise comme une lame trop trempée.",
+      "Le Regard s’abat une dernière fois, et {qui} n’a plus rien pour le retenir."
+     ],
+     "perdue": [
+      "La Tour jette tout son poids, et {qui} le lui renvoie. La pierre de Barad-dûr tremble.",
+      "Le dernier coup se brise sur {qui} comme une vague sur un roc. L’Œil saigne de lumière."
+     ]
+    },
+    "insinuer": {
+     "gagnee": [
+      "Le dernier mot entre, et il trouve le cœur. {qui} cède de l’intérieur.",
+      "L’Œil n’a plus besoin de frapper : {qui} ouvre lui-même la dernière porte."
+     ],
+     "perdue": [
+      "Le dernier mensonge tombe à plat. {qui} en rit, et ce rire brûle l’Œil.",
+      "{qui} referme la dernière fissure et rejette l’Ombre tout entière."
+     ]
+    },
+    "feindre": {
+     "gagnee": [
+      "Une dernière ruse : l’Œil semble vaincu. {qui} baisse sa garde, et c’est fini.",
+      "La Tour s’offre en proie, et {qui}, en voulant la saisir, se livre."
+     ],
+     "perdue": [
+      "La dernière feinte ne trompe personne. {qui} l’emporte, mais l’Œil s’est gardé de trop s’exposer.",
+      "{qui} voit clair dans la dernière ruse. La Tour recule, blessée moins qu’elle n’aurait pu l’être."
+     ]
+    }
+   }
+  },
+  "regard": {
+   "victoire": [
+    "Le Regard force l’esprit de {qui}. Il ne sentira qu’un frisson, un nuage sur le soleil.",
+    "{qui} détourne les yeux une seconde de trop. L’Œil est entré.",
+    "Le voile se déchire. L’Œil lit {qui} comme une page ouverte."
+   ],
+   "defaite": [
+    "{qui} soutient le Regard et le renvoie. Il sait désormais que l’Œil le cherche : « {verite} »",
+    "Une lumière blanche brûle l’Œil. {qui} a vu qui le regardait, et pourquoi : « {verite} »",
+    "{qui} lève la tête et regarde l’Œil en face. L’Œil cligne le premier : « {verite} »"
+   ]
+  },
+  "personnages": {
+   "sam": {
+    "victoire": [
+     "Sam lâche prise. Il ne comprend pas ce qui lui arrive, seulement qu’il obéira."
+    ],
+    "defaite": [
+     "Sam tient, têtu comme une racine. L’Œil se retire, et Sam a entendu une chose qu’il ne devait pas : « {verite} »",
+     "Sam repousse l’Ombre sans même savoir comment. Il en garde un mot, un seul : « {verite} »"
+    ]
+   },
+   "aragorn": {
+    "victoire": [
+     "L’héritier d’Isildur plie, comme son ancêtre a plié. La Tour s’en souviendra."
+    ],
+    "defaite": [
+     "Aragorn arrache sa volonté à l’Œil comme on tire une lame du fourreau. Il emporte une vérité : « {verite} »",
+     "Le fils d’Arathorn rejette la Tour, et la Tour, en reculant, lui laisse voir : « {verite} »"
+    ]
+   },
+   "gandalf": {
+    "victoire": [
+     "La flamme de Mithrandir vacille et s’incline. L’Œil a fait plier un Messager de l’Ouest."
+    ],
+    "defaite": [
+     "Gandalf se dresse, et le Feu Secret brûle l’Œil jusqu’à la Tour. Il a lu : « {verite} »",
+     "Le Gris rejette l’Ombre d’un seul mot, et dans l’éclair il voit : « {verite} »"
+    ]
+   },
+   "elrond": {
+    "victoire": [
+     "Le Semi-Elfe cède. Les eaux du Bruinen s’apaisent, comme si elles avaient perdu leur maître."
+    ],
+    "defaite": [
+     "Elrond oppose à l’Œil trois âges du monde. L’Œil recule, et Elrond apprend : « {verite} »",
+     "Vilya s’embrase au doigt d’Elrond. L’Œil est repoussé, et sa pensée est mise à nu : « {verite} »"
+    ]
+   },
+   "glorfindel": {
+    "victoire": [
+     "La lumière de Glorfindel pâlit et s’éteint. L’Œil a vaincu celui qui avait vaincu un Balrog."
+    ],
+    "defaite": [
+     "Glorfindel s’embrase dans le monde des ombres. L’Œil est aveuglé, et le Seigneur elfe lit en lui : « {verite} »",
+     "Glorfindel rit, un rire de Gondolin. L’Œil s’enfuit en laissant derrière lui : « {verite} »"
+    ]
+   }
+  }
  },
  "journal": {
   "vide": [
    "Un jour passe. La Tour attend.",
-   "Rien qui vaille d’être écrit. L’Œil veille."
-  ]
+   "Rien qui vaille d’être écrit. L’Œil veille.",
+   "Le monde se tait. La Tour écoute ce silence.",
+   "Un jour gris, sans nouvelles. La patience aussi est une arme."
+  ],
+  "types": {
+   "fin": [
+    "Ainsi s’achève le premier mouvement de la guerre.",
+    "La Tour referme ce chapitre."
+   ],
+   "combat": [
+    "Cette nuit, les Neuf ont frappé.",
+    "Le sang a coulé sur les routes de l’Eriador.",
+    "La Main s’est refermée, et quelque chose s’est brisé."
+   ],
+   "pulsation": [
+    "L’Anneau a parlé. Toute la Tour l’a entendu.",
+    "Un battement d’or a traversé l’Ombre.",
+    "Le Précieux a brillé, ne serait-ce qu’un instant."
+   ],
+   "detection": [
+    "La piste de l’Anneau se resserre.",
+    "Le Regard a effleuré quelque chose d’or.",
+    "La Tour sait un peu mieux où chercher."
+   ],
+   "duel": [
+    "Un esprit s’est dressé contre la Tour.",
+    "L’Œil a croisé une volonté digne de ce nom.",
+    "Il y a eu combat, aujourd’hui, dans le monde des ombres."
+   ],
+   "corruption": [
+    "L’Ombre s’étend sur la carte.",
+    "Une terre de plus a senti les racines de la Tour.",
+    "La peur a fait son œuvre."
+   ],
+   "forme": [
+    "Sauron reprend chair, un peu plus.",
+    "La Tour s’est repliée sur elle-même, et en est ressortie plus dense."
+   ],
+   "voix": [
+    "La Voix a parlé dans la nuit.",
+    "Des esprits ont entendu la Tour sans le savoir.",
+    "La Voix a semé ce qu’elle sème toujours."
+   ],
+   "seuil": [
+    "Quelque chose a basculé, et ne reviendra pas.",
+    "Un équilibre s’est rompu.",
+    "Le monde a changé d’un cran."
+   ],
+   "nazgul": [
+    "Les Neuf ont couru l’Eriador.",
+    "Les Cavaliers ont été les yeux et les mains de la Tour.",
+    "Les Neuf ont chassé."
+   ],
+   "oeil": [
+    "L’Œil s’est posé, et il a vu.",
+    "Le Regard a fouillé un coin du monde.",
+    "L’Œil a ouvert une fenêtre dans la brume."
+   ],
+   "murmures": [
+    "Des voix sont montées vers la Tour.",
+    "La Tour a écouté le monde."
+   ],
+   "deplacement_pnj": [
+    "Le monde a bougé sous la brume."
+   ]
+  },
+  "clotures": {
+   "debut": [
+    "Le Comté dort encore. Il ne dormira plus longtemps.",
+    "La chasse ne fait que commencer.",
+    "L’Œil est patient. Les petits ne le sont pas."
+   ],
+   "milieu": [
+    "La route de l’est se resserre comme un nœud.",
+    "Chaque jour qui passe rapproche l’Anneau de son Maître, ou de ses ennemis.",
+    "Les terres sauvages ne cachent plus rien bien longtemps."
+   ],
+   "fin": [
+    "Le Gué n’est plus loin. Le temps manque.",
+    "Fondcombe attend, et la Tour aussi.",
+    "Bientôt, l’eau ou l’Ombre tranchera."
+   ]
+  }
  },
- "lieux": {
-  "comte_ouest": "Hobbitebourg",
-  "comte_est": "le Marais du Comté",
-  "pays_de_bouc": "le Pays de Bouc",
-  "vieille_foret": "la Vieille Forêt",
-  "galgals": "les Hauts des Galgals",
-  "bree": "Bree",
-  "chetwood": "le Bois de Chet",
-  "montauvent": "le Mont Venteux",
-  "terres_solitaires": "les Terres Solitaires",
-  "trollshaws": "le Bois aux Trolls",
-  "gue_bruinen": "le Gué de Bruinen",
-  "fondcombe": "Fondcombe",
-  "route_sarn": "la Route du Sud",
-  "tharbad": "Tharbad",
-  "isengard": "l’Isengard",
-  "rohan": "le Rohan",
-  "mordor": "le Mordor"
+ "canon": {
+  "jalons": [
+   {
+    "tour": 1,
+    "id": "khamul_comte",
+    "condition": {
+     "nazgulDans": [
+      "comte_ouest",
+      "comte_est"
+     ]
+    },
+    "textes": [
+     "Dans une autre histoire, deux Cavaliers seraient entrés dans le Comté ce jour-là, et l’Ancien Gamegie leur aurait fermé sa porte au nez."
+    ]
+   },
+   {
+    "tour": 2,
+    "id": "depart_cul_de_sac",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "comte_ouest"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, Frodon aurait quitté Cul-de-Sac ce soir-là, en sifflant, avec Sam et Pippin, comme on part en promenade.",
+     "Dans une autre histoire, Cul-de-Sac aurait vu partir son maître ce soir-là, à pied, sans un regard en arrière."
+    ]
+   },
+   {
+    "tour": 3,
+    "id": "gildor",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "comte_est"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, des Elfes chantant sous les étoiles auraient trouvé les hobbits dans le Bois-Clos, et un Cavalier aurait reculé devant leur chant.",
+     "Dans une autre histoire, Gildor Inglorion aurait partagé son feu avec trois hobbits perdus, et leur aurait dit de ne pas s’attarder."
+    ]
+   },
+   {
+    "tour": 4,
+    "id": "creux_de_crique",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "pays_de_bouc"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, le Bac de Fertébouc aurait emporté les hobbits juste avant qu’un Cavalier ne renifle la rive, et Merry leur aurait préparé un bain à Creux-de-Crique.",
+     "Dans une autre histoire, la conspiration de Creux-de-Crique aurait été dévoilée ce soir-là, autour d’un bon repas, et Frodon aurait cessé d’être seul."
+    ]
+   },
+   {
+    "tour": 5,
+    "id": "vieille_foret",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "vieille_foret"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, les hobbits seraient entrés dans la Vieille Forêt par la Haie, et le Vieil Homme-Saule les aurait presque gardés pour toujours.",
+     "Dans une autre histoire, une chanson aurait résonné sous les arbres de la Vieille Forêt, et l’Œil n’aurait jamais su qui la chantait."
+    ]
+   },
+   {
+    "tour": 7,
+    "id": "galgals",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "galgals"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, un Être des Galgals aurait couché les hobbits sous la pierre, et une épée de l’Arthedain aurait changé de main.",
+     "Dans une autre histoire, le brouillard des Hauts aurait pris les hobbits, et les morts auraient rendu, sans le savoir, la lame qui blessera un jour le Roi-Sorcier."
+    ]
+   },
+   {
+    "tour": 8,
+    "id": "poney_fringant",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon",
+       "aragorn"
+      ],
+      "regions": [
+       "bree"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, quatre hobbits seraient entrés au Poney Fringant ce soir-là, et un Rôdeur assis dans l’ombre les aurait attendus.",
+     "Dans une autre histoire, Frodon aurait chanté sur une table du Poney, puis disparu sous les yeux de tous, et Grand-Pas aurait compris."
+    ]
+   },
+   {
+    "tour": 9,
+    "id": "attaque_auberge",
+    "condition": {
+     "nazgulDans": [
+      "bree",
+      "pays_de_bouc"
+     ]
+    },
+    "textes": [
+     "Dans une autre histoire, cette nuit-là, les Cavaliers auraient forcé la porte de Creux-de-Crique et lacéré les lits vides d’une chambre du Poney.",
+     "Dans une autre histoire, le Cor de Bouc aurait sonné dans la nuit, et les Cavaliers seraient repartis bredouilles de deux maisons à la fois."
+    ]
+   },
+   {
+    "tour": 12,
+    "id": "gandalf_montauvent",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "gandalf"
+      ],
+      "regions": [
+       "montauvent"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, un éclair aurait illuminé le sommet du Mont Venteux toute une nuit : Gandalf, seul, contre les Neuf.",
+     "Dans une autre histoire, Gandalf aurait gravé une rune sur une pierre d’Amon Sûl avant de fuir vers le nord, et Grand-Pas l’aurait trouvée."
+    ]
+   },
+   {
+    "tour": 15,
+    "id": "amon_sul",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "montauvent"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, cinq Cavaliers seraient montés vers le camp d’Amon Sûl, et la lame de Morgul aurait trouvé l’épaule de Frodon.",
+     "Dans une autre histoire, Frodon aurait mis l’Anneau sous le Mont Venteux, et il aurait vu le Roi-Sorcier tel qu’il est."
+    ]
+   },
+   {
+    "tour": 18,
+    "id": "glorfindel_depart",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "glorfindel"
+      ],
+      "regions": [
+       "gue_bruinen",
+       "trollshaws",
+       "terres_solitaires"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, Glorfindel aurait quitté Fondcombe ce jour-là, envoyé par Elrond sur la Grande Route."
+    ]
+   },
+   {
+    "tour": 20,
+    "id": "dernier_pont",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "glorfindel"
+      ],
+      "regions": [
+       "terres_solitaires",
+       "trollshaws"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, Glorfindel aurait chassé trois Cavaliers du Dernier Pont, et laissé sur le parapet une pierre elfique pour le Porteur."
+    ]
+   },
+   {
+    "tour": 22,
+    "id": "franchir_pont",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "terres_solitaires",
+       "trollshaws"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, les hobbits auraient franchi le Dernier Pont ce jour-là, et Grand-Pas aurait trouvé la pierre verte de Glorfindel."
+    ]
+   },
+   {
+    "tour": 27,
+    "id": "glorfindel_trouve",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "glorfindel",
+       "frodon"
+      ],
+      "regions": [
+       "trollshaws",
+       "gue_bruinen"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, un cheval blanc aux brides d’argent serait apparu sur la route, et Glorfindel aurait salué le Porteur dans la langue des Elfes."
+    ]
+   },
+   {
+    "tour": 27,
+    "id": "gandalf_fondcombe",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "gandalf"
+      ],
+      "regions": [
+       "fondcombe"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, Gandalf serait arrivé à Fondcombe ce jour-là, épuisé, et Elrond aurait su que le Porteur n’était pas loin."
+    ]
+   },
+   {
+    "tour": 29,
+    "id": "gue",
+    "condition": {
+     "presents": {
+      "personnages": [
+       "frodon"
+      ],
+      "regions": [
+       "gue_bruinen"
+      ]
+     }
+    },
+    "textes": [
+     "Dans une autre histoire, Frodon aurait franchi le Gué seul sur Asfaloth, se serait retourné pour défier les Neuf, et le Bruinen se serait levé en chevaux d’écume.",
+     "Dans une autre histoire, les eaux du Bruinen auraient emporté les Neuf, et l’Anneau aurait dormi le soir même sous le toit d’Elrond."
+    ]
+   }
+  ],
+  "fins": {
+   "victoire_noire": [
+    "Dans une autre histoire, l’Anneau aurait atteint Fondcombe, et un Conseil aurait décidé de le porter au cœur du Mordor. Cette histoire-là n’aura pas lieu.",
+    "Dans une autre histoire, un jardinier aurait porté son maître jusqu’au flanc de la Montagne du Destin. Dans celle-ci, l’Anneau rentre chez lui."
+   ],
+   "victoire_grise": [
+    "Dans une autre histoire, la blessure de Frodon se serait refermée sous les mains d’Elrond, presque sans laisser de trace. Ici, l’éclat de Morgul est un fil qui mène à la Tour.",
+    "Dans une autre histoire, l’Anneau serait arrivé à Fondcombe sans que la Tour sache par quelle route. Ici, elle le sait."
+   ],
+   "statu_quo": [
+    "C’est l’histoire qu’on connaît : l’Anneau dort à Fondcombe, et l’Ouest se demande encore quoi en faire. Mais la Tour, elle, a appris.",
+    "Dans cette histoire comme dans l’autre, l’Anneau a atteint Fondcombe. Reste à savoir qui le portera ensuite."
+   ],
+   "ouest_s_eveille": [
+    "Dans une autre histoire, l’Ouest aurait douté jusqu’au bout, divisé, lent. Ici, le Conseil Blanc s’est levé trop tôt pour la Tour.",
+    "Dans une autre histoire, Sauron serait resté une ombre dont on doutait. Ici, toute la Terre du Milieu sait qu’il est revenu."
+   ]
+  }
+ },
+ "constructeur": {
+  "appels": {
+   "frodon": [
+    "Porteur",
+    "Sacquet",
+    "Petit voleur du Comté"
+   ],
+   "sam": [
+    "Jardinier",
+    "Gamegie",
+    "Petit serviteur"
+   ],
+   "merry": [
+    "Brandebouc",
+    "Fils du Pays de Bouc"
+   ],
+   "pippin": [
+    "Touque",
+    "Petit Touque",
+    "Peregrin"
+   ],
+   "aragorn": [
+    "Fils d’Arathorn",
+    "Héritier d’Isildur",
+    "Rôdeur"
+   ],
+   "gandalf": [
+    "Mithrandir",
+    "Pèlerin Gris",
+    "Messager de l’Ouest"
+   ],
+   "elrond": [
+    "Semi-Elfe",
+    "Seigneur d’Imladris"
+   ],
+   "glorfindel": [
+    "Seigneur de la Fleur d’Or",
+    "Toi qui es revenu de Mandos"
+   ],
+   "prosper": [
+    "Aubergiste",
+    "Poiredebeurre"
+   ],
+   "bill_fougeron": [
+    "Fougeron",
+    "Mon fidèle Bill"
+   ],
+   "sudiste": [
+    "Homme du Sud",
+    "Serviteur de deux maîtres"
+   ],
+   "l_ancien": [
+    "Vieux jardinier",
+    "Gamegie l’Ancien"
+   ],
+   "maggotte": [
+    "Fermier",
+    "Maggotte"
+   ],
+   "gros_bolger": [
+    "Bolger",
+    "Gardien de la maison vide"
+   ],
+   "saroumane": [
+    "Curunír",
+    "Saroumane le Sage"
+   ]
+  },
+  "appelDefaut": [
+   "Écoute-moi",
+   "Toi"
+  ],
+  "secrets": {
+   "sec_frodon_01": {
+    "paranoia": [
+     "Tu te caches sous le nom de Sous-la-Colline, mais tes amis, eux, ont bien vite oublié le tien."
+    ],
+    "annatar": [
+     "Sous-la-Colline, Sacquet : à quoi bon un nom d’emprunt ? Je peux t’en donner un que l’on chantera."
+    ],
+    "fer": [
+     "Je connais ton faux nom, Sous-la-Colline. Je connais aussi le vrai."
+    ]
+   },
+   "sec_frodon_02": {
+    "paranoia": [
+     "Tu as vendu Cul-de-Sac sur la parole d’un magicien. Qui, au Comté, te le pardonnera ?"
+    ],
+    "annatar": [
+     "Tu as vendu ta maison pour ce fardeau. Garde-le, et c’est le Comté entier qui sera ta maison."
+    ],
+    "fer": [
+     "Tu as menti à tout le Comté sur ton départ. Tu peux bien obéir une fois sans mentir."
+    ]
+   },
+   "sec_frodon_03": {
+    "paranoia": [
+     "Le magicien n’est pas venu. Il ne viendra pas. Il t’a laissé l’Anneau comme on laisse un chien à la porte."
+    ],
+    "annatar": [
+     "Gandalf t’a abandonné. Moi, je ne t’abandonnerai pas."
+    ],
+    "fer": [
+     "Gandalf ne viendra pas te sauver. Il n’y a plus que moi."
+    ]
+   },
+   "sec_frodon_04": {
+    "paranoia": [
+     "Chaque fois que tu le passes, tu les vois. Et tes amis, qui ne voient rien, te prennent pour un fou."
+    ],
+    "annatar": [
+     "Passe-le, et tu ne verras plus les Cavaliers. Tu verras ce que je vois."
+    ],
+    "fer": [
+     "Passe-le à ton doigt. Maintenant."
+    ]
+   },
+   "sec_sam_01": {
+    "paranoia": [
+     "Tu as juré au magicien de ne jamais le laisser seul. Et lui, qu’a-t-il juré pour toi ?"
+    ],
+    "annatar": [
+     "Ton serment t’enchaîne, jardinier. Je peux t’en délivrer, et te donner un jardin plus grand que le monde."
+    ],
+    "fer": [
+     "Ton serment ne compte plus. Laisse-le."
+    ]
+   },
+   "sec_sam_02": {
+    "paranoia": [
+     "Tu as espionné ton maître pour les autres. Crois-tu qu’il l’ait oublié ? Il attend son heure."
+    ],
+    "annatar": [
+     "Tu sais écouter aux fenêtres, Gamegie. Un tel talent mérite un meilleur maître."
+    ],
+    "fer": [
+     "Tu as déjà trahi un secret. Tu le feras encore, pour moi."
+    ]
+   },
+   "sec_merry_01": {
+    "paranoia": [
+     "Tu savais pour l’Anneau bien avant qu’il ne l’avoue. Il ne te l’a jamais dit, à toi. Il ne te fait pas confiance."
+    ],
+    "annatar": [
+     "Tu as tout deviné avant les autres, Brandebouc. C’est toi qui devrais mener, et non suivre."
+    ],
+    "fer": [
+     "Tu sais garder un secret. Garde celui-ci : tais-toi."
+    ]
+   },
+   "sec_merry_02": {
+    "paranoia": [
+     "Tu as préparé les poneys, les cartes, la route. Et c’est lui qu’on remerciera."
+    ],
+    "annatar": [
+     "Sans toi, ils seraient perdus. Prends la tête, et ils te suivront."
+    ],
+    "fer": [
+     "Tu connais les chemins. Tu prendras celui que je te montre."
+    ]
+   },
+   "sec_pippin_01": {
+    "paranoia": [
+     "Au Poney, tu as failli tout dire. Ils s’en souviennent, Touque. Ils se méfient de toi, maintenant."
+    ],
+    "annatar": [
+     "Tu aimes raconter des histoires, Touque. Je t’en offrirai une dont tu seras le héros."
+    ],
+    "fer": [
+     "Tu as failli parler, au Poney. Cette fois, tu parleras."
+    ]
+   },
+   "sec_pippin_02": {
+    "paranoia": [
+     "Tu parles trop quand tu as peur. Ils le savent. C’est pour ça qu’ils ne te disent rien."
+    ],
+    "annatar": [
+     "La nuit te fait peur ? Sers-moi, et tu ne craindras plus jamais le noir."
+    ],
+    "fer": [
+     "La nuit vient, et tu as peur. Parle."
+    ]
+   },
+   "sec_aragorn_01": {
+    "paranoia": [
+     "Tu portes une épée brisée, héritier d’Isildur. Les hobbits le savent-ils ? Leur as-tu dit qui tu es, et ce que ton sang a fait ?"
+    ],
+    "annatar": [
+     "Narsil peut être reforgée, et le trône de Gondor t’attend. Il suffit d’un mot."
+    ],
+    "fer": [
+     "Héritier d’Isildur, tu plieras comme ton ancêtre a plié."
+    ]
+   },
+   "sec_aragorn_02": {
+    "paranoia": [
+     "Elrond te refuse sa fille. Crois-tu qu’il te veuille du bien ? Il t’envoie mourir sur les routes."
+    ],
+    "annatar": [
+     "Arwen, sans attendre la couronne, sans attendre Elrond. Je peux te la donner."
+    ],
+    "fer": [
+     "Pense à Arwen, Rôdeur, et obéis, si tu veux la revoir."
+    ]
+   },
+   "sec_aragorn_03": {
+    "paranoia": [
+     "Gandalf t’a confié le Porteur parce qu’il ne pouvait pas venir. Ou parce qu’il ne voulait pas."
+    ],
+    "annatar": [
+     "Le magicien te charge de ses fardeaux. Je t’offre les tiens propres, et une couronne au bout."
+    ],
+    "fer": [
+     "Tu veilles sur le Porteur. Tu le mèneras où je veux."
+    ]
+   },
+   "sec_gandalf_01": {
+    "paranoia": [
+     "Tu portes Narya, l’un des Trois. Les autres le savent-ils ? Que penseraient-ils d’un gardien qui cache un anneau ?"
+    ],
+    "annatar": [
+     "Narya n’est qu’une étincelle, Mithrandir. Je t’offre la flamme tout entière."
+    ],
+    "fer": [
+     "Je sens Narya à ta main, Gris. Elle ne te protégera pas."
+    ]
+   },
+   "sec_gandalf_02": {
+    "paranoia": [
+     "Saroumane t’a trahi. Qui d’autre, parmi tes Sages, attend son tour ?"
+    ],
+    "annatar": [
+     "Saroumane t’a enfermé. Je peux te donner Orthanc, et lui à tes pieds."
+    ],
+    "fer": [
+     "Tu t’es échappé d’Orthanc. Tu ne m’échapperas pas."
+    ]
+   },
+   "sec_gandalf_03": {
+    "paranoia": [
+     "Ta lettre n’est jamais partie, et le Porteur te croit traître. Tu ne peux faire confiance à personne, pas même à un aubergiste."
+    ],
+    "annatar": [
+     "Ta lettre est perdue, ton plan est en ruines. Je peux réparer tout cela."
+    ],
+    "fer": [
+     "Ta lettre ne partira jamais. Et toi, tu resteras où tu es."
+    ]
+   },
+   "sec_elrond_01": {
+    "paranoia": [
+     "Tu portes Vilya, Semi-Elfe, et tu te crois à l’abri. Mithrandir et Galadriel portent les deux autres. Qui gardera les gardiens ?"
+    ],
+    "annatar": [
+     "Vilya s’éteindra quand l’Unique sera détruit. Garde-le, et Imladris ne fanera jamais."
+    ],
+    "fer": [
+     "Je sens Vilya, Semi-Elfe. Je l’ai forgée, en un sens."
+    ]
+   },
+   "sec_elrond_02": {
+    "paranoia": [
+     "Tu commandes aux eaux du Bruinen. Et si elles se retournaient contre ceux que tu aimes ?"
+    ],
+    "annatar": [
+     "Les eaux t’obéissent. Bientôt, le monde entier t’obéirait."
+    ],
+    "fer": [
+     "Retiens les eaux du Bruinen. Ne les lève pas."
+    ]
+   },
+   "sec_glorfindel_01": {
+    "paranoia": [
+     "Elrond t’envoie seul sur la Grande Route contre les Neuf. Il sait ce qu’il fait. Il se débarrasse de toi."
+    ],
+    "annatar": [
+     "Elrond t’envoie chasser comme un chien. Je t’offre de régner."
+    ],
+    "fer": [
+     "Quitte la Grande Route, Seigneur elfe. Rentre."
+    ]
+   },
+   "sec_glorfindel_02": {
+    "paranoia": [
+     "Ta pierre sur le parapet du Pont : un signe pour les voyageurs, et pour quiconque les traque."
+    ],
+    "annatar": [
+     "Une pierre pour guider des hobbits. Est-ce là tout ce qu’il reste à celui qui a vaincu un Balrog ?"
+    ],
+    "fer": [
+     "Reprends ta pierre du Pont. Efface le signe."
+    ]
+   },
+   "sec_prosper_01": {
+    "paranoia": [
+     "Tu as oublié la lettre du magicien, aubergiste. Il le sait, et il reviendra te le faire payer."
+    ],
+    "annatar": [
+     "Une lettre oubliée, ce n’est rien. Je peux faire que personne ne s’en souvienne jamais."
+    ],
+    "fer": [
+     "Oublie encore, aubergiste. Oublie tout."
+    ]
+   },
+   "sec_prosper_02": {
+    "paranoia": [
+     "Tu as vendu un poney volé à prix d’or. Bill le sait, et Bill parle."
+    ],
+    "annatar": [
+     "Tu sais faire de bonnes affaires, Poiredebeurre. J’en ai de bien meilleures à te proposer."
+    ],
+    "fer": [
+     "Tu as vendu un poney. Tu vendras aussi ceux qui l’ont acheté."
+    ]
+   },
+   "sec_bill_01": {
+    "paranoia": [
+     "Le Sudiste te paie, Fougeron. Mais pour qui travaille le Sudiste ? Pas pour moi. Il te vendra."
+    ],
+    "annatar": [
+     "Le Sudiste te donne des miettes. Je te donnerai Bree."
+    ],
+    "fer": [
+     "Oublie le Sudiste. C’est à moi que tu rapportes."
+    ]
+   },
+   "sec_bill_02": {
+    "paranoia": [
+     "Tu comptes vendre ton poney aux voyageurs. Et s’ils te vendaient, eux, à Grand-Pas ?"
+    ],
+    "annatar": [
+     "Un poney à prix d’or, ce n’est qu’un début, Bill."
+    ],
+    "fer": [
+     "Vends-leur ton poney. Et regarde bien quelle route ils prennent."
+    ]
+   },
+   "sec_sudiste_01": {
+    "paranoia": [
+     "Tu espionnes pour Saroumane. Crois-tu qu’il te garde en vie, quand il n’aura plus besoin de toi ?"
+    ],
+    "annatar": [
+     "Saroumane te paie en promesses. Moi, je paie en pouvoir."
+    ],
+    "fer": [
+     "Je sais à qui tu écris, Homme du Sud. Désormais, c’est à moi."
+    ]
+   },
+   "sec_ancien_01": {
+    "paranoia": [
+     "Tu as menti au Cavalier, vieux jardinier. Il reviendra. Et c’est ton Sam qu’il trouvera."
+    ],
+    "annatar": [
+     "Ton mensonge n’était rien. Dis la vérité, et ton fils te reviendra."
+    ],
+    "fer": [
+     "Tu as menti une fois au Cavalier. La prochaine fois, tu diras vrai."
+    ]
+   },
+   "sec_maggotte_01": {
+    "paranoia": [
+     "Tu as caché les hobbits sous tes champignons. Le Comté finira par le savoir, et le Comté parle."
+    ],
+    "annatar": [
+     "Tu as rendu service au jeune Sacquet. Rends-m’en un, et tes champs s’étendront jusqu’au Brandevin."
+    ],
+    "fer": [
+     "Tu les as menés au Bac. Tu diras par où."
+    ]
+   },
+   "sec_bolger_01": {
+    "paranoia": [
+     "Ils t’ont laissé garder une maison vide pour faire croire qu’il y vivait. Tu es l’appât, Bolger."
+    ],
+    "annatar": [
+     "Pourquoi rester seul dans cette maison ? Pars, et tu n’auras plus jamais peur."
+    ],
+    "fer": [
+     "Ouvre la porte de Creux-de-Crique. Laisse-la ouverte."
+    ]
+   },
+   "sec_saroumane_01": {
+    "paranoia": [
+     "Tu cherches l’Anneau pour toi, Curunír, et tu me mens par la pierre. Je le sais. Qui d’autre le sait ?"
+    ],
+    "annatar": [
+     "Trouve-le pour moi, et tu seras mon égal, comme tu l’as toujours voulu."
+    ],
+    "fer": [
+     "Assez de mensonges par la pierre. Rapporte."
+    ]
+   }
+  },
+  "peurs": {
+   "frodon": {
+    "paranoia": [
+     "Tu deviendras comme Gollum, et tes amis te regarderont comme on regarde une bête."
+    ],
+    "annatar": [
+     "Tu as peur qu’il te ronge ? Il ne ronge que ceux qui lui résistent."
+    ],
+    "fer": [
+     "Tu deviendras ce que tu crains. Commence maintenant."
+    ]
+   },
+   "sam": {
+    "paranoia": [
+     "Un jour, il te renverra. Il partira seul, et tu ne pourras rien y faire."
+    ],
+    "annatar": [
+     "Je peux faire qu’il ne te quitte jamais."
+    ],
+    "fer": [
+     "Laisse-le seul. C’est ce que tu crains le plus, alors fais-le."
+    ]
+   },
+   "merry": {
+    "paranoia": [
+     "Le jour venu, tu ne seras d’aucune aide. Ils le savent déjà. Ils t’emmènent par pitié."
+    ],
+    "annatar": [
+     "Je peux faire de toi celui qui sauve les autres."
+    ],
+    "fer": [
+     "Tu es inutile, Brandebouc. Alors obéis, au moins."
+    ]
+   },
+   "pippin": {
+    "paranoia": [
+     "Tu feras une bêtise. Tu la feras, et ils ne te le pardonneront pas."
+    ],
+    "annatar": [
+     "Sers-moi, et plus jamais tu ne décevras personne."
+    ],
+    "fer": [
+     "Fais-la, ta bêtise. Maintenant."
+    ]
+   },
+   "aragorn": {
+    "paranoia": [
+     "Tu failliras comme Isildur a failli. Les hobbits le sentent déjà."
+    ],
+    "annatar": [
+     "Isildur a failli parce qu’il était seul. Tu ne le seras pas."
+    ],
+    "fer": [
+     "Faillis, comme ton ancêtre."
+    ]
+   },
+   "gandalf": {
+    "paranoia": [
+     "Saroumane m’a déjà tout dit. Tes plans, tes amis, tes routes. Tout."
+    ],
+    "annatar": [
+     "Tu as peur de céder à l’Anneau ? Cède, et tu verras que tu avais tort d’avoir peur."
+    ],
+    "fer": [
+     "Tu céderas, Mithrandir. Tu l’as toujours su."
+    ]
+   },
+   "elrond": {
+    "paranoia": [
+     "Si l’Anneau vient à Imladris, l’Ombre viendra avec lui. Et ce sera ta faute."
+    ],
+    "annatar": [
+     "Laisse l’Anneau loin d’Imladris, et je laisserai Imladris en paix."
+    ],
+    "fer": [
+     "Ferme ta porte au Porteur."
+    ]
+   },
+   "glorfindel": {
+    "paranoia": [
+     "Tu ne crains rien ? Alors tu ne vois rien venir."
+    ],
+    "annatar": [
+     "Rien ne t’effraie. Rien ne te tente. Rien ne te reste."
+    ],
+    "fer": [
+     "Tu as connu la mort. Retournes-y."
+    ]
+   },
+   "prosper": {
+    "paranoia": [
+     "Les ennuis sont déjà dans ton auberge, Poiredebeurre. Ils dorment dans tes chambres."
+    ],
+    "annatar": [
+     "Plus jamais d’ennuis sous ton toit. Je t’en fais la promesse."
+    ],
+    "fer": [
+     "Ferme ton auberge à ceux qui fuient."
+    ]
+   },
+   "bill_fougeron": {
+    "paranoia": [
+     "Grand-Pas reviendra te régler ton compte. Il est peut-être déjà là."
+    ],
+    "annatar": [
+     "Grand-Pas ne te touchera plus jamais. Pas tant que tu me sers."
+    ],
+    "fer": [
+     "Grand-Pas te cherche. Cours, et rapporte ce que tu vois."
+    ]
+   },
+   "sudiste": {
+    "paranoia": [
+     "Ton maître d’Isengard apprendra que tu sers une autre main. Peut-être le sait-il déjà."
+    ],
+    "annatar": [
+     "Saroumane n’en saura rien. Je te le promets."
+    ],
+    "fer": [
+     "Saroumane saura, si tu n’obéis pas."
+    ]
+   },
+   "l_ancien": {
+    "paranoia": [
+     "Les gens du dehors dévoreront ton Sam. Et c’est M. Frodon qui l’aura emmené."
+    ],
+    "annatar": [
+     "Ton Sam reviendra sain et sauf, si tu m’aides."
+    ],
+    "fer": [
+     "Si tu veux revoir ton Sam, parle."
+    ]
+   },
+   "maggotte": {
+    "paranoia": [
+     "Tes chiens ne te protégeront pas des Cavaliers. Ni tes voisins."
+    ],
+    "annatar": [
+     "Les Cavaliers ne passeront plus jamais ta barrière."
+    ],
+    "fer": [
+     "Les Cavaliers reviendront ce soir. Ouvre-leur."
+    ]
+   },
+   "gros_bolger": {
+    "paranoia": [
+     "Ils viendront, Bolger, et tu seras seul dans la maison. Ils l’ont voulu ainsi."
+    ],
+    "annatar": [
+     "Tu ne seras plus jamais seul."
+    ],
+    "fer": [
+     "Reste seul dans la maison. Attends-les."
+    ]
+   }
+  },
+  "generique": {
+   "paranoia": [
+    "Ceux qui t’entourent te mentent. Tu le sais déjà.",
+    "Ils parlent de toi quand tu dors. Demande-toi qui gagne si tu tombes.",
+    "Ton ami a déjà choisi. Il ne te l’a simplement pas encore dit."
+   ],
+   "annatar": [
+    "Tu mérites mieux que cela. Sers-moi, et tout ceci sera à toi.",
+    "Je ne te demande pas d’être loyal. Seulement un peu d’aide, et une grande récompense.",
+    "Tu étais fait pour plus que cette route boueuse."
+   ],
+   "fer": [
+    "Obéis.",
+    "À genoux.",
+    "Tu n’as pas le choix. Tu ne l’as jamais eu."
+   ]
+  },
+  "allie": [
+   "Regarde {allie}. Regarde comme il te regarde.",
+   "{allie} te vendra au premier qui paiera.",
+   "Demande à {allie} ce qu’il fait la nuit, quand tu dors."
+  ],
+  "fer": {
+   "se_taire": [
+    "Tais-toi. Ne dis rien de ce que tu sais.",
+    "Pas un mot à tes amis. Pas un seul.",
+    "Garde le silence, et oublie pourquoi."
+   ],
+   "livrer": [
+    "Dis-moi ce que tu sais. Tout.",
+    "Ouvre ton esprit, et livre-le.",
+    "Parle. Je t’écoute."
+   ],
+   "deplacer": [
+    "Va vers {lieu}. Maintenant.",
+    "Prends la route de {lieu}, et ne te retourne pas.",
+    "Marche jusqu’à {lieu}. Tes pieds savent le chemin."
+   ]
+  },
+  "clotures": {
+   "paranoia": [
+    "Tu es seul.",
+    "Personne ne viendra.",
+    "Réfléchis-y, cette nuit.",
+    ""
+   ],
+   "annatar": [
+    "Il suffit d’un mot.",
+    "Dis oui.",
+    "Je suis patient. Pas toi.",
+    ""
+   ],
+   "fer": [
+    "Je suis ton maître.",
+    "L’Œil te voit.",
+    "",
+    ""
+   ]
+  }
  }
 }

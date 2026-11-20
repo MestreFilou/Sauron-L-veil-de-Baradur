@@ -9,6 +9,7 @@ npm install
 npm run dev        # le client sur http://localhost:5173
 npm test           # tests du moteur, du monde, de la narration et de l'audio
 npm run typecheck
+npm run banc       # banc d'équilibrage : 11 bots, 40 parties chacun
 npm run build      # client de production dans client/dist
 ```
 

@@ -49,8 +49,8 @@ describe('répliques déclenchées', () => {
 
   it('fait tourner les répliques d’un registre', () => {
     const c = new Map<string, number>();
-    const ids = [1, 2, 3, 4].map(() => choisirReplique('paranoia', c)?.id);
     const toutes = REPLIQUES.filter((r) => r.registre === 'paranoia').map((r) => r.id);
+    const ids = toutes.map(() => choisirReplique('paranoia', c)?.id);
     expect(new Set(ids)).toEqual(new Set(toutes));
   });
 

@@ -1,7 +1,8 @@
-# L'Œil de Barad-dûr : document de mécaniques (v0.1)
+# L'Œil de Barad-dûr : document de mécaniques (v0.2)
 
 > Document de conception, pas de code. Il complète le GDD (`game_design_document_l_il_de_barad_d_r.md`).
 > Tous les chiffres sont des **valeurs de départ à équilibrer** en jouant le prototype. Ils sont là pour que le code puisse être écrit sans trou.
+> **v0.2 (20/11/2026)** : premier équilibrage mesuré au banc de bots (section 2.1 bis). Les chiffres changés sont repris ici et dans `engine/src/regles.ts`.
 
 ---
 
@@ -17,7 +18,7 @@
 ## 1. Le temps et le périmètre
 
 - **1 tour = 1 jour.** L'Acte I (Eriador) couvre environ 30 tours, du 22 septembre 3018 T.A. (les Cavaliers arrivent dans le Comté) jusqu'au Gué de Bruinen vers le 20 octobre.
-- Les PNJ suivent un **calendrier canon** par défaut (départ de Frodon, Bree, Montauvent, Gué). Les actions du joueur le font dévier : c'est tout l'enjeu.
+- Les PNJ suivent un **calendrier canon** par défaut, **caché au joueur** : l'Aube ne l'annonce pas ; chaque jalon n'apparaît qu'à la Nuit du jour concerné, sous la forme « Dans une autre histoire, ce jour-là : … » (départ de Frodon, Bree, Montauvent, Gué). Les actions du joueur le font dévier : c'est tout l'enjeu.
 - Jalons canon utilisés comme horloge (dates approximatives, à caler) :
 
 | Tour | Date | Événement par défaut si Sauron n'intervient pas |
@@ -41,20 +42,54 @@ Mesure à quel point l'Ouest perçoit que Sauron est actif et sait ce qu'il cher
 | Seuil | Effet (déclenché une fois, irréversible) |
 |---|---|
 | 20 | Les rumeurs d'« Hommes Noirs » circulent. Les murmures en provenance de Bree deviennent moins fiables (-10 %), les gens se taisent. |
-| 40 | Gandalf (s'il est libre) et les Rôdeurs passent en mode alerte : déplacements accélérés de +1 région/2 tours, Méfiance de base +10 pour tous les héros. |
+| 40 | Gandalf (s'il est libre) et les Rôdeurs passent en mode alerte : déplacements accélérés de +1 région/2 tours, Méfiance de base +10 pour tous les héros, **défense +10 contre les embuscades**. |
 | 60 | Elrond convoque des alliés : Glorfindel part en patrouille (il chasse activement les Nazgûl isolés). |
 | 80 | L'Ouest s'unit : Doute de tous les héros -20, et la Voix coûte +1 PA. |
 | 100 | **« L'Ouest s'éveille »** : fin de l'Acte I en défaite partielle (voir 8). |
 
-- **Décroissance** : -2 par tour sans aucune action « visible » (V+3 ou plus) ce tour-là. Plancher : la Visibilité ne redescend jamais sous le palier atteint moins 10 (une fois découvert, on ne se cache plus tout à fait).
+- **Décroissance** : **-3** par tour sans aucune action « visible » (V+3 ou plus) ce tour-là. Plancher : la Visibilité ne redescend jamais sous le palier atteint moins 10 (une fois découvert, on ne se cache plus tout à fait).
 - V de départ : **10**.
+
+### 2.1 bis Calibrage de la Visibilité (v0.2)
+
+**Le problème** (prototype v0.1) : un bot qui pose des embuscades partout gagnait 34 à 35 parties sur 40, presque toujours dans le Comté avant le tour 5. L'embuscade ne coûtait rien tant qu'elle ne se déclenchait pas, pouvait se tendre le soir même de l'arrivée, frapper chaque nuit sans perte d'efficacité, et la lame de Morgul suffisait à gagner (le porteur devenait un spectre 15 tours plus tard, quoi qu'il arrive).
+
+**L'objectif** : la Visibilité est un budget. Un joueur qui la ménage frappe cinq ou six fois dans l'acte et vit entre 50 et 90 au milieu de l'acte ; celui qui frappe sans compter réveille l'Ouest vers le tour 10 à 18 ; celui qui ne fait rien voit sa trace s'effacer.
+
+**Ce qui a changé** (détails en 5.3 et 2.8) :
+
+| Levier | v0.1 | v0.2 |
+|---|---|---|
+| Embuscade | se tend après une chevauchée, chaque Nazgûl paie la sienne | se tend **là où le Nazgûl est déjà** (pas de marche ce tour) ; une seule suffit, **la meute présente se joint** à l'assaut |
+| Chance de combat | 30 + 10 par Nazgûl en plus, sans limite | 30 + 10 par Nazgûl en plus, **5 Nazgûl comptés au plus** |
+| Défense | fiches des présents | + **défense des lieux** (Comté 10, Pays de Bouc 15, Bree 10, terres sauvages 0) + **vigilance** (+10 par embuscade subie, 3 tours, 20 au plus) + **Rôdeurs** au palier 40 (+10) |
+| V d'une embuscade déclenchée | +4 | **+4, +1 par Nazgûl compté en plus** (une meute de 5 : +8) |
+| Lame de Morgul | toute victoire du Roi-Sorcier | seulement si **le Roi-Sorcier a tendu l'embuscade lui-même**, et sur une **victoire nette** (jet sous la moitié de la chance) |
+| Froid de la lame | spectre 15 tours après, sans recours | **+1 par nuit, +0,5 avec Aragorn (athelas), 0 auprès d'un Sage** ; Doute +5 par nuit au même rythme |
+| Décroissance de V | -2 par tour calme | **-3** par tour calme |
+
+**Le banc** : `npm run banc` fait jouer onze bots aux stratégies opposées (40 parties chacun, graines fixes). Ils jouent comme le client, avec ce que sait le joueur : la connaissance de Sauron et le calendrier des livres, jamais la vraie position du porteur. Le test `world/tests/equilibrage.test.ts` fait échouer la suite si un réglage fait sortir un bot de sa fourchette.
+
+| Bot | Stratégie | v0.1 | v0.2 (graines 1-40) | v0.2 (100 parties, graines 1001-1100) |
+|---|---|---|---|---|
+| passif | l'Œil seul | 0/40, V finale 5 | 0/40, V finale 5 | 0 % |
+| prudent | meute de 5, jamais au-dessus de V 50 | 39/40 | 10/40 (V finale 60) | 24 % |
+| stratège | meute avec le Roi, attend la fin de la vigilance, garde de la marge sous 100 | 38/40 | 18/40, 0 Éveil (V 72 au tour 15) | 39 % |
+| murmureur | une Voix préparée par tour + chasse en appoint | non testé | 18/40, 0 Éveil | 55 % |
+| agressif | frappe dès 3 Nazgûl, sans attendre | non testé | 3/40, Éveil au tour 17 en moyenne | 2 % |
+| embusqueur | toute la meute s'embusque sur le porteur chaque tour | **35/40** | **2/40**, Éveil au tour 15 | 10 % |
+| barrage | embuscades permanentes sur la route canon | 16/40 | 0/40 | 0 % |
+| voix (sans retenue) | quatre Voix par tour | 0/40 | 0/40, Éveil au tour 6 | 1 % |
+| terreur | Cris et Traques à chaque tour | 0/40 | 0/40, Éveil au tour 5 | 0 % |
+
+Lecture : aucune stratégie ne domine ; la patience paie (attendre que la vigilance retombe, frapper en meute avec le Roi-Sorcier, dans les terres sauvages plutôt qu'au Comté) ; la Voix est une vraie voie de victoire (le murmureur gagne souvent en brisant Frodon) ; les victoires tombent surtout entre Montauvent et le Gué (tour 19 en moyenne), plus au Comté.
 
 ### 2.2 Doute (D), par personnage, 0 à 100
 
 Mesure à quel point l'esprit d'un personnage est fissuré. C'est la porte d'entrée de la Voix.
 
 - Valeurs de départ indicatives : Frodon 15, Sam 5, Merry 10, Pippin 25, Aragorn 20, Gandalf 5, Elrond 0, Glorfindel 0, Prosper Poiredebeurre 30, Bill Fougeard 60, Saroumane 55 (hors carte, Acte II).
-- **Hausse** : Voix réussie (+10 à +25), Terreur forte dans sa région (+5/tour si T ≥ 60), blessure par une lame de Morgul (+5/tour tant que non soignée), porter l'Anneau (+3 par utilisation).
+- **Hausse** : Voix réussie (+10 à +25), Terreur forte dans sa région (+5/tour si T ≥ 60), blessure par une lame de Morgul (+5/tour tant que non soignée, au rythme du froid : +2,5 avec Aragorn, 0 auprès d'un Sage), porter l'Anneau (+3 par utilisation).
 - **Baisse** : -3/tour en présence d'un Sage (Gandalf, Elrond, Glorfindel) dans la même région, -10 au repos à Fondcombe, -5 quand un allié de confiance est présent.
 - **Seuils** : à 50, le personnage peut cacher une information à ses alliés ou faire un mauvais choix de route ; à 75, il peut trahir une fois (action dictée par Sauron) ; à 100, il est **brisé** (quitte la partie ou devient un pion, selon le personnage).
 
@@ -168,7 +203,7 @@ Pendant ce tour, **le reste de la carte est couvert de brume** : les murmures de
 | Nazgûl : se déplacer | 0 | 1 région (2 en posture Traque, 3 en Ombre Ailée) | 0 |
 | Nazgûl : **Traque** (Cavalier Noir) | 1 | Fouille la région : jet de détection Anneau, interroge les locaux, T +10 | +2 |
 | Nazgûl : **Interroger** un PNJ | 1 | Obtient un fait vrai (le PNJ est terrifié, T +5) ; le PNJ peut devenir agent | +1 |
-| Nazgûl : **Embuscade** | 1 | Prépare une attaque nocturne si la cible entre dans la région | +4 si déclenchée |
+| Nazgûl : **Embuscade** | 1 | Prépare une attaque nocturne si la cible entre dans la région (3 tours). Se tend **sans chevaucher ce tour**. Les autres Nazgûl présents à la nuit se joignent à l'assaut (5.3) | +4 si déclenchée, +1 par Nazgûl compté en plus |
 | Nazgûl : **Fléau** (Ombre Ailée, Acte II+) | 2 | T +30, moral des armées brisé | +8 |
 | Nazgûl : **Cri** | 0 | T +15 dans la région et ses voisines, D +5 pour les héros | +3 |
 | Placer / activer un **agent** | 1 | Un PNJ à D ≥ 60 devient espion (+1 murmure fiable 70 %/tour sur sa région) | +1 |
@@ -267,6 +302,17 @@ Déclenché par un Commandement contre W ≥ 60 ou par un regard sur une cible d
 - **Démonté / dissipé** : le Nazgûl rentre au Mordor, indisponible pendant **10 tours**, V +5 (une défaite visible).
 - **Perte de signal** : un Nazgûl à plus de 3 régions de tout autre Nazgûl voit ses rapports passer de 85 % à 60 % de vrai, et il ne reçoit les ordres qu'un tour sur deux.
 
+### 5.1 bis Embuscades et combats nocturnes (v0.2)
+
+- **Tendre** : 1 PA, par un Nazgûl qui est déjà dans la région au début du tour (il ne chevauche pas ce tour). Un Nazgûl ne tient qu'une embuscade à la fois. Elle dure 3 tours et se déclenche la première nuit où la cible (ou, sans cible, le porteur ou un héros) est présente.
+- **La meute** : tous les Nazgûl disponibles dans la région cette nuit-là se joignent à l'assaut, qu'ils aient tendu l'embuscade ou qu'ils viennent d'arriver.
+- **Chance** = 30 + 10 × (Nazgûl comptés - 1) + 10 si le Roi-Sorcier est là - défense, bornée entre 5 et 90. Au plus 5 Nazgûl comptés.
+- **Défense** = défense des présents (Aragorn 25, Gandalf 35, Glorfindel 40, Sam 10, Merry 5, Pippin 5) + défense des lieux (Comté 10, Pays de Bouc 15, Bree 10) + vigilance + 10 au palier 40.
+- **Vigilance** : après chaque embuscade, réussie ou non, le groupe de la cible gagne +10 de défense pendant 3 tours (20 au plus). Frapper chaque nuit ne sert à rien.
+- **Visibilité** : +4, +1 par Nazgûl compté au-delà du premier.
+- **Issue contre le porteur** : victoire nette (jet sous la moitié de la chance) et Roi-Sorcier embusqué lui-même : **lame de Morgul** (A2). Porteur déjà marqué et victoire nette : **Étreinte** (A3). Autre victoire : Doute +15. Échec en présence de Gandalf ou de Glorfindel : un Nazgûl est démonté (V +5).
+- Ordres de grandeur : la meute complète contre les quatre Hobbits au Comté, 45 % ; contre la Communauté avec Aragorn dans les terres sauvages, 30 % (20 % une fois les Rôdeurs en alerte) ; avec Gandalf ou Glorfindel, presque rien.
+
 ### 5.2 Le dilemme renseignement contre terreur
 
 - **Posture Traque** (défaut en Acte I) : rapide, précise, T +10 par action, V modérée.
@@ -285,7 +331,7 @@ Quatre branches, qui se nourrissent d'Essence et coûtent toutes de la Visibilit
 |---|---|---|---|
 | A0. **Le Nom** | Acquis au départ (Gollum a parlé : « Comté », « Sacquet ») | La région Comté est ciblable par l'Œil sans malus | 0 |
 | A1. **La Piste** | 3 détections de trace OU 1 Pulsation | La carte de chaleur affiche la région probable avec ±1 région d'erreur | +3 |
-| A2. **La Marque** | Le porteur blessé par la lame de Morgul | Position exacte chaque tour (le froid de la lame est un lien) ; D du porteur +5/tour ; au bout de 15 tours sans soin, le porteur devient un spectre et l'Anneau est livré | +8 |
+| A2. **La Marque** | Le porteur blessé par la lame de Morgul (embuscade tendue par le Roi-Sorcier, victoire nette) | Position exacte chaque tour (le froid de la lame est un lien) ; le **froid** monte de 1 par nuit (0,5 avec Aragorn, 0 auprès d'un Sage), le Doute de 5 au même rythme ; à 15 de froid, le porteur devient un spectre et l'Anneau est livré | +8 |
 | A3. **L'Étreinte** | Un Nazgûl gagne un affrontement dans la région du porteur, ou le porteur est brisé (D = 100) | L'Anneau est saisi : il est envoyé vers Barad-dûr (transport sur plusieurs tours, interceptable dans les actes suivants) | +25 |
 | A4. **Le Retour** | L'Anneau atteint Barad-dûr | Débloque la Forme 4 et la branche des Trois. Victoire de campagne si combiné à certaines conditions | +40 (l'Ouest sait tout) |
 
@@ -552,5 +598,5 @@ Lucas prévoit d'utiliser la musique des films. Le jeu n'étant pas publié, c'e
 ## 11. Questions ouvertes pour Lucas
 
 1. Faut-il garder le **Comté corruptible** dès l'Acte I, ou le réserver à un acte tardif (dans l'œuvre, c'est Saroumane qui s'en charge à la fin) ?
-2. Le joueur doit-il **voir le calendrier canon** (pour savoir ce qu'il fait dévier), ou le découvrir ?
+2. ~~Le joueur doit-il **voir le calendrier canon** ?~~ Tranché : caché, révélé après coup (« Dans une autre histoire… »), voir section 1.
 3. La couche inventée du Noir Parler : veux-tu valider chaque racine, ou laisser Opus produire le lexique complet que tu relis en une fois ?
