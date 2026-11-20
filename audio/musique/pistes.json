@@ -1,0 +1,19 @@
+{
+ "version": 1,
+ "_note": "Musique par ambiance (mécaniques 10.3 bis). Ce dossier est remplaçable : changer de musique = remplacer les fichiers et ce manifeste, sans toucher au code. Les fichiers audio de ce dossier ne sont pas versionnés.",
+ "_format": {
+  "fichier": "Chemin relatif à audio/musique/.",
+  "titre": "Pour mémoire (crédits, sélection).",
+  "boucle": "true : la piste boucle tant que l’ambiance dure.",
+  "volume_db": "Gain appliqué à la lecture (0 = tel quel).",
+  "fondu_s": "Fondu enchaîné en entrée et en sortie."
+ },
+ "ambiances": {
+  "barad_dur": [],
+  "traque": [],
+  "voix": [],
+  "duel": [],
+  "victoire": [],
+  "defaite": []
+ }
+}

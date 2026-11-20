@@ -1,0 +1,197 @@
+{
+ "_note": "Lexique fermé du Noir Parler (mécaniques, 10.1). Version de départ : environ 30 entrées sur les 300 visées, à compléter une fois avec Opus 5.5 puis relire et figer.",
+ "entrees": [
+  {
+   "mot": "ash",
+   "sens": "un",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "nazg",
+   "sens": "anneau",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "durb",
+   "sens": "gouverner",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "gimb",
+   "sens": "trouver",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "thrak",
+   "sens": "amener",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "krimp",
+   "sens": "lier",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "burzum",
+   "sens": "ténèbres",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "ishi",
+   "sens": "dans",
+   "statut": "atteste",
+   "type": "suffixe"
+  },
+  {
+   "mot": "agh",
+   "sens": "et",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "at",
+   "sens": "infinitif, « pour »",
+   "statut": "atteste",
+   "type": "suffixe"
+  },
+  {
+   "mot": "ul",
+   "sens": "les, eux",
+   "statut": "atteste",
+   "type": "suffixe"
+  },
+  {
+   "mot": "ûk",
+   "sens": "tous, entièrement",
+   "statut": "atteste",
+   "type": "suffixe"
+  },
+  {
+   "mot": "gûl",
+   "sens": "spectre, esprit",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "lug",
+   "sens": "tour",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "búrz",
+   "sens": "sombre",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "uruk",
+   "sens": "orque",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "hai",
+   "sens": "peuple",
+   "statut": "atteste",
+   "type": "suffixe"
+  },
+  {
+   "mot": "olog",
+   "sens": "troll",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "ghâsh",
+   "sens": "feu",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "snaga",
+   "sens": "esclave",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "sharkû",
+   "sens": "vieil homme",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "tark",
+   "sens": "homme de Gondor",
+   "statut": "atteste",
+   "type": "racine"
+  },
+  {
+   "mot": "mozg",
+   "sens": "penser, esprit",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "thrûm",
+   "sens": "peur",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "gazg",
+   "sens": "voir, regarder",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "ulbur",
+   "sens": "œil",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "dushn",
+   "sens": "douter",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "rakh",
+   "sens": "briser",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "nûr",
+   "sens": "ombre",
+   "statut": "invente",
+   "type": "racine"
+  },
+  {
+   "mot": "izg",
+   "sens": "toi, ton",
+   "statut": "invente",
+   "type": "suffixe"
+  },
+  {
+   "mot": "um",
+   "sens": "nom abstrait",
+   "statut": "derive",
+   "type": "suffixe"
+  },
+  {
+   "mot": "krû",
+   "sens": "traître, faible",
+   "statut": "invente",
+   "type": "racine"
+  }
+ ]
+}

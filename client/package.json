@@ -1,0 +1,26 @@
+{
+  "name": "@sauron/client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Interface de jeu : React pour les panneaux, PixiJS pour la carte et le Monde de l'Ombre.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p . && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@sauron/engine": "0.1.0",
+    "@sauron/narrative": "0.1.0",
+    "@sauron/world": "0.1.0",
+    "pixi.js": "^8.6.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0"
+  }
+}

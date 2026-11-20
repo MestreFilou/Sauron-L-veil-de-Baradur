@@ -1,0 +1,74 @@
+[
+ {
+  "id": "roi_sorcier",
+  "nom": "Le Roi-Sorcier",
+  "titre": "Seigneur d’Angmar",
+  "vitesse": 2,
+  "bonusDetection": 10,
+  "roiSorcier": true,
+  "regionDepart": "route_sarn"
+ },
+ {
+  "id": "khamul",
+  "nom": "Khamûl",
+  "titre": "l’Easterling · craint le jour",
+  "vitesse": 2,
+  "bonusDetection": 20,
+  "sensibleAuJour": true,
+  "regionDepart": "comte_ouest"
+ },
+ {
+  "id": "troisieme",
+  "nom": "Le Troisième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "route_sarn"
+ },
+ {
+  "id": "quatrieme",
+  "nom": "Le Quatrième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "route_sarn"
+ },
+ {
+  "id": "cinquieme",
+  "nom": "Le Cinquième",
+  "titre": "compagnon de Khamûl",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "comte_est"
+ },
+ {
+  "id": "sixieme",
+  "nom": "Le Sixième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "tharbad",
+  "disponibleAuTour": 3
+ },
+ {
+  "id": "septieme",
+  "nom": "Le Septième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "tharbad",
+  "disponibleAuTour": 4
+ },
+ {
+  "id": "huitieme",
+  "nom": "Le Huitième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "tharbad",
+  "disponibleAuTour": 4
+ },
+ {
+  "id": "neuvieme",
+  "nom": "Le Neuvième",
+  "vitesse": 2,
+  "bonusDetection": 0,
+  "regionDepart": "tharbad",
+  "disponibleAuTour": 5
+ }
+]

@@ -1,0 +1,290 @@
+{
+ "_note": "Banque de textes préécrits. Le jeu se joue entièrement avec elle ; Claude n'est qu'un complément optionnel. Variables : {qui} {lieu} {nombre} {compagnons} {jours}. Ajouter des variantes ne demande aucun code.",
+ "murmures": {
+  "espion": {
+   "presence": [
+    "Je l’ai vu de mes yeux, Maître : {qui} est à {lieu}{compagnons}.",
+    "{qui}, à {lieu}{compagnons}. J’ai payé pour le savoir, je jure que c’est vrai.",
+    "Un nommé {qui} loge à {lieu}{compagnons}. Il paie bien et se tait mal."
+   ],
+   "absence": [
+    "{qui} n’est pas à {lieu}, Maître. J’ai fouillé partout, demandé à tout le monde.",
+    "Personne à {lieu} n’a vu {qui}. On le cherche ailleurs, peut-être."
+   ],
+   "terreur": [
+    "À {lieu}, on barre les portes avant la nuit. Les gens ne parlent plus aux étrangers.",
+    "La peur tient {lieu}. Même les chiens se taisent."
+   ],
+   "passage_porteur": [
+    "Des petites gens sont passés à {lieu}, pressés, l’un d’eux tenant la main sur sa poitrine comme sur un trésor.",
+    "À {lieu}, un voyageur a payé en argent du Comté et refusé qu’on porte son sac."
+   ],
+   "nazgul": [
+    "Des cavaliers noirs à {lieu}, {nombre}. On ne les regarde pas en face.",
+    "{nombre} Hommes Noirs ont traversé {lieu}. Ils demandaient après un certain Sacquet."
+   ],
+   "calme": [
+    "Rien à {lieu}, Maître. Des bêtises de marché, des querelles de clôture.",
+    "{lieu} dort. Je n’ai rien entendu qui vaille votre or."
+   ]
+  },
+  "crebain": {
+   "presence": [
+    "Croâ. Des marcheurs à {lieu}. Petits. Beaucoup ou peu, on ne sait pas.",
+    "Vu d’en haut : une troupe à {lieu}{compagnons}. Ils se cachent sous les arbres le jour."
+   ],
+   "absence": [
+    "Personne sur les routes de {lieu}. Vide. Vide.",
+    "Les ailes ont tourné au-dessus de {lieu} : aucun marcheur."
+   ],
+   "terreur": [
+    "Les gens de {lieu} ne sortent plus. Les champs sont vides.",
+    "Fumées éteintes à {lieu}. Ils se terrent."
+   ],
+   "passage_porteur": [
+    "Une piste fraîche à {lieu}, vers l’est. Des pas légers, pressés.",
+    "Des marcheurs ont couché à {lieu}. Les cendres sont tièdes."
+   ],
+   "nazgul": [
+    "Chevaux noirs à {lieu}. Les ailes ne s’approchent pas.",
+    "Ombres à cheval sur {lieu}. {nombre}, peut-être."
+   ],
+   "calme": [
+    "Rien à {lieu}. Vent, herbe, moutons.",
+    "{lieu} est tranquille. Les ailes reviennent bredouilles."
+   ]
+  },
+  "rumeur": {
+   "presence": [
+    "On dit que {qui} est à {lieu}{compagnons}, mais on dit tant de choses après la troisième pinte.",
+    "Le cousin d’un ami jure avoir trinqué avec {qui}, à {lieu}. Il paraît même qu’il a chanté.",
+    "À {lieu}, tout le monde parle de {qui}{compagnons}. Personne ne l’a vu, mais tout le monde en parle."
+   ],
+   "absence": [
+    "{qui} ? Pas vu à {lieu}. Il est mort, ou parti chez les Elfes, ou les deux.",
+    "On le cherchait à {lieu}, ce {qui}. Envolé, à ce qu’il paraît."
+   ],
+   "terreur": [
+    "Paraît qu’à {lieu}, les gens dorment avec une hache sous l’oreiller.",
+    "Des loups, des Hommes Noirs, des fantômes : à {lieu}, on ne sait plus ce qu’on craint, mais on a peur."
+   ],
+   "passage_porteur": [
+    "Des semi-hommes sont passés à {lieu} il y a {jours}, l’un d’eux a disparu sous les yeux de tous, puis il est revenu !",
+    "À {lieu}, un petit gars aurait fait un tour de magie. Envolé, puis revenu. Il buvait trop, sans doute."
+   ],
+   "nazgul": [
+    "Des cavaliers noirs à {lieu}, {nombre}, ou plus, montés sur des chevaux qui ne mangent pas.",
+    "On a vu des Hommes Noirs du côté de {lieu}. Ils reniflent comme des chiens."
+   ],
+   "calme": [
+    "Rien de neuf à {lieu}, sinon que la bière est moins bonne qu’avant.",
+    "{lieu} ? On s’y ennuie à mourir, à ce qu’on dit."
+   ]
+  },
+  "nazgul": {
+   "presence": [
+    "Des vies chaudes à {lieu}{compagnons}. L’une d’elles brille plus qu’elle ne devrait.",
+    "À {lieu}, des esprits qui tremblent. {qui}, peut-être. Le nom n’a pas d’odeur."
+   ],
+   "absence": [
+    "Nulle aura de {qui} à {lieu}. Le froid ne trouve rien.",
+    "{lieu} est vide de ce que nous cherchons."
+   ],
+   "terreur": [
+    "La peur suinte de {lieu}. Elle nous nourrit.",
+    "À {lieu}, les cœurs battent vite. Ils nous sentent."
+   ],
+   "passage_porteur": [
+    "La TRACE. À {lieu}, il y a {jours}. L’or froid a laissé sa morsure dans l’air.",
+    "Le Précieux est passé par {lieu}. Son sillage brûle encore."
+   ],
+   "nazgul": [
+    "Le lien est clair : {nombre} des nôtres à {lieu}.",
+    "À {lieu}, le froid compte {nombre} des Neuf."
+   ],
+   "calme": [
+    "Rien à {lieu}. Seulement des ombres ordinaires.",
+    "{lieu} ne garde aucune trace. Le froid passe et ne trouve rien."
+   ]
+  },
+  "agent": {
+   "presence": [
+    "Votre serviteur a vu {qui} à {lieu}{compagnons}, de ses yeux, ce soir même.",
+    "{qui} est à {lieu}{compagnons}. Je l’ai suivi jusqu’à la porte."
+   ],
+   "absence": [
+    "{qui} n’est plus à {lieu}. Je l’aurais su.",
+    "Pas trace de {qui} à {lieu}, je le jure sur ma vie."
+   ],
+   "terreur": [
+    "{lieu} tremble, Maître, comme vous l’avez voulu.",
+    "Les gens de {lieu} ont peur. Ils parleront à qui paiera."
+   ],
+   "passage_porteur": [
+    "Ceux que vous cherchez ont traversé {lieu} il y a {jours}. Ils allaient vers l’est.",
+    "Un semi-homme qui se fait appeler Sous-la-Colline est passé à {lieu}."
+   ],
+   "nazgul": [
+    "Les Cavaliers de la Main sont à {lieu}, {nombre}. Tout le monde se terre.",
+    "{nombre} de vos Cavaliers à {lieu}, Maître. J’ai baissé les yeux."
+   ],
+   "calme": [
+    "Rien à {lieu}. J’ouvre l’œil.",
+    "{lieu} est calme. Trop calme, peut-être."
+   ]
+  }
+ },
+ "deformations": [
+  " Mais le témoin n’est pas sûr du nombre.",
+  " Les détails changent d’une bouche à l’autre.",
+  " Un autre jure qu’ils allaient dans l’autre sens.",
+  " Le nom a été mal entendu."
+ ],
+ "compagnons": {
+  "0": "",
+  "1": " avec un compagnon",
+  "2": " avec deux compagnons",
+  "3": " avec trois compagnons",
+  "4": " avec quatre compagnons",
+  "5": " avec cinq compagnons"
+ },
+ "nombres": [
+  "aucun",
+  "un",
+  "deux",
+  "trois",
+  "quatre",
+  "cinq",
+  "six",
+  "sept",
+  "huit",
+  "neuf"
+ ],
+ "voix": {
+  "paranoia": {
+   "reussite": [
+    "{qui} se surprend à regarder ses compagnons autrement. Qui, parmi eux, l’a déjà trahi en pensée ?",
+    "Une pensée froide s’installe chez {qui} : on lui ment, on le surveille. Il croit l’avoir eue seul.",
+    "{qui} se tait plus longtemps qu’à l’ordinaire. Le doute a trouvé une prise."
+   ],
+   "echec": [
+    "{qui} chasse une pensée qui n’était pas la sienne, et se rapproche de ceux qu’il aime.",
+    "Quelque chose a voulu l’isoler. {qui} le sent, et serre plus fort la main de ses amis."
+   ]
+  },
+  "annatar": {
+   "reussite": [
+    "{qui} rêve de ce qu’il pourrait avoir. Il ne sait pas encore qu’il a déjà dit oui.",
+    "Une promesse douce comme du miel. {qui} l’accepte sans savoir de qui elle vient."
+   ],
+   "echec": [
+    "{qui} entend la promesse, et reconnaît la main qui la tend. Il la repousse avec horreur.",
+    "Trop belle, la promesse. {qui} devine qui la fait."
+   ]
+  },
+  "fer": {
+   "reussite": [
+    "{qui} obéit avant même de comprendre l’ordre.",
+    "La volonté de {qui} plie comme un roseau. Il fera ce qu’on lui dit."
+   ],
+   "echec": [
+    "{qui} serre les dents. L’ordre glisse sur lui comme l’eau sur la pierre.",
+    "{qui} refuse. Une volonté étrangère vient de heurter la sienne, et elle a reculé."
+   ]
+  }
+ },
+ "personnages": {
+  "frodon": {
+   "paranoia": {
+    "reussite": [
+     "Frodon regarde Sam dormir et se demande, pour la première fois, ce que Sam ferait pour l’Anneau.",
+     "Gandalf n’est pas venu. Frodon se répète que ce n’est rien. Il n’y croit plus tout à fait."
+    ]
+   },
+   "annatar": {
+    "reussite": [
+     "Frodon pense au Comté, et à ce qu’il pourrait faire pour le protéger s’il gardait l’Anneau. Juste un peu."
+    ]
+   }
+  },
+  "bill_fougeron": {
+   "annatar": {
+    "reussite": [
+     "Bill Fougeron ricane dans l’ombre de sa haie. L’argent du Sud n’était qu’un début."
+    ]
+   }
+  },
+  "aragorn": {
+   "paranoia": {
+    "echec": [
+     "Grand-Pas sent le Regard comme un vent froid. Il a connu pire. Il ne dira rien aux hobbits, pas encore."
+    ]
+   }
+  }
+ },
+ "duel": {
+  "ecraser": {
+   "gagnee": [
+    "La Tour s’abat de tout son poids. {qui} plie sous le Regard.",
+    "Le feu de l’Œil brûle tout ce qui résiste. {qui} recule."
+   ],
+   "perdue": [
+    "La Tour frappe, et frappe dans le vide : {qui} n’est plus là où l’Œil le cherchait.",
+    "{qui} encaisse le choc et tient bon. La pierre de Barad-dûr tremble."
+   ]
+  },
+  "insinuer": {
+   "gagnee": [
+    "Un mot, un seul, glissé au bon endroit. {qui} vacille.",
+    "L’Ombre entre par une fissure que {qui} ignorait."
+   ],
+   "perdue": [
+    "{qui} voit venir le mensonge et le retourne contre la Tour.",
+    "La fissure se referme. {qui} connaît ses propres faiblesses."
+   ]
+  },
+  "feindre": {
+   "gagnee": [
+    "La Tour recule, {qui} s’avance, et tombe dans le piège.",
+    "Une fausse retraite. {qui} y croit."
+   ],
+   "perdue": [
+    "La feinte ne trompe pas {qui}. Mais l’Œil s’est gardé de trop s’exposer.",
+    "{qui} ne mord pas. La Tour se retire sans grand dommage."
+   ]
+  },
+  "victoire": [
+   "L’esprit de {qui} cède. Il fera ce que veut la Tour.",
+   "{qui} se tait, vaincu, et n’en saura jamais rien."
+  ],
+  "defaite": [
+   "{qui} rejette l’Ombre. Dans le contrecoup, il arrache à Sauron une vérité : « {verite} »",
+   "Retour de flamme. {qui} a vu dans l’Œil plus que l’Œil ne voulait montrer : « {verite} »"
+  ]
+ },
+ "journal": {
+  "vide": [
+   "Un jour passe. La Tour attend.",
+   "Rien qui vaille d’être écrit. L’Œil veille."
+  ]
+ },
+ "lieux": {
+  "comte_ouest": "Hobbitebourg",
+  "comte_est": "le Marais du Comté",
+  "pays_de_bouc": "le Pays de Bouc",
+  "vieille_foret": "la Vieille Forêt",
+  "galgals": "les Hauts des Galgals",
+  "bree": "Bree",
+  "chetwood": "le Bois de Chet",
+  "montauvent": "le Mont Venteux",
+  "terres_solitaires": "les Terres Solitaires",
+  "trollshaws": "le Bois aux Trolls",
+  "gue_bruinen": "le Gué de Bruinen",
+  "fondcombe": "Fondcombe",
+  "route_sarn": "la Route du Sud",
+  "tharbad": "Tharbad",
+  "isengard": "l’Isengard",
+  "rohan": "le Rohan",
+  "mordor": "le Mordor"
+ }
+}
