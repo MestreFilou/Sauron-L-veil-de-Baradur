@@ -1,5 +1,6 @@
 import type { Approche, Ordre, OrdreFer, Registre } from '@sauron/engine';
 import { chanceVoix, coutVoix, regionsJouables, voixAPortee } from '@sauron/engine';
+import { BANQUE_FR, construireMurmure } from '@sauron/narrative/banque';
 import { useMemo, useRef, useState } from 'react';
 import { bus } from '../bus';
 import { monde, useJeu } from '../store';
@@ -29,7 +30,8 @@ export function Voix() {
   const cibles = useMemo(() => v.personnages.filter((p) => !monde.personnages.get(p.id)?.horsCarte), [v.personnages]);
   const [cibleId, setCible] = useState(() => cibles.find((c) => c.id === 'bill_fougeron')?.id ?? cibles[0]?.id ?? '');
   const [reg, setReg] = useState(0);
-  const [texte, setTexte] = useState('');
+  /** Le constructeur de murmure remplace le texte libre : la phrase s'assemble à partir des choix. */
+  const [tournure, setTournure] = useState(0);
   const [secret, setSecret] = useState('');
   const [allie, setAllie] = useState('');
   const [fer, setFer] = useState<'se_taire' | 'livrer' | 'deplacer'>('se_taire');
@@ -48,13 +50,24 @@ export function Voix() {
         type: 'voix',
         cible: cible.id,
         registre: R.id,
-        ...(texte.trim() ? { texteLibre: texte.trim().slice(0, 200) } : {}),
         ...(secret ? { secret } : {}),
         ...(R.id === 'paranoia' && allie ? { allie } : {}),
         ...(R.id === 'fer' ? { ordreFer, approches: [approche, approche, approche] } : {}),
       }
     : null;
   const estimation = ordre ? chanceVoix(monde, etat, ordre) : null;
+  const texte = cible
+    ? construireMurmure({
+        registre: R.id,
+        cible: cible.id,
+        secret: secret ? { id: secret } : null,
+        peurConnue: etat.connaissance.peurs.includes(cible.id),
+        allie: R.id === 'paranoia' && allie ? (v.personnages.find((p) => p.id === allie)?.nom ?? null) : null,
+        ordreFer,
+        lieu: BANQUE_FR.lieux?.[ferRegion] ?? monde.regions.get(ferRegion)?.nom ?? '',
+        tournure,
+      })
+    : '';
   const aPortee = cible ? voixAPortee(monde, etat, cible.id) : false;
 
   const projeter = () => {
@@ -75,7 +88,7 @@ export function Voix() {
       setTimeout(() => sp.remove(), 2400);
     });
     bus.emit('flare', 0.7);
-    setTexte('');
+    setTournure((t) => t + 1);
     annoncer(`La Voix partira vers ${cible!.nom} au crépuscule.`);
   };
 
@@ -112,7 +125,9 @@ export function Voix() {
         ))}
       </div>
       <div className="voicebox" ref={boite}>
-        <textarea id="vtext" maxLength={200} value={texte} placeholder={R.ph} onChange={(e) => setTexte(e.target.value)} />
+        <div id="vtext" className="construit" title="Une autre tournure" onClick={() => setTournure((t) => t + 1)}>
+          {texte || R.ph}
+        </div>
       </div>
       <div className="vopts">
         {secrets.length > 0 && (

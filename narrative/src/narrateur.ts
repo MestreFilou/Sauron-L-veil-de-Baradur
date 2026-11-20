@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
-import type { EtiquettesTexteLibre, Murmure, ResultatDuel, ResultatVoix } from '@sauron/engine';
+import type { EtiquettesTexteLibre, Evenement, Murmure, ResultatDuel, ResultatVoix } from '@sauron/engine';
 import { z } from 'zod';
 import {
   promptAnalyse,
@@ -61,8 +61,8 @@ export interface ContexteVoix {
 export interface Narrateur {
   /** Texte de chaque murmure, par identifiant. */
   ecrireMurmures(murmures: Murmure[], journal: string[]): Promise<Record<string, string>>;
-  /** Résumé de trois phrases du jour écoulé. */
-  ecrireJournal(date: string, evenements: string[]): Promise<string>;
+  /** Résumé de trois phrases du jour écoulé (événements du moteur, ou phrases déjà écrites). */
+  ecrireJournal(date: string, evenements: (string | Evenement)[]): Promise<string>;
   /** Étiquettes du murmure libre, que le moteur convertit en bonus plafonnés. */
   analyserTexteLibre(params: Parameters<typeof promptAnalyse>[0]): Promise<EtiquettesTexteLibre>;
   reactionVoix(ctx: ContexteVoix): Promise<string>;
@@ -114,8 +114,9 @@ export class NarrateurClaude implements Narrateur {
     return Object.fromEntries(r.murmures.filter((m) => attendus.has(m.id)).map((m) => [m.id, m.texte]));
   }
 
-  async ecrireJournal(date: string, evenements: string[]): Promise<string> {
-    return (await this.haiku(SYSTEME_JOURNAL, promptJournal(date, evenements), SchemaJournal, 1500)).resume;
+  async ecrireJournal(date: string, evenements: (string | Evenement)[]): Promise<string> {
+    const phrases = evenements.filter((e) => typeof e === 'string' || e.public).map((e) => (typeof e === 'string' ? e : e.texte));
+    return (await this.haiku(SYSTEME_JOURNAL, promptJournal(date, phrases), SchemaJournal, 1500)).resume;
   }
 
   async analyserTexteLibre(params: Parameters<typeof promptAnalyse>[0]): Promise<EtiquettesTexteLibre> {
