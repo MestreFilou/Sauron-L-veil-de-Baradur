@@ -196,3 +196,30 @@ body.ombre .tabs button.on{color:var(--spectre)}
 .basmilieu .panel,.basmilieu #voice,.basmilieu #orders{position:relative;left:auto;right:auto;bottom:auto;top:auto;pointer-events:auto}
 @media (max-width:1250px){.basmilieu{left:264px;right:330px}}
 @media (max-height:820px){#vtext{height:38px}}
+
+/* ---------- Son (mécaniques 10.3 bis, 10.4) ---------- */
+.son{position:relative;display:flex;align-items:center}
+.son>.btn.mini{width:28px;height:24px;padding:0;display:grid;place-items:center}
+.son svg{width:16px;height:16px;fill:var(--bronze-clair)}
+.son svg .trait{fill:none;stroke:var(--bronze-clair);stroke-width:1.6;stroke-linecap:round}
+.son .btn.coupe svg{fill:#6d5a44}.son .btn.coupe svg .trait{stroke:var(--braise)}
+.reglages-son{position:absolute;top:32px;right:0;width:250px;z-index:8;padding:0 0 12px}
+.reglages-son .body{padding:10px 14px 0;display:flex;flex-direction:column;gap:7px;font-size:14px}
+.reglages-son .curseur{display:grid;grid-template-columns:62px 1fr 26px;align-items:center;gap:8px;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-2)}
+.reglages-son .curseur b{font-weight:400;text-align:right;color:var(--texte)}
+.reglages-son input[type=range]{accent-color:var(--braise);width:100%}
+.reglages-son .case{display:flex;gap:8px;align-items:center;color:var(--texte)}
+.reglages-son input[type=checkbox]{accent-color:var(--braise)}
+#soustitres{position:fixed;left:50%;bottom:calc(18px + 300px);transform:translateX(-50%);z-index:10;width:min(760px,80vw);text-align:center;
+  pointer-events:none;opacity:0;transition:opacity .45s;text-shadow:0 2px 6px #000,0 0 14px rgba(0,0,0,.9);
+  padding:10px 26px 12px;background:radial-gradient(ellipse at 50% 50%,rgba(6,4,3,.9) 0%,rgba(6,4,3,.72) 55%,transparent 78%)}
+#soustitres.show{opacity:1;pointer-events:auto}
+#soustitres .np{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;color:#b8361f;letter-spacing:.04em;margin-bottom:4px}
+#soustitres .np span{opacity:.5;transition:opacity .2s, color .2s}
+#soustitres .np span.dit{opacity:1;color:#e0573a}
+#soustitres .np span.glose{cursor:help;border-bottom:1px dotted rgba(184,54,31,.45)}
+#soustitres .fr{font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;line-height:1.35;color:#f1e4cc}
+#soustitres .fr span{opacity:.45;transition:opacity .2s}
+#soustitres .fr span.dit{opacity:1}
+#soustitres .note{margin-top:4px;font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.25em;text-transform:uppercase;color:#6d5a44}
+#soustitres.muette .fr span{opacity:1}
