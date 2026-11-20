@@ -5,6 +5,7 @@
     "engine/tests",
     "world/src",
     "world/tests",
+    "world/banc",
     "narrative/src",
     "narrative/tests",
     "audio/src",

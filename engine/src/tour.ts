@@ -174,10 +174,8 @@ export function aube(monde: Monde, etat: EtatJeu): void {
   // A2 : la Marque donne la position exacte chaque tour.
   if (pt.blessureMorgul) connaitreAnneau(etat, pt.region, etat.tour, true);
 
-  const jalon = monde.donnees.calendrier.find((j) => j.tour === etat.tour);
-  evenement(etat, 'aube', `Aube du ${dateDuTour(etat.tour).texte}.` + (jalon ? ` Selon le cours prévu des choses : ${jalon.evenement}` : ''), {
-    donnees: { jalon: jalon ?? null },
-  });
+  // Le calendrier canon reste caché au joueur : il ne le découvre qu'après coup, à la Nuit.
+  evenement(etat, 'aube', `Aube du ${dateDuTour(etat.tour).texte}.`);
   etat.phase = 'oeil';
 }
 
@@ -346,7 +344,6 @@ export function nuit(monde: Monde, etat: EtatJeu): void {
     if (p.sortiDeJeu) continue;
     const def = personnage(monde, p.id);
     if (estHeros(monde, p.id) && etat.regions[p.region]!.terreur >= REGLES.doute.terreurForte.seuil) changerDoute(etat, p.id, REGLES.doute.terreurForte.gain);
-    if (p.blessureMorgul) changerDoute(etat, p.id, REGLES.doute.lameMorgul);
     const sage = presents(monde, etat, p.region).some((q) => q.id !== p.id && personnage(monde, q.id).role === 'sage');
     if (sage && def.role !== 'sage') changerDoute(etat, p.id, REGLES.doute.presenceSage);
     const refuge = monde.donnees.refuge;
@@ -399,13 +396,26 @@ export function nuit(monde: Monde, etat: EtatJeu): void {
     ajouterVisibilite(etat, REGLES.mefiance.alerte.visibilite, `${personnage(monde, p.id).nom} prévient ses alliés`);
     evenement(etat, 'seuil', `${personnage(monde, p.id).nom} sent l’Œil et prévient ses compagnons.`);
   }
-  // A2 : sans soin, le porteur marqué devient un spectre au bout de 15 tours.
+  // A2 : le froid de la lame gagne le porteur ; à son comble, il devient un spectre.
   const pt = porteur(etat);
-  if (pt.blessureMorgul && etat.tour - pt.blessureMorgul.depuis >= REGLES.anneau.toursMarqueAvantSpectre) {
-    etreinte(monde, etat, `${personnage(monde, pt.id).nom} devient un spectre`);
+  if (pt.blessureMorgul && !pt.sortiDeJeu) {
+    const b = pt.blessureMorgul;
+    const a = REGLES.anneau;
+    const autour = presents(monde, etat, pt.region).filter((q) => q.id !== pt.id);
+    const sage = autour.some((q) => personnage(monde, q.id).role === 'sage');
+    const guerisseur = autour.some((q) => personnage(monde, q.id).traits.includes('guerisseur'));
+    const froid = sage ? a.froidSage : guerisseur ? a.froidGuerisseur : a.froidParNuit;
+    b.froid = (b.froid ?? etat.tour - b.depuis) + froid;
+    // Le Doute suit le froid : les soins qui ralentissent l'un apaisent l'autre.
+    changerDoute(etat, pt.id, Math.round(REGLES.doute.lameMorgul * froid));
+    if (b.froid >= a.froidSpectre) etreinte(monde, etat, `${personnage(monde, pt.id).nom} devient un spectre`);
   }
 
-  // 3. Fin de l'acte, Journal.
+  // 3. Après coup, ce que le livre racontait de ce jour.
+  const jalon = monde.donnees.calendrier.find((j) => j.tour === etat.tour);
+  if (jalon) evenement(etat, 'canon', `Dans une autre histoire, ce jour-là : ${jalon.evenement}`, { donnees: { jalon } });
+
+  // 4. Fin de l'acte, Journal.
   verifierFin(monde, etat);
   etat.journal.push({ tour: etat.tour, evenements: etat.evenements.filter((e) => e.public) });
 }

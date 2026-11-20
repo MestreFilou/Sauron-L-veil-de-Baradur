@@ -1,7 +1,8 @@
 /**
  * Toutes les valeurs chiffrées des règles, en un seul endroit.
  *
- * Elles viennent de docs/mecaniques-boucle-de-tour.md (v0.1). Ce sont des
+ * Elles viennent de docs/mecaniques-boucle-de-tour.md (v0.2, équilibrée au banc :
+ * `npm run banc`, garde-fous dans world/tests/equilibrage.test.ts). Ce sont des
  * valeurs de départ à équilibrer : on les modifie ici, jamais en dur dans le code.
  * Les références entre parenthèses renvoient aux sections du document.
  */
@@ -16,7 +17,7 @@ export const REGLES = {
     depart: 10,
     /** Paliers déclenchés une seule fois (2.1). */
     paliers: [20, 40, 60, 80, 100] as const,
-    decroissance: 2,
+    decroissance: 3,
     /** Une action est « visible » si elle rapporte V +3 ou plus (2.1). */
     seuilActionVisible: 3,
     /** Plancher : dernier palier atteint moins 10. */
@@ -25,6 +26,8 @@ export const REGLES = {
     malusFiabiliteBree: 10,
     /** Palier 40 : Méfiance de base +10 pour tous les héros. */
     mefianceAlerte: 10,
+    /** Palier 40 : les Rôdeurs veillent sur les routes, défense +10 pour les héros attaqués. */
+    defenseAlerte: 10,
     /** Palier 80 : Doute de tous les héros -20, la Voix coûte +1 PA. */
     douteUnionOuest: -20,
   },
@@ -94,8 +97,18 @@ export const REGLES = {
     oeilSentir: 50,
     /** A1 : trois détections de trace, ou une Pulsation. */
     detectionsPourPiste: 3,
-    /** A2 : tours sans soin avant que le porteur ne devienne un spectre. */
-    toursMarqueAvantSpectre: 15,
+    /**
+     * A2 : le froid de la lame. +1 par nuit, +0,5 si un guérisseur (Aragorn et
+     * l'athelas) est avec le porteur, 0 si un Sage l'accompagne. À 15, il devient
+     * un spectre. Calé sur le canon : blessé à Montauvent (tour 15), soigné en
+     * route par Aragorn puis Glorfindel, Frodon atteint Fondcombe à la limite.
+     */
+    froidSpectre: 15,
+    froidParNuit: 1,
+    froidGuerisseur: 0.5,
+    froidSage: 0,
+    /** A2 : la lame ne frappe que sur une victoire nette (jet sous cette fraction de la chance). */
+    fractionLame: 0.5,
     /** Les traces s'effacent après ce nombre de tours. */
     dureeTrace: 6,
   },
@@ -172,7 +185,12 @@ export const REGLES = {
     detourBrandevin: 1,
     traque: { pa: 1, terreur: 10, visibilite: 2 },
     interroger: { pa: 1, terreur: 5, visibilite: 1 },
-    embuscade: { pa: 1, visibilite: 4, duree: 3 },
+    /**
+     * Embuscade (5.1 bis) : elle se tend sans chevaucher ce tour. Déclenchée, elle
+     * coûte +4, plus 1 par Nazgûl compté au-delà du premier. `visibilitePose` reste
+     * à 0 : l'essai à +1 par pose (v0.2) bridait trop les joueurs patients.
+     */
+    embuscade: { pa: 1, visibilitePose: 0, visibilite: 4, visibiliteParNazgul: 1, duree: 3 },
     cri: { pa: 0, terreur: 15, terreurRoiSorcier: 25, doute: 5, visibilite: 3 },
     fleau: { pa: 2, terreur: 30, visibilite: 8 },
     crue: { chance: 70 },
@@ -186,7 +204,15 @@ export const REGLES = {
     combat: {
       base: 30,
       parNazgulSupplementaire: 10,
+      /** Au-delà de ce nombre d'assaillants, les Nazgûl se gênent : ils ne comptent plus. */
+      nazgulComptesMax: 5,
       roiSorcier: 10,
+      /**
+       * Après une embuscade, réussie ou non, le groupe de la cible veille
+       * (feux, tours de garde, routes détournées) : défense + bonus pendant
+       * `duree` tours, cumulable jusqu'à `max`.
+       */
+      vigilance: { defense: 10, duree: 3, max: 20 },
       min: 5,
       max: 90,
       douteVictoire: 15,

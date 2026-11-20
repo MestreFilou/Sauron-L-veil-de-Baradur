@@ -155,12 +155,15 @@ export function interroger(monde: Monde, etat: EtatJeu, id: IdNazgul, pnj: IdPer
 
 export function poserEmbuscade(monde: Monde, etat: EtatJeu, id: IdNazgul, cible: IdPersonnage | undefined): void {
   const n = etat.nazgul[id]!;
+  // Un Nazgûl ne tient qu'une embuscade : la nouvelle remplace l'ancienne.
+  for (const r of Object.values(etat.regions)) r.embuscades = r.embuscades.filter((e) => e.nazgul !== id);
   etat.regions[n.region]!.embuscades.push({
     nazgul: id,
     cible: cible ?? null,
     posee: etat.tour,
     expire: etat.tour + REGLES.nazgul.embuscade.duree - 1,
   });
+  ajouterVisibilite(etat, REGLES.nazgul.embuscade.visibilitePose, `${nom(monde, id)} tapi à ${region(monde, n.region).nom}`);
   evenement(etat, 'nazgul', `${nom(monde, id)} se tapit à ${region(monde, n.region).nom} et attend la nuit.`);
 }
 
@@ -212,18 +215,26 @@ export function pulsation(monde: Monde, etat: EtatJeu, raison: string): void {
 
 function combattre(monde: Monde, etat: EtatJeu, regionId: IdRegion, cible: IdPersonnage, embusques: IdNazgul[], rng: Rng): void {
   const c = REGLES.nazgul.combat;
-  const assaillants = nazgulDans(etat, regionId).filter((n) => embusques.includes(n.id));
-  if (!assaillants.length) return;
+  // Une embuscade déclenchée appelle toute la meute présente : les autres Nazgûl de la région se joignent à l'assaut.
+  const assaillants = nazgulDans(etat, regionId);
+  if (!assaillants.some((n) => embusques.includes(n.id))) return;
   const defenseurs = presents(monde, etat, regionId).filter((p) => !p.brise);
-  const defense = defenseurs.reduce((s, p) => s + (personnage(monde, p.id).defenseCombat ?? 0), 0);
+  const vigilance = Math.max(0, ...defenseurs.map((p) => (p.vigilance && p.vigilance.jusquA >= etat.tour ? p.vigilance.defense : 0)));
+  const alerte = etat.jauges.paliers.includes(40) ? REGLES.visibilite.defenseAlerte : 0;
+  const lieux = region(monde, regionId).defenseCombat ?? 0;
+  const defense = defenseurs.reduce((s, p) => s + (personnage(monde, p.id).defenseCombat ?? 0), 0) + vigilance + alerte + lieux;
   const roi = assaillants.find((n) => nazgulDef(monde, n.id).roiSorcier);
-  const chance = borner(c.base + c.parNazgulSupplementaire * (assaillants.length - 1) + (roi ? c.roiSorcier : 0) - defense, c.min, c.max);
+  const comptes = Math.min(assaillants.length, c.nazgulComptesMax);
+  const chance = borner(c.base + c.parNazgulSupplementaire * (comptes - 1) + (roi ? c.roiSorcier : 0) - defense, c.min, c.max);
   const jet = rng.d100();
   const lieu = region(monde, regionId).nom;
   const nomCible = personnage(monde, cible).nom;
   for (const p of defenseurs) connaitrePosition(etat, p.id);
-  ajouterVisibilite(etat, REGLES.nazgul.embuscade.visibilite, `embuscade à ${lieu}`);
-  const donnees = { region: regionId, cible, chance, jet, assaillants: assaillants.map((n) => n.id), defense };
+  const e = REGLES.nazgul.embuscade;
+  const visibilite = e.visibilite + e.visibiliteParNazgul * (comptes - 1);
+  ajouterVisibilite(etat, visibilite, `embuscade à ${lieu}`);
+  mettreEnVeille(monde, etat, cible, defenseurs);
+  const donnees = { region: regionId, cible, chance, jet, assaillants: assaillants.map((n) => n.id), defense, vigilance, alerte, lieux, visibilite };
 
   if (cible === etat.anneau.porteur && rng.chance(REGLES.pnj.anneauSousAttaque)) pulsation(monde, etat, `surpris par l’embuscade à ${lieu}`);
 
@@ -236,9 +247,10 @@ function combattre(monde: Monde, etat: EtatJeu, regionId: IdRegion, cible: IdPer
         evenement(etat, 'combat', `Les Neuf fondent sur ${nomCible} à ${lieu} et l’emportent.`, { donnees });
         return;
       }
-      if (roi && !roi.lameMorgulUtilisee) {
+      // La lame ne frappe que si le Roi-Sorcier a tendu lui-même l'embuscade, et sur une victoire nette.
+      if (roi && embusques.includes(roi.id) && !roi.lameMorgulUtilisee && jet < chance * REGLES.anneau.fractionLame) {
         roi.lameMorgulUtilisee = true;
-        p.blessureMorgul = { depuis: etat.tour };
+        p.blessureMorgul = { depuis: etat.tour, froid: 0 };
         etat.anneau.etape = 'A2';
         ajouterVisibilite(etat, 8, 'A2, la Marque');
         ajouterEssence(etat, REGLES.essence.herosBriseOuBlesse, `${nomCible} blessé par la lame de Morgul`);
@@ -252,6 +264,19 @@ function combattre(monde: Monde, etat: EtatJeu, regionId: IdRegion, cible: IdPer
     evenement(etat, 'combat', `L’embuscade à ${lieu} échoue : ${nomCible} et ses compagnons repoussent les Neuf.`, { donnees });
     const protecteur = defenseurs.find((p) => ['glorfindel', 'gandalf'].includes(p.id));
     if (protecteur) demonter(monde, etat, assaillants[0]!.id, `chassé par ${personnage(monde, protecteur.id).nom}`);
+  }
+}
+
+/** Après une embuscade, la cible, son groupe et ceux qui l'ont défendue redoublent de prudence. */
+function mettreEnVeille(monde: Monde, etat: EtatJeu, cible: IdPersonnage, defenseurs: { id: IdPersonnage }[]): void {
+  const v = REGLES.nazgul.combat.vigilance;
+  if (v.defense <= 0) return;
+  const groupe = personnage(monde, cible).groupe;
+  const ids = new Set(defenseurs.map((p) => p.id));
+  for (const p of Object.values(etat.personnages)) {
+    if (!(ids.has(p.id) || p.id === cible || (groupe && personnage(monde, p.id).groupe === groupe))) continue;
+    const actuelle = p.vigilance && p.vigilance.jusquA >= etat.tour ? p.vigilance.defense : 0;
+    p.vigilance = { defense: Math.min(v.max, actuelle + v.defense), jusquA: etat.tour + v.duree };
   }
 }
 

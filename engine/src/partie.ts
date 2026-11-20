@@ -67,7 +67,14 @@ export function validerOrdre(monde: Monde, etat: EtatJeu, o: Ordre): void {
     if (o.type === 'nazgul_deplacer') {
       region(monde, o.destination);
       if (etat.ordres.some((x) => x.type === 'nazgul_deplacer' && x.nazgul === o.nazgul)) throw new ErreurRegle(`${def.nom} a déjà reçu un ordre de marche.`);
+      if (o.destination !== n.region && etat.ordres.some((x) => x.type === 'nazgul_embuscade' && x.nazgul === o.nazgul)) {
+        throw new ErreurRegle(`${def.nom} se tapit ce soir : il ne chevauche pas.`);
+      }
     } else {
+      // Une embuscade se prépare sur place : le Nazgûl doit déjà être dans la région au début du tour.
+      if (o.type === 'nazgul_embuscade' && etat.ordres.some((x) => x.type === 'nazgul_deplacer' && x.nazgul === o.nazgul && x.destination !== n.region)) {
+        throw new ErreurRegle(`${def.nom} chevauche ce tour : une embuscade se tend là où l’on est déjà.`);
+      }
       if (estActionNazgul(o) && etat.ordres.some((x) => estActionNazgul(x) && 'nazgul' in x && x.nazgul === o.nazgul)) {
         throw new ErreurRegle(`${def.nom} ne fait qu’une action par tour (le déplacement est libre).`);
       }
