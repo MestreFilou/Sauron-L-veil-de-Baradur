@@ -297,7 +297,7 @@ describe('Nazgûl et Anneau', () => {
     const v = e.jauges.visibilite;
     e = appliquer(monde, e, fin);
     expect(e.regions['carrefour']!.terreur).toBe(10 - 0); // pas de décroissance : un Nazgûl est présent
-    expect(e.jauges.visibilite).toBeGreaterThanOrEqual(v + 2 - 2);
+    expect(e.jauges.visibilite).toBeGreaterThanOrEqual(v + 2 - REGLES.visibilite.decroissance);
   });
 
   it('la Haie plafonne la Terreur à 50', () => {
@@ -310,11 +310,99 @@ describe('Nazgûl et Anneau', () => {
   });
 });
 
+describe('embuscades et combats (équilibrage v0.2)', () => {
+  const combats = (e: EtatJeu) => e.journal.flatMap((j) => j.evenements).filter((x) => x.type === 'combat' && x.donnees && 'chance' in x.donnees);
+
+  /** Le porteur et son ami au Carrefour, où attend le Roi ; Khamûl est à l'Est. */
+  const auCarrefour = () => {
+    const e = appliquer(monde, partie(), oeil('ouest'));
+    e.personnages['porteur']!.region = 'carrefour';
+    e.personnages['ami']!.region = 'carrefour';
+    return e;
+  };
+
+  it('une embuscade se tend là où le Nazgûl est déjà : pas de marche le même tour', () => {
+    let e = appliquer(monde, partie(), oeil('ouest'));
+    e = appliquer(monde, e, ordre({ type: 'nazgul_deplacer', nazgul: 'khamul', destination: 'carrefour' }));
+    expect(() => appliquer(monde, e, ordre({ type: 'nazgul_embuscade', nazgul: 'khamul' }))).toThrow(ErreurRegle);
+    e = appliquer(monde, e, ordre({ type: 'nazgul_embuscade', nazgul: 'roi' }));
+    expect(() => appliquer(monde, e, ordre({ type: 'nazgul_deplacer', nazgul: 'roi', destination: 'est' }))).toThrow(ErreurRegle);
+    // Rester sur place n'est pas une marche.
+    expect(() => appliquer(monde, e, ordre({ type: 'nazgul_deplacer', nazgul: 'roi', destination: 'carrefour' }))).not.toThrow();
+  });
+
+  it('la meute présente se joint à l’assaut, et la Visibilité grandit avec elle', () => {
+    let e = auCarrefour();
+    e = appliquer(monde, e, ordre({ type: 'nazgul_embuscade', nazgul: 'roi', cible: 'porteur' }));
+    e = appliquer(monde, e, ordre({ type: 'nazgul_deplacer', nazgul: 'khamul', destination: 'carrefour' }));
+    e = appliquer(monde, e, fin);
+    const [c] = combats(e);
+    const d = c!.donnees as { assaillants: string[]; chance: number; defense: number; visibilite: number };
+    expect(d.assaillants.sort()).toEqual(['khamul', 'roi']);
+    const k = REGLES.nazgul.combat;
+    expect(d.chance).toBe(Math.max(k.min, Math.min(k.max, k.base + k.parNazgulSupplementaire + k.roiSorcier - d.defense)));
+    expect(d.visibilite).toBe(REGLES.nazgul.embuscade.visibilite + REGLES.nazgul.embuscade.visibiliteParNazgul);
+  });
+
+  it('après une embuscade, le groupe de la cible veille quelques tours', () => {
+    let e = auCarrefour();
+    e = appliquer(monde, e, ordre({ type: 'nazgul_embuscade', nazgul: 'roi', cible: 'porteur' }));
+    e = appliquer(monde, e, fin);
+    if (e.anneau.saisi) return;
+    const v = REGLES.nazgul.combat.vigilance;
+    expect(e.personnages['porteur']!.vigilance).toEqual({ defense: v.defense, jusquA: 1 + v.duree });
+    expect(e.personnages['ami']!.vigilance).toEqual({ defense: v.defense, jusquA: 1 + v.duree });
+  });
+
+  it('le froid de la lame fait du porteur un spectre, sauf auprès d’un Sage', () => {
+    const blesse = (region: string) => {
+      const e = appliquer(monde, partie(), oeil('ouest'));
+      e.personnages['porteur']!.region = region;
+      e.personnages['porteur']!.blessureMorgul = { depuis: 1, froid: REGLES.anneau.froidSpectre - 1 };
+      e.anneau.etape = 'A2';
+      return appliquer(monde, e, fin);
+    };
+    expect(blesse('ouest').issue).toBe('victoire_noire');
+    // Le Sage de la Colline arrête le froid.
+    const e = blesse('colline');
+    expect(e.issue).toBeNull();
+    expect(e.personnages['porteur']!.blessureMorgul!.froid).toBe(REGLES.anneau.froidSpectre - 1);
+  });
+
+  it('un guérisseur ralentit le froid de moitié', () => {
+    const d: DonneesMonde = structuredClone(donneesTest);
+    d.personnages.find((p) => p.id === 'ami')!.traits.push('guerisseur');
+    const m = indexerMonde(d);
+    let e = appliquer(m, creerPartie(m, 3), oeil('ouest'));
+    e.personnages['porteur']!.blessureMorgul = { depuis: 1, froid: 0 };
+    e = appliquer(m, e, fin);
+    expect(e.personnages['porteur']!.blessureMorgul!.froid).toBe(REGLES.anneau.froidGuerisseur);
+  });
+
+  it('une ancienne sauvegarde sans froid repart du tour de la blessure', () => {
+    let e = appliquer(monde, partie(), oeil('ouest'));
+    e.personnages['porteur']!.blessureMorgul = { depuis: 1 };
+    e = appliquer(monde, e, fin);
+    expect(e.personnages['porteur']!.blessureMorgul!.froid).toBe(REGLES.anneau.froidParNuit);
+  });
+});
+
+describe('calendrier canon', () => {
+  it('ne l’annonce pas à l’aube, et le révèle après coup à la Nuit', () => {
+    let e = tourCalme(partie(), 'ouest'); // aube du tour 2, jalon du tour 2 dans le calendrier de test
+    expect(e.evenements.find((x) => x.type === 'aube')!.texte).not.toContain('porteur');
+    e = tourCalme(e, 'ouest');
+    const canon = e.journal.find((j) => j.tour === 2)!.evenements.find((x) => x.type === 'canon');
+    expect(canon?.texte).toBe('Dans une autre histoire, ce jour-là : Le porteur se met en route.');
+  });
+});
+
 describe('jauges et seuils', () => {
-  it('la Visibilité décroît de 2 par tour calme, sans passer sous le palier atteint moins 10', () => {
+  it('la Visibilité décroît de 3 par tour calme, sans passer sous le palier atteint moins 10', () => {
     let e = partie();
     e = tourCalme(e, 'ouest'); // V 11 au tour 1
-    expect(e.jauges.visibilite).toBe(11 - 2); // décroissance à l'aube du tour 2
+    expect(REGLES.visibilite.decroissance).toBe(3);
+    expect(e.jauges.visibilite).toBe(11 - 3); // décroissance à l'aube du tour 2
     e.jauges.visibilite = 31;
     e.jauges.paliers = [20, 40];
     for (let i = 0; i < 2; i++) e = tourCalme(e, 'ouest');

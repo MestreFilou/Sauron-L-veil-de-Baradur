@@ -42,6 +42,11 @@ export interface RegionDef {
   terrain: string;
   voisins: Voisin[];
   volonteRegionale: number;
+  /**
+   * Défense des lieux contre une embuscade nocturne (haies, portes, gens du pays) :
+   * s'ajoute à celle des présents. Les terres sauvages n'en ont pas.
+   */
+  defenseCombat?: number;
   /** Plafond de Terreur (la Haie du Pays de Bouc : 50). */
   terreurPlafond?: number;
   sourcesMurmures: SourceMurmure[];
@@ -55,7 +60,8 @@ export interface RegionDef {
   terreurInitiale?: number;
 }
 
-export type Trait = 'orgueil' | 'desir' | 'humble' | 'avide' | 'peureux' | 'loyal' | 'sage';
+/** `guerisseur` : ralentit le froid de la lame de Morgul (Aragorn et l'athelas). */
+export type Trait = 'orgueil' | 'desir' | 'humble' | 'avide' | 'peureux' | 'loyal' | 'sage' | 'guerisseur';
 
 export interface Secret {
   id: string;
@@ -169,7 +175,12 @@ export interface EtatPersonnage {
   dette: boolean;
   agent: boolean;
   brise: boolean;
-  blessureMorgul: { depuis: number } | null;
+  /**
+   * Blessure de la lame de Morgul. `froid` monte chaque nuit (moins vite sous les
+   * soins d'un guérisseur, pas du tout près d'un Sage) ; à `froidSpectre`, le porteur
+   * devient un spectre. Absent dans les anciennes sauvegardes : on repart de `depuis`.
+   */
+  blessureMorgul: { depuis: number; froid?: number } | null;
   /** Tours de retard sur l'itinéraire canon (partagé par le groupe). */
   retard: number;
   /** Destination imposée par un Commandement de Fer, prioritaire sur l'itinéraire. */
@@ -183,6 +194,8 @@ export interface EtatPersonnage {
   silenceJusquA: number;
   dernierContact: number;
   sortiDeJeu: boolean;
+  /** Le groupe veille après une embuscade : défense en plus jusqu'au tour indiqué (inclus). */
+  vigilance?: { defense: number; jusquA: number };
 }
 
 export type Posture = 'traque' | 'ombre_ailee';
@@ -326,6 +339,8 @@ export type Ordre =
 
 export type TypeEvenement =
   | 'aube'
+  /** Après coup : ce que le livre racontait de ce jour (« Dans une autre histoire… »). */
+  | 'canon'
   | 'deplacement_pnj'
   | 'oeil'
   | 'duel'

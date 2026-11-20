@@ -360,7 +360,8 @@
   "volonte": 80,
   "douteInitial": 20,
   "traits": [
-   "humble"
+   "humble",
+   "guerisseur"
   ],
   "defenseCombat": 25,
   "peur": "Faillir comme Isildur a failli.",
