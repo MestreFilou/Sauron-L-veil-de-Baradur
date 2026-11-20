@@ -1,0 +1,182 @@
+{
+ "version": 2,
+ "_format": {
+  "methode": "« noir_parler » : Lucas lit la phonétique (champ lu), à l’endroit. « anglais_inverse » : Lucas lit la phrase anglaise (champ lu), le script inverse la piste. (mécaniques 10.3)",
+  "lu": "Ce que Lucas lit au micro.",
+  "noir_parler": "Transcription affichée au-dessus du sous-titre (null pour l’anglais inversé, qui n’est pas du Noir Parler).",
+  "fichier": "Chemin relatif au dossier audio/ ; sortie de render_rec.sh, un fichier par réplique.",
+  "statut": "a_enregistrer, puis enregistre une fois le fichier livré.",
+  "duree_s": "Durée du fichier, remplie à l’enregistrement ; sert au minutage des sous-titres.",
+  "reperes": "Optionnel : [{mot, debut, fin}] en secondes, pour un surlignage mot à mot (10.4). Sans repères, le texte est réparti sur la durée."
+ },
+ "repliques": [
+  {
+   "id": "anneau_inscription",
+   "registre": "inscription",
+   "methode": "noir_parler",
+   "lu": "ACH nazg dour-ba-tou-LOUK, ACH nazg gim-ba-TOUL, ACH nazg thra-ka-tou-LOUK agh BOUR-zoum-i-chi krim-pa-TOUL",
+   "noir_parler": "Ash nazg durbatulûk, ash nazg gimbatul, ash nazg thrakatulûk agh burzum-ishi krimpatul.",
+   "sous_titre": "Un Anneau pour les gouverner tous, un Anneau pour les trouver, un Anneau pour les amener tous et dans les ténèbres les lier.",
+   "fichier": "voix/anneau_inscription.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "paranoia_01",
+   "registre": "paranoia",
+   "methode": "noir_parler",
+   "lu": "gaz-GAT-izg OUL-bour. ACH krou gim-ba-TOUL-izg",
+   "noir_parler": "Gazgat-izg ulbur. Ash krû gimbatul-izg.",
+   "sous_titre": "L’Œil te regarde. L’un des tiens te livrera.",
+   "fichier": "voix/paranoia_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "paranoia_02",
+   "registre": "paranoia",
+   "methode": "noir_parler",
+   "lu": "douch-NAT-izg. MOZG-oul krou",
+   "noir_parler": "Dushnat-izg. Mozg-ul krû.",
+   "sous_titre": "Doute. Leurs pensées sont traîtresses.",
+   "fichier": "voix/paranoia_02.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "annatar_01",
+   "registre": "annatar",
+   "methode": "noir_parler",
+   "lu": "nazg ACH-izg. dour-BAT-izg",
+   "noir_parler": "Nazg ash-izg. Durbat-izg.",
+   "sous_titre": "Un anneau pour toi. Pour que tu gouvernes.",
+   "fichier": "voix/annatar_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "fer_01",
+   "registre": "fer",
+   "methode": "noir_parler",
+   "lu": "thra-KAT-izg ! SNA-ga !",
+   "noir_parler": "Thrakat-izg! Snaga!",
+   "sous_titre": "Viens à moi ! Esclave !",
+   "fichier": "voix/fer_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "fer_02",
+   "registre": "fer",
+   "methode": "noir_parler",
+   "lu": "ra-KHAT-oul THROUM-i-chi",
+   "noir_parler": "Rakhat-ul thrûm-ishi.",
+   "sous_titre": "Brise-les dans la peur.",
+   "fichier": "voix/fer_02.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "cri_nazgul",
+   "registre": "cri",
+   "methode": "noir_parler",
+   "lu": "GOUL ! GOUL-ouk !",
+   "noir_parler": "Gûl! Gûl-ûk!",
+   "sous_titre": "(cri des Nazgûl)",
+   "fichier": "voix/cri_nazgul.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "paranoia_en_01",
+   "registre": "paranoia",
+   "methode": "anglais_inverse",
+   "lu": "They whisper about you when you sleep. Ask yourself who gains if you fall.",
+   "noir_parler": null,
+   "sous_titre": "Ils parlent de toi quand tu dors. Demande-toi qui gagne si tu tombes.",
+   "fichier": "voix/paranoia_en_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "paranoia_en_02",
+   "registre": "paranoia",
+   "methode": "anglais_inverse",
+   "lu": "Your friend has already chosen. He simply has not told you yet.",
+   "noir_parler": null,
+   "sous_titre": "Ton ami a déjà choisi. Il ne te l’a simplement pas encore dit.",
+   "fichier": "voix/paranoia_en_02.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "annatar_en_01",
+   "registre": "annatar",
+   "methode": "anglais_inverse",
+   "lu": "You were meant for more than this. Serve me, and it shall be yours.",
+   "noir_parler": null,
+   "sous_titre": "Tu étais fait pour plus que cela. Sers-moi, et tout ceci sera à toi.",
+   "fichier": "voix/annatar_en_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "annatar_en_02",
+   "registre": "annatar",
+   "methode": "anglais_inverse",
+   "lu": "I do not ask for loyalty. Only for a little help, and a great reward.",
+   "noir_parler": null,
+   "sous_titre": "Je ne te demande pas d’être loyal. Seulement un peu d’aide, et une grande récompense.",
+   "fichier": "voix/annatar_en_02.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "fer_en_01",
+   "registre": "fer",
+   "methode": "anglais_inverse",
+   "lu": "Kneel. Do not sleep. Watch them, and report.",
+   "noir_parler": null,
+   "sous_titre": "À genoux. Ne dors pas. Surveille-les, et rapporte.",
+   "fichier": "voix/fer_en_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "duel_victoire_en_01",
+   "registre": "duel",
+   "methode": "anglais_inverse",
+   "lu": "Your will is a candle. I am the night.",
+   "noir_parler": null,
+   "sous_titre": "Ta volonté est une chandelle. Je suis la nuit.",
+   "fichier": "voix/duel_victoire_en_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  },
+  {
+   "id": "duel_defaite_en_01",
+   "registre": "duel",
+   "methode": "anglais_inverse",
+   "lu": "You have seen too much. You will regret it.",
+   "noir_parler": null,
+   "sous_titre": "Tu en as trop vu. Tu le regretteras.",
+   "fichier": "voix/duel_defaite_en_01.mp3",
+   "statut": "a_enregistrer",
+   "duree_s": null,
+   "reperes": null
+  }
+ ]
+}

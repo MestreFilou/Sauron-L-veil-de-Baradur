@@ -5,3 +5,11 @@ dist/
 .env
 .env.local
 coverage/
+
+# Musique : usage privé, jamais versionnée (audio/musique/LISEZMOI.md)
+audio/musique/**/*.mp3
+audio/musique/**/*.ogg
+audio/musique/**/*.wav
+audio/musique/**/*.flac
+audio/musique/**/*.m4a
+audio/musique/**/*.opus

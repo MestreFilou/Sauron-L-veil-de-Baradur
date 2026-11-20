@@ -1,5 +1,4 @@
 import lexiqueJson from '../donnees/lexique_noir_parler.json';
-import repliquesJson from '../donnees/repliques.json';
 
 export interface EntreeLexique {
   mot: string;
@@ -8,17 +7,7 @@ export interface EntreeLexique {
   type: 'racine' | 'suffixe';
 }
 
-export interface Replique {
-  id: string;
-  registre: 'inscription' | 'paranoia' | 'annatar' | 'fer' | 'cri';
-  noir_parler: string;
-  phonetique: string;
-  sous_titre: string;
-  fichier: string;
-}
-
 export const LEXIQUE = (lexiqueJson as { entrees: EntreeLexique[] }).entrees;
-export const REPLIQUES = (repliquesJson as { repliques: Replique[] }).repliques;
 
 const normaliser = (s: string) => s.toLowerCase().normalize('NFC');
 
@@ -59,12 +48,6 @@ export function verifierLigne(ligne: string, lexique: EntreeLexique[] = LEXIQUE)
     .filter(Boolean);
   const inconnus = mots.filter((m) => !decomposer(m, lexique));
   return { valide: inconnus.length === 0, inconnus };
-}
-
-/** Une réplique fixe du registre, choisie de façon déterministe : le jeu parle sans synthèse en direct. */
-export function repliqueFixe(registre: Replique['registre'], graine = 0): Replique | undefined {
-  const liste = REPLIQUES.filter((r) => r.registre === registre);
-  return liste.length ? liste[Math.abs(graine) % liste.length] : undefined;
 }
 
 /** Clé de cache d'un fichier audio : hachage du texte phonétique et de la voix (10.3). */

@@ -1,12 +1,11 @@
 /**
- * Chaîne de traitement de la voix de Sauron (mécaniques, 10.3), en Web Audio :
- * voix transposée vers le bas, sous-couche à l'octave inférieure (-12 dB),
- * couche chuchotée décalée de 30 ms (-18 dB), saturation légère, passe-bas
- * vers 6 kHz, réverbération à convolution (grande salle de pierre).
+ * Chaîne de voix en Web Audio, pour le prototypage seulement.
  *
- * Note : la transposition passe par `playbackRate`, qui ralentit aussi la voix.
- * C'est voulu pour Sauron (plus lent, plus lourd) ; une vraie transposition à
- * tempo constant demandera un AudioWorklet.
+ * Les voix du jeu ne passent PAS par ici : depuis la décision du 20/11/2026
+ * (mécaniques 10.3), Lucas enregistre les répliques et la chaîne « légion »
+ * (render_rec.sh) applique les effets hors ligne ; le jeu lit des fichiers
+ * déjà traités (voir banque.ts). Ce module sert à essayer des réglages en
+ * direct, par exemple pour le cri des Nazgûl, qui reste à produire.
  */
 export interface OptionsVoix {
   demiTons: number;
@@ -99,9 +98,4 @@ export function jouerVoix(ctx: AudioContext, voix: AudioBuffer, options: Options
   couche(voix, taux / 2, options.sousCoucheDb);
   if (chuchote) couche(chuchote, taux, options.chuchotementDb, options.decalageChuchotementMs / 1000);
   return voix.duration / taux;
-}
-
-/** Synthèse vocale branchable (ElevenLabs, Piper, XTTS…) : le jeu ne l'exige pas. */
-export interface SyntheseVocale {
-  synthetiser(phonetique: string, voix: string): Promise<ArrayBuffer>;
 }

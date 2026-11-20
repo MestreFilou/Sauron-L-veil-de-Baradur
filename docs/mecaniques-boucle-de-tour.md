@@ -524,21 +524,22 @@ Le lexique complet (≈ 300 entrées visées) sera produit **une fois** avec Opu
 3. Le **code vérifie** que chaque racine et chaque suffixe existent dans le lexique. Si un mot est inconnu, on relance une fois, puis on retombe sur une réplique fixe du même registre.
 4. Règle de longueur : la phrase en Noir Parler fait **1 à 2 propositions courtes** (3 secondes d'audio maximum). Le sous-titre peut porter davantage que l'audio : c'est la voix qui fait l'effet, le sous-titre porte le sens.
 
-### 10.3 La synthèse vocale
+### 10.3 Production des voix (décision du 20/11/2026)
 
-Aucun moteur de synthèse vocale ne connaît le Noir Parler. On contourne :
+**Choix retenu : la voix de Lucas, enregistrée puis traitée par script.** La synthèse vocale a été testée (espeak-ng/MBROLA) puis écartée, faute de naturel.
 
-- **Orthographe phonétique** : la ligne est envoyée au moteur dans une graphie adaptée à sa langue de base (par exemple « gaz-GAT-izg OUL-bour »), avec l'accent tonique marqué. Règles de prononciation fixées dans le lexique : gh = [ɣ] (r grasseyé), kh = [x] (jota espagnole), sh = [ʃ], û = « ou » long, z toujours sonore.
-- **Moteur** : un service de synthèse qui permet de concevoir une voix grave (ElevenLabs, par exemple, avec ses voix sur mesure) pour la qualité, ou un moteur local open source (Piper, XTTS) pour le hors-ligne et le coût nul. À comparer sur 10 répliques tests avant de choisir. Claude ne produit pas d'audio : c'est un service séparé.
-- **Traitement dans le navigateur (Web Audio API)**, appliqué à toutes les voix :
-  - transposition de -3 à -5 demi-tons ;
-  - une **sous-couche une octave plus bas**, à -12 dB, pour l'effet de voix multiple ;
-  - une couche **chuchotée** (même texte, voix murmurée) à -18 dB, légèrement décalée de 30 ms ;
-  - réverbération à convolution (grande salle de pierre pour Barad-dûr, plus sèche pour une Voix dans un esprit) ;
-  - légère saturation et filtre passe-bas autour de 6 kHz.
-  - Variantes : les Nazgûl ont un **cri** strident (pas de transposition vers le bas, aigus saturés), la Bouche de Sauron une voix humaine et sèche.
-- **Répliques fixes pré-enregistrées** : l'inscription de l'Anneau, environ 50 phrases par registre et les cris sont générés **à l'avance** et livrés avec le jeu. La synthèse en direct ne sert qu'aux lignes dynamiques.
-- **Cache** : chaque fichier audio est indexé par un hachage du texte phonétique et de la voix. Une même phrase n'est jamais synthétisée deux fois.
+- **Enregistrement** : micro Blue Yeti en mode cardioïde, à 10-15 cm, pics entre -12 et -6 dB, export en WAV (ou mp3 ≥ 192 kbit/s).
+- **Deux méthodes, selon la réplique** :
+  - *Anglais inversé* (masse des répliques) : Lucas lit la phrase en anglais, le script inverse la piste puis applique les effets. Pas de phonétique à écrire.
+  - *Noir Parler à l'endroit* (phrases clés : inscription de l'Anneau, répliques du lexique) : Lucas lit la phonétique, sans inversion.
+- **Chaîne « légion » retenue** (`audio_tests/chaine_retenue/`) : voix principale -3 demi-tons, quatre voix superposées (-12, -7, -0,6, -15,5 demi-tons) avec chacune une dérive lente de hauteur et un léger décalage, grain très discret, réverbération moyenne, égalisation calée sur une référence de Sauron (`eq_yeti.txt` pour le Yeti).
+- **Production en série** : une prise contenant plusieurs phrases est découpée automatiquement sur les silences, puis chaque phrase passe dans `render_rec.sh`. La sortie est un fichier audio par réplique, indexé dans la banque avec son sous-titre.
+- **Aucune synthèse ni IA en cours de partie** : toutes les voix sont pré-enregistrées et livrées avec le jeu (voir le mode sans IA).
+- **Nazgûl** : cri à produire à part (couches aiguës saturées), pas encore enregistré.
+
+### 10.3 bis Musique
+
+Lucas prévoit d'utiliser la musique des films. Le jeu n'étant pas publié, c'est un usage privé ; la musique est rangée dans un dossier séparé et remplaçable (`audio/musique/`), avec des pistes par ambiance (Barad-dûr, traque, Voix, duel, victoire, défaite), pour pouvoir la changer sans toucher au code si le jeu devait un jour être partagé.
 
 ### 10.4 Sous-titres
 
