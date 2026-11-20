@@ -7,6 +7,7 @@ import { Murmures } from './panneaux/Murmures';
 import { Neuf } from './panneaux/Neuf';
 import { Voix } from './panneaux/Voix';
 import { Runes } from './Runes';
+import { Son } from './son/Son';
 import { useJeu } from './store';
 
 function Toast() {
@@ -133,6 +134,7 @@ export function App() {
       <Toast />
       <Duel />
       <Fin />
+      <Son />
       <Intro />
     </>
   );

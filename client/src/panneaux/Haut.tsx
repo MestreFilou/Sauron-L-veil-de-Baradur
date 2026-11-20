@@ -1,3 +1,4 @@
+import { BoutonSon } from '../son/Reglages';
 import { useJeu } from '../store';
 
 const ROMAINS: [number, string][] = [
@@ -45,6 +46,7 @@ export function Haut() {
         <Jauge nom="Terreur" v={j.terreurMoyenne} max={100} c1="#9a7bd0" c2="#4a3470" />
         <Jauge nom="Essence" v={j.essenceRestante} max={35} c1="#d8e6f0" c2="#6f8a9c" />
         <Jauge nom="PA" v={j.paRestants} max={8} c1="#e2b85c" c2="#7a5a1c" texte={`${j.paRestants}/${j.pa}`} />
+        <BoutonSon />
       </div>
     </header>
   );

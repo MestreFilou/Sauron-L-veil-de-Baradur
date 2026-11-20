@@ -14,3 +14,5 @@ Un dossier séparé et remplaçable (mécaniques 10.3 bis). Pour ajouter une pis
 Ambiances : `barad_dur` (l'écran principal), `traque` (un Nazgûl sur une piste, le Monde de l'Ombre), `voix` (la Voix projetée), `duel` (duel mental), `victoire`, `defaite`. Une ambiance sans piste reste silencieuse ; plusieurs pistes alternent.
 
 Les fichiers audio de ce dossier sont ignorés par git : la musique des films reste un usage privé et n'entre jamais dans le dépôt. Pour partager le jeu un jour, il suffira de remplacer les fichiers et ce manifeste.
+
+Dans le jeu (`client/src/son/ambiance.ts`), l'ambiance suit l'état, par ordre de priorité : fin de l'acte (`victoire` pour une victoire noire ou grise, `defaite` sinon), duel mental ouvert, Voix en train d'être dite (et quelques secondes après), traque (Monde de l'Ombre ou ordre de traque donné), et `barad_dur` le reste du temps. La musique baisse sous les voix. Le volume (général, musique, voix) et la coupure (touche M) se règlent avec le bouton du son, en haut à droite.

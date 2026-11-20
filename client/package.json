@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sauron/audio": "0.1.0",
     "@sauron/engine": "0.1.0",
     "@sauron/narrative": "0.1.0",
     "@sauron/world": "0.1.0",
