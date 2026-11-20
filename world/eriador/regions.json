@@ -1,0 +1,136 @@
+[
+  {
+    "id": "comte_ouest", "royaume": "eriador", "nom": "Le Comté · Hobbitebourg", "terrain": "collines_cultivees",
+    "voisins": [
+      { "id": "comte_est", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "route_sarn", "joursCheval": 2, "joursPied": 3, "obstacle": null }
+    ],
+    "volonteRegionale": 40, "sourcesMurmures": ["rumeur", "espion"], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "comte_est", "royaume": "eriador", "nom": "Le Comté · Marais et Bois-Clos", "terrain": "bocage",
+    "voisins": [
+      { "id": "comte_ouest", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "pays_de_bouc", "joursCheval": 1, "joursPied": 1, "obstacle": "brandevin" },
+      { "id": "bree", "joursCheval": 2, "joursPied": 3, "obstacle": null }
+    ],
+    "volonteRegionale": 40, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "pays_de_bouc", "royaume": "eriador", "nom": "Pays de Bouc · Creux-de-Crique", "terrain": "bocage_clos",
+    "voisins": [
+      { "id": "comte_est", "joursCheval": 1, "joursPied": 1, "obstacle": "brandevin" },
+      { "id": "vieille_foret", "joursCheval": 1, "joursPied": 1, "obstacle": null }
+    ],
+    "volonteRegionale": 40, "terreurPlafond": 50, "sourcesMurmures": ["rumeur", "crebain"], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "vieille_foret", "royaume": "eriador", "nom": "La Vieille Forêt", "terrain": "foret_ancienne",
+    "voisins": [
+      { "id": "pays_de_bouc", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "galgals", "joursCheval": 1, "joursPied": 1, "obstacle": null }
+    ],
+    "volonteRegionale": 100, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": ["zone_aveugle"]
+  },
+  {
+    "id": "galgals", "royaume": "eriador", "nom": "Les Hauts des Galgals", "terrain": "collines_tumulaires",
+    "voisins": [
+      { "id": "vieille_foret", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "bree", "joursCheval": 1, "joursPied": 1, "obstacle": null }
+    ],
+    "volonteRegionale": 0, "terreurInitiale": 35, "bonusDetection": 10, "sourcesMurmures": ["crebain"], "murmuresBonus": -1, "reglesSpeciales": []
+  },
+  {
+    "id": "bree", "royaume": "eriador", "nom": "Bree · le Poney Fringant", "terrain": "village_carrefour",
+    "voisins": [
+      { "id": "galgals", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "comte_est", "joursCheval": 2, "joursPied": 3, "obstacle": null },
+      { "id": "chetwood", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "route_sarn", "joursCheval": 2, "joursPied": 4, "obstacle": null }
+    ],
+    "volonteRegionale": 20, "terreurInitiale": 10, "sourcesMurmures": ["espion", "rumeur"], "murmuresBonus": 2, "reglesSpeciales": []
+  },
+  {
+    "id": "chetwood", "royaume": "eriador", "nom": "Bois de Chet · Marais aux Moucherons", "terrain": "bois_et_marais",
+    "voisins": [
+      { "id": "bree", "joursCheval": 1, "joursPied": 1, "obstacle": null },
+      { "id": "montauvent", "joursCheval": 2, "joursPied": 4, "obstacle": null }
+    ],
+    "volonteRegionale": 15, "sourcesMurmures": ["crebain"], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "montauvent", "royaume": "eriador", "nom": "Mont Venteux · Amon Sûl", "terrain": "hauteur_ruinee",
+    "voisins": [
+      { "id": "chetwood", "joursCheval": 2, "joursPied": 4, "obstacle": null },
+      { "id": "terres_solitaires", "joursCheval": 1, "joursPied": 2, "obstacle": null }
+    ],
+    "volonteRegionale": 20, "sourcesMurmures": ["crebain"], "murmuresBonus": 0, "reglesSpeciales": ["point_haut"]
+  },
+  {
+    "id": "terres_solitaires", "royaume": "eriador", "nom": "Terres Solitaires · Dernier Pont", "terrain": "landes",
+    "voisins": [
+      { "id": "montauvent", "joursCheval": 1, "joursPied": 2, "obstacle": null },
+      { "id": "trollshaws", "joursCheval": 1, "joursPied": 2, "obstacle": null }
+    ],
+    "volonteRegionale": 10, "sourcesMurmures": ["crebain"], "murmuresBonus": -2, "reglesSpeciales": []
+  },
+  {
+    "id": "trollshaws", "royaume": "eriador", "nom": "Bois aux Trolls", "terrain": "bois_rocheux",
+    "voisins": [
+      { "id": "terres_solitaires", "joursCheval": 1, "joursPied": 2, "obstacle": null },
+      { "id": "gue_bruinen", "joursCheval": 1, "joursPied": 2, "obstacle": null }
+    ],
+    "volonteRegionale": 15, "sourcesMurmures": ["crebain"], "murmuresBonus": -1, "reglesSpeciales": []
+  },
+  {
+    "id": "gue_bruinen", "royaume": "eriador", "nom": "Gué de Bruinen", "terrain": "gue",
+    "voisins": [
+      { "id": "trollshaws", "joursCheval": 1, "joursPied": 2, "obstacle": null },
+      { "id": "fondcombe", "joursCheval": 1, "joursPied": 1, "obstacle": "bruinen" }
+    ],
+    "volonteRegionale": 60, "sourcesMurmures": ["crebain"], "murmuresBonus": -1, "reglesSpeciales": ["crue"]
+  },
+  {
+    "id": "fondcombe", "royaume": "eriador", "nom": "Fondcombe · Imladris", "terrain": "vallee_elfique",
+    "voisins": [
+      { "id": "gue_bruinen", "joursCheval": 1, "joursPied": 1, "obstacle": "bruinen" }
+    ],
+    "volonteRegionale": 100, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": ["sanctuaire"]
+  },
+  {
+    "id": "route_sarn", "royaume": "eriador", "nom": "Route du Sud · Gué de Sarn", "terrain": "route",
+    "voisins": [
+      { "id": "bree", "joursCheval": 2, "joursPied": 4, "obstacle": null },
+      { "id": "comte_ouest", "joursCheval": 2, "joursPied": 3, "obstacle": null },
+      { "id": "tharbad", "joursCheval": 2, "joursPied": 5, "obstacle": null }
+    ],
+    "volonteRegionale": 20, "sourcesMurmures": ["espion", "crebain"], "murmuresBonus": 0, "reglesSpeciales": ["entree_nazgul"]
+  },
+  {
+    "id": "tharbad", "royaume": "eriador", "nom": "Tharbad", "terrain": "ruines", "horsCarte": true,
+    "voisins": [
+      { "id": "route_sarn", "joursCheval": 2, "joursPied": 5, "obstacle": null },
+      { "id": "isengard", "joursCheval": 4, "joursPied": 9, "obstacle": null },
+      { "id": "mordor", "joursCheval": 8, "joursPied": 20, "obstacle": null }
+    ],
+    "volonteRegionale": 0, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "isengard", "royaume": "hors_carte", "nom": "Isengard · Orthanc", "terrain": "forteresse", "horsCarte": true,
+    "voisins": [
+      { "id": "tharbad", "joursCheval": 4, "joursPied": 9, "obstacle": null },
+      { "id": "rohan", "joursCheval": 2, "joursPied": 4, "obstacle": null }
+    ],
+    "volonteRegionale": 0, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "rohan", "royaume": "hors_carte", "nom": "Rohan", "terrain": "plaines", "horsCarte": true,
+    "voisins": [{ "id": "isengard", "joursCheval": 2, "joursPied": 4, "obstacle": null }],
+    "volonteRegionale": 0, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": []
+  },
+  {
+    "id": "mordor", "royaume": "hors_carte", "nom": "Mordor · Barad-dûr", "terrain": "forteresse", "horsCarte": true,
+    "voisins": [{ "id": "tharbad", "joursCheval": 8, "joursPied": 20, "obstacle": null }],
+    "volonteRegionale": 0, "sourcesMurmures": [], "murmuresBonus": 0, "reglesSpeciales": []
+  }
+]

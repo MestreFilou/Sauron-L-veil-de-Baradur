@@ -1,0 +1,522 @@
+{
+ "largeur": 1600,
+ "hauteur": 1000,
+ "note": "Coordonnées en unités monde (1600×1000), reprises de la maquette direction-visuelle/maquette-ecran-principal.html.",
+ "regions": {
+  "comte_ouest": {
+   "centre": [
+    360,
+    452
+   ],
+   "rayon": 80,
+   "description": "Des pipes, des haies, des querelles de famille. Le nom « Sacquet » revient trop souvent dans les auberges."
+  },
+  "comte_est": {
+   "centre": [
+    482,
+    462
+   ],
+   "rayon": 55,
+   "description": "Le Marais et le Bois-Clos, jusqu’au Bac de Bouc. Les champs du Père Maggotte et ses chiens."
+  },
+  "pays_de_bouc": {
+   "centre": [
+    585,
+    478
+   ],
+   "rayon": 45,
+   "description": "Derrière la Haie, Creux-de-Crique. Une maison qu’on dit habitée."
+  },
+  "vieille_foret": {
+   "centre": [
+    640,
+    490
+   ],
+   "rayon": 60,
+   "description": "Les arbres haïssent tout ce qui marche. Une volonté plus ancienne que la Tour s’y moque de l’Anneau."
+  },
+  "galgals": {
+   "centre": [
+    705,
+    560
+   ],
+   "rayon": 80,
+   "description": "Les Êtres des Galgals se souviennent d’Angmar. Leurs tombes écoutent."
+  },
+  "bree": {
+   "centre": [
+    790,
+    450
+   ],
+   "rayon": 62,
+   "description": "Le carrefour des rumeurs. Le Poney Fringant, la porte de l’Ouest, des gens qui parlent trop."
+  },
+  "chetwood": {
+   "centre": [
+    900,
+    425
+   ],
+   "rayon": 75,
+   "description": "Bois de Chet et Marais aux Moucherons. Une route lente, où l’odeur des semi-hommes reste fraîche."
+  },
+  "montauvent": {
+   "centre": [
+    1060,
+    455
+   ],
+   "rayon": 90,
+   "description": "Amon Sûl, la tour brisée. De la crête, on voit loin, et l’on est vu de loin."
+  },
+  "terres_solitaires": {
+   "centre": [
+    1195,
+    478
+   ],
+   "rayon": 70,
+   "description": "Landes vides jusqu’au Dernier Pont. Peu de bouches pour parler."
+  },
+  "trollshaws": {
+   "centre": [
+    1310,
+    428
+   ],
+   "rayon": 62,
+   "description": "Trois trolls de pierre, figés par l’aube d’un autre âge. Rien ne bouge."
+  },
+  "gue_bruinen": {
+   "centre": [
+    1385,
+    462
+   ],
+   "rayon": 42,
+   "description": "Les eaux grondent. Au-delà, une lumière qui brûle."
+  },
+  "fondcombe": {
+   "centre": [
+    1445,
+    412
+   ],
+   "rayon": 48,
+   "description": "Le Regard glisse. Une lumière ancienne refuse d’être vue."
+  },
+  "route_sarn": {
+   "centre": [
+    720,
+    760
+   ],
+   "rayon": 105,
+   "description": "Le Chemin Vert et le Gué de Sarn : la porte par où les Neuf sont venus du Sud."
+  }
+ },
+ "lieux_hors_carte": {
+  "tharbad": [
+   880,
+   878
+  ],
+  "mordor": null,
+  "isengard": null,
+  "rohan": null
+ },
+ "cote": [
+  [
+   100,
+   -20
+  ],
+  [
+   92,
+   110
+  ],
+  [
+   108,
+   215
+  ],
+  [
+   84,
+   320
+  ],
+  [
+   120,
+   388
+  ],
+  [
+   205,
+   404
+  ],
+  [
+   238,
+   428
+  ],
+  [
+   196,
+   450
+  ],
+  [
+   130,
+   468
+  ],
+  [
+   92,
+   560
+  ],
+  [
+   104,
+   690
+  ],
+  [
+   74,
+   810
+  ],
+  [
+   96,
+   1020
+  ]
+ ],
+ "rivieres": [
+  {
+   "nom": "Brandevin",
+   "points": [
+    [
+     470,
+     245
+    ],
+    [
+     500,
+     320
+    ],
+    [
+     525,
+     390
+    ],
+    [
+     545,
+     440
+    ],
+    [
+     548,
+     480
+    ],
+    [
+     560,
+     540
+    ],
+    [
+     590,
+     620
+    ],
+    [
+     610,
+     720
+    ],
+    [
+     630,
+     820
+    ],
+    [
+     612,
+     920
+    ],
+    [
+     600,
+     1015
+    ]
+   ],
+   "largeur": [
+    1,
+    2.6
+   ]
+  },
+  {
+   "nom": "Lhûn",
+   "points": [
+    [
+     300,
+     140
+    ],
+    [
+     268,
+     230
+    ],
+    [
+     250,
+     310
+    ],
+    [
+     232,
+     400
+    ],
+    [
+     222,
+     426
+    ]
+   ],
+   "largeur": [
+    0.8,
+    1.8
+   ]
+  },
+  {
+   "nom": "Fontgrise",
+   "points": [
+    [
+     1210,
+     40
+    ],
+    [
+     1225,
+     200
+    ],
+    [
+     1235,
+     330
+    ],
+    [
+     1240,
+     470
+    ],
+    [
+     1255,
+     560
+    ],
+    [
+     1280,
+     680
+    ],
+    [
+     1300,
+     760
+    ]
+   ],
+   "largeur": [
+    0.9,
+    2.2
+   ]
+  },
+  {
+   "nom": "Bruinen",
+   "points": [
+    [
+     1475,
+     330
+    ],
+    [
+     1440,
+     400
+    ],
+    [
+     1400,
+     445
+    ],
+    [
+     1385,
+     458
+    ],
+    [
+     1352,
+     520
+    ],
+    [
+     1322,
+     620
+    ],
+    [
+     1300,
+     758
+    ]
+   ],
+   "largeur": [
+    0.8,
+    2
+   ]
+  },
+  {
+   "nom": "Grisfleuve",
+   "points": [
+    [
+     1300,
+     760
+    ],
+    [
+     1200,
+     815
+    ],
+    [
+     1080,
+     840
+    ],
+    [
+     960,
+     865
+    ],
+    [
+     880,
+     878
+    ],
+    [
+     800,
+     930
+    ],
+    [
+     762,
+     1015
+    ]
+   ],
+   "largeur": [
+    2.2,
+    3
+   ]
+  },
+  {
+   "nom": "l’Eau",
+   "points": [
+    [
+     300,
+     430
+    ],
+    [
+     350,
+     445
+    ],
+    [
+     420,
+     448
+    ],
+    [
+     480,
+     451
+    ],
+    [
+     543,
+     452
+    ]
+   ],
+   "largeur": [
+    0.6,
+    1.1
+   ]
+  }
+ ],
+ "routes": {
+  "grandeRouteEst": [
+   [
+    230,
+    472
+   ],
+   [
+    300,
+    480
+   ],
+   [
+    360,
+    458
+   ],
+   [
+    450,
+    462
+   ],
+   [
+    546,
+    458
+   ],
+   [
+    580,
+    462
+   ],
+   [
+    640,
+    432
+   ],
+   [
+    720,
+    440
+   ],
+   [
+    790,
+    452
+   ],
+   [
+    860,
+    453
+   ],
+   [
+    930,
+    464
+   ],
+   [
+    1000,
+    470
+   ],
+   [
+    1060,
+    474
+   ],
+   [
+    1150,
+    472
+   ],
+   [
+    1240,
+    470
+   ],
+   [
+    1320,
+    466
+   ],
+   [
+    1385,
+    457
+   ]
+  ],
+  "cheminFondcombe": [
+   [
+    1385,
+    457
+   ],
+   [
+    1410,
+    440
+   ],
+   [
+    1445,
+    414
+   ]
+  ],
+  "cheminVert": [
+   [
+    700,
+    160
+   ],
+   [
+    720,
+    250
+   ],
+   [
+    760,
+    350
+   ],
+   [
+    790,
+    452
+   ],
+   [
+    790,
+    560
+   ],
+   [
+    800,
+    680
+   ],
+   [
+    810,
+    780
+   ],
+   [
+    835,
+    870
+   ],
+   [
+    862,
+    1010
+   ]
+  ]
+ }
+}

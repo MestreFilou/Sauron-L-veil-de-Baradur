@@ -1,0 +1,77 @@
+[
+ {
+  "tour": 1,
+  "date": "22 sept.",
+  "evenement": "Khamûl et un compagnon entrent dans le Comté."
+ },
+ {
+  "tour": 2,
+  "date": "23 sept.",
+  "evenement": "Frodon quitte Cul-de-Sac."
+ },
+ {
+  "tour": 3,
+  "date": "24 sept.",
+  "evenement": "Les hobbits rencontrent les Elfes de Gildor dans le Bois-Clos."
+ },
+ {
+  "tour": 4,
+  "date": "25 sept.",
+  "evenement": "Les hobbits gagnent Creux-de-Crique."
+ },
+ {
+  "tour": 5,
+  "date": "26 sept.",
+  "evenement": "Les hobbits entrent dans la Vieille Forêt."
+ },
+ {
+  "tour": 7,
+  "date": "28 sept.",
+  "evenement": "Les hobbits sont pris dans les Hauts des Galgals."
+ },
+ {
+  "tour": 8,
+  "date": "29 sept.",
+  "evenement": "Le Poney Fringant : rencontre avec l’Arpenteur."
+ },
+ {
+  "tour": 9,
+  "date": "30 sept.",
+  "evenement": "Attaque de Creux-de-Crique et de l’auberge de Bree."
+ },
+ {
+  "tour": 12,
+  "date": "3 oct.",
+  "evenement": "Gandalf est assailli de nuit sur le Mont Venteux."
+ },
+ {
+  "tour": 15,
+  "date": "6 oct.",
+  "evenement": "Montauvent : le camp sous Amon Sûl est attaqué."
+ },
+ {
+  "tour": 18,
+  "date": "9 oct.",
+  "evenement": "Glorfindel quitte Fondcombe."
+ },
+ {
+  "tour": 20,
+  "date": "11 oct.",
+  "evenement": "Glorfindel chasse les Cavaliers du Dernier Pont."
+ },
+ {
+  "tour": 22,
+  "date": "13 oct.",
+  "evenement": "Les hobbits franchissent le Dernier Pont."
+ },
+ {
+  "tour": 27,
+  "date": "18 oct.",
+  "evenement": "Glorfindel trouve le Porteur. Gandalf atteint Fondcombe."
+ },
+ {
+  "tour": 29,
+  "date": "20 oct.",
+  "evenement": "Le Gué de Bruinen."
+ }
+]

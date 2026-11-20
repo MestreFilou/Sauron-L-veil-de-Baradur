@@ -1,0 +1,19 @@
+{
+  "name": "@sauron/narrative",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Le LLM raconte, le code décide. Le jeu tourne sur une banque de textes préécrits (banque/fr.json) ; Claude (Haiku 5.5 pour les murmures et le Journal, Sonnet 5.5 pour la Voix et les duels) n'est qu'un complément optionnel.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./banque": "./src/banque.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
+    "@sauron/engine": "0.1.0",
+    "@sauron/world": "0.1.0",
+    "zod": "^4.1.0"
+  }
+}

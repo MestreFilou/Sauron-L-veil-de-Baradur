@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "engine/src",
+    "engine/tests",
+    "world/src",
+    "world/tests",
+    "narrative/src",
+    "narrative/tests",
+    "audio/src",
+    "audio/tests"
+  ]
+}

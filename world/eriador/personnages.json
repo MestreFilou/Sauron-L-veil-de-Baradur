@@ -1,0 +1,828 @@
+[
+ {
+  "id": "frodon",
+  "nom": "Frodon Sacquet",
+  "titre": "le Porteur",
+  "camp": "peuples_libres",
+  "role": "heros",
+  "volonte": 55,
+  "douteInitial": 15,
+  "traits": [
+   "loyal"
+  ],
+  "peur": "Devenir comme Gollum : que l’Anneau le ronge jusqu’à ne plus rien laisser de lui.",
+  "destination": "Fondcombe, chez Elrond, comme Gandalf le lui a conseillé.",
+  "secrets": [
+   {
+    "id": "sec_frodon_01",
+    "type": "mensonge",
+    "texte": "Il voyage sous le nom de M. Sous-la-Colline."
+   },
+   {
+    "id": "sec_frodon_02",
+    "type": "mensonge",
+    "texte": "Il a vendu Cul-de-Sac et fait croire qu’il partait s’installer au Pays de Bouc."
+   },
+   {
+    "id": "sec_frodon_03",
+    "type": "relation",
+    "texte": "Il croit que Gandalf l’a abandonné : le magicien n’est jamais venu au rendez-vous."
+   },
+   {
+    "id": "sec_frodon_04",
+    "type": "peur",
+    "texte": "Chaque fois qu’il passe l’Anneau, il voit les Cavaliers tels qu’ils sont, et eux le voient."
+   }
+  ],
+  "relations": {
+   "sam": 90,
+   "merry": 75,
+   "pippin": 75,
+   "gandalf": 85,
+   "aragorn": 20
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_ouest"
+   },
+   {
+    "tour": 3,
+    "region": "comte_est"
+   },
+   {
+    "tour": 4,
+    "region": "pays_de_bouc"
+   },
+   {
+    "tour": 5,
+    "region": "vieille_foret"
+   },
+   {
+    "tour": 7,
+    "region": "galgals"
+   },
+   {
+    "tour": 8,
+    "region": "bree",
+    "metAnneau": true
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 14,
+    "region": "montauvent"
+   },
+   {
+    "tour": 15,
+    "region": "montauvent",
+    "metAnneau": true
+   },
+   {
+    "tour": 16,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 23,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen",
+    "metAnneau": true
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ],
+  "groupe": "communaute",
+  "porteur": true
+ },
+ {
+  "id": "sam",
+  "nom": "Samsagace Gamegie",
+  "titre": "Sam",
+  "camp": "peuples_libres",
+  "role": "heros",
+  "volonte": 70,
+  "douteInitial": 5,
+  "traits": [
+   "humble",
+   "loyal"
+  ],
+  "peur": "Perdre M. Frodon, ou le laisser seul quand il le faudrait le moins.",
+  "destination": "Là où va M. Frodon.",
+  "secrets": [
+   {
+    "id": "sec_sam_01",
+    "type": "intention",
+    "texte": "Il a juré à Gandalf de ne jamais laisser Frodon seul."
+   },
+   {
+    "id": "sec_sam_02",
+    "type": "relation",
+    "texte": "Il espionnait Frodon pour le compte de Merry et Pippin : c’est lui qui a tout révélé de l’Anneau."
+   }
+  ],
+  "relations": {
+   "frodon": 95,
+   "merry": 60,
+   "pippin": 60
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_ouest"
+   },
+   {
+    "tour": 3,
+    "region": "comte_est"
+   },
+   {
+    "tour": 4,
+    "region": "pays_de_bouc"
+   },
+   {
+    "tour": 5,
+    "region": "vieille_foret"
+   },
+   {
+    "tour": 7,
+    "region": "galgals"
+   },
+   {
+    "tour": 8,
+    "region": "bree"
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 14,
+    "region": "montauvent"
+   },
+   {
+    "tour": 16,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 23,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ],
+  "groupe": "communaute",
+  "defenseCombat": 10
+ },
+ {
+  "id": "merry",
+  "nom": "Meriadoc Brandebouc",
+  "titre": "Merry",
+  "camp": "peuples_libres",
+  "role": "heros",
+  "volonte": 45,
+  "douteInitial": 10,
+  "traits": [
+   "loyal"
+  ],
+  "peur": "N’être d’aucune aide le jour où le danger viendra.",
+  "destination": "Fondcombe, avec Frodon.",
+  "secrets": [
+   {
+    "id": "sec_merry_01",
+    "type": "relation",
+    "texte": "Il connaissait l’existence de l’Anneau bien avant que Frodon ne l’avoue : la conspiration de Creux-de-Crique."
+   },
+   {
+    "id": "sec_merry_02",
+    "type": "objet",
+    "texte": "Il a préparé des poneys et les cartes de la Vieille Forêt."
+   }
+  ],
+  "relations": {
+   "frodon": 80,
+   "pippin": 85,
+   "sam": 60
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_ouest"
+   },
+   {
+    "tour": 3,
+    "region": "comte_est"
+   },
+   {
+    "tour": 4,
+    "region": "pays_de_bouc"
+   },
+   {
+    "tour": 5,
+    "region": "vieille_foret"
+   },
+   {
+    "tour": 7,
+    "region": "galgals"
+   },
+   {
+    "tour": 8,
+    "region": "bree"
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 14,
+    "region": "montauvent"
+   },
+   {
+    "tour": 16,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 23,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ],
+  "groupe": "communaute",
+  "defenseCombat": 5
+ },
+ {
+  "id": "pippin",
+  "nom": "Peregrin Touque",
+  "titre": "Pippin",
+  "camp": "peuples_libres",
+  "role": "heros",
+  "volonte": 35,
+  "douteInitial": 25,
+  "traits": [
+   "desir"
+  ],
+  "peur": "Décevoir ses amis par une bêtise.",
+  "destination": "Fondcombe, et l’aventure au bout.",
+  "secrets": [
+   {
+    "id": "sec_pippin_01",
+    "type": "mensonge",
+    "texte": "Au Poney Fringant, il a failli tout raconter de la fête de Bilbon devant la salle commune."
+   },
+   {
+    "id": "sec_pippin_02",
+    "type": "peur",
+    "texte": "Il parle trop quand il a peur, et il a peur la nuit."
+   }
+  ],
+  "relations": {
+   "frodon": 75,
+   "merry": 90,
+   "sam": 55
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_ouest"
+   },
+   {
+    "tour": 3,
+    "region": "comte_est"
+   },
+   {
+    "tour": 4,
+    "region": "pays_de_bouc"
+   },
+   {
+    "tour": 5,
+    "region": "vieille_foret"
+   },
+   {
+    "tour": 7,
+    "region": "galgals"
+   },
+   {
+    "tour": 8,
+    "region": "bree"
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 14,
+    "region": "montauvent"
+   },
+   {
+    "tour": 16,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 23,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ],
+  "groupe": "communaute",
+  "defenseCombat": 5
+ },
+ {
+  "id": "aragorn",
+  "nom": "Aragorn",
+  "titre": "Grand-Pas le Rôdeur",
+  "camp": "peuples_libres",
+  "role": "heros",
+  "volonte": 80,
+  "douteInitial": 20,
+  "traits": [
+   "humble"
+  ],
+  "defenseCombat": 25,
+  "peur": "Faillir comme Isildur a failli.",
+  "destination": "Fondcombe, où l’attendent Elrond et Arwen.",
+  "secrets": [
+   {
+    "id": "sec_aragorn_01",
+    "type": "objet",
+    "texte": "Il est l’héritier d’Isildur et porte les fragments de Narsil."
+   },
+   {
+    "id": "sec_aragorn_02",
+    "type": "relation",
+    "texte": "Il aime Arwen, fille d’Elrond, et Elrond la lui refuse tant qu’il n’est pas roi."
+   },
+   {
+    "id": "sec_aragorn_03",
+    "type": "intention",
+    "texte": "Gandalf lui a demandé de veiller sur Frodon si lui-même ne pouvait venir."
+   }
+  ],
+  "relations": {
+   "gandalf": 90,
+   "frodon": 40,
+   "elrond": 70
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "bree"
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 14,
+    "region": "montauvent"
+   },
+   {
+    "tour": 16,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 23,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ],
+  "groupe": "communaute"
+ },
+ {
+  "id": "gandalf",
+  "nom": "Gandalf",
+  "titre": "Mithrandir",
+  "camp": "peuples_libres",
+  "role": "sage",
+  "volonte": 95,
+  "douteInitial": 5,
+  "traits": [
+   "sage"
+  ],
+  "defenseCombat": 35,
+  "connuDeSauron": true,
+  "peur": "Que Saroumane ait déjà tout dit à la Tour, ou que lui-même cède un jour à l’Anneau.",
+  "destination": "Rattraper Frodon, puis rejoindre Fondcombe.",
+  "secrets": [
+   {
+    "id": "sec_gandalf_01",
+    "type": "objet",
+    "texte": "Il porte Narya, l’Anneau du Feu, l’un des Trois."
+   },
+   {
+    "id": "sec_gandalf_02",
+    "type": "relation",
+    "texte": "Saroumane l’a retenu prisonnier à Orthanc ; il s’est échappé par les airs."
+   },
+   {
+    "id": "sec_gandalf_03",
+    "type": "mensonge",
+    "texte": "Sa lettre à Frodon n’est jamais partie : Prosper Poiredebeurre l’a oubliée."
+   }
+  ],
+  "relations": {
+   "frodon": 85,
+   "aragorn": 90,
+   "elrond": 90
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "rohan"
+   },
+   {
+    "tour": 7,
+    "region": "route_sarn"
+   },
+   {
+    "tour": 8,
+    "region": "comte_ouest"
+   },
+   {
+    "tour": 9,
+    "region": "bree"
+   },
+   {
+    "tour": 10,
+    "region": "chetwood"
+   },
+   {
+    "tour": 12,
+    "region": "montauvent"
+   },
+   {
+    "tour": 13,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 20,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 27,
+    "region": "fondcombe"
+   }
+  ]
+ },
+ {
+  "id": "elrond",
+  "nom": "Elrond",
+  "titre": "seigneur d’Imladris",
+  "camp": "peuples_libres",
+  "role": "sage",
+  "volonte": 95,
+  "douteInitial": 0,
+  "traits": [
+   "sage"
+  ],
+  "connuDeSauron": true,
+  "peur": "Que l’Anneau vienne à Imladris et y attire l’Ombre.",
+  "destination": "Nulle part : il veille sur Fondcombe.",
+  "secrets": [
+   {
+    "id": "sec_elrond_01",
+    "type": "objet",
+    "texte": "Il porte Vilya, le plus puissant des Trois."
+   },
+   {
+    "id": "sec_elrond_02",
+    "type": "intention",
+    "texte": "Il commande aux eaux du Bruinen."
+   }
+  ],
+  "relations": {
+   "gandalf": 90,
+   "aragorn": 70,
+   "glorfindel": 90
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "fondcombe"
+   }
+  ]
+ },
+ {
+  "id": "glorfindel",
+  "nom": "Glorfindel",
+  "titre": "seigneur de la maison de la Fleur d’Or",
+  "camp": "peuples_libres",
+  "role": "sage",
+  "volonte": 90,
+  "douteInitial": 0,
+  "traits": [
+   "sage"
+  ],
+  "defenseCombat": 40,
+  "peur": "Peu de chose sous le ciel : il a déjà vaincu un Balrog et connu la mort.",
+  "destination": "Trouver le Porteur et le ramener au Gué.",
+  "secrets": [
+   {
+    "id": "sec_glorfindel_01",
+    "type": "intention",
+    "texte": "Elrond l’a envoyé chasser les Neuf sur la Grande Route."
+   },
+   {
+    "id": "sec_glorfindel_02",
+    "type": "objet",
+    "texte": "Il a laissé une pierre elfique sur le parapet du Dernier Pont, en signe pour les voyageurs."
+   }
+  ],
+  "relations": {
+   "elrond": 90
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "fondcombe"
+   },
+   {
+    "tour": 18,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 19,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 20,
+    "region": "terres_solitaires"
+   },
+   {
+    "tour": 27,
+    "region": "trollshaws"
+   },
+   {
+    "tour": 29,
+    "region": "gue_bruinen"
+   },
+   {
+    "tour": 30,
+    "region": "fondcombe"
+   }
+  ]
+ },
+ {
+  "id": "prosper",
+  "nom": "Prosper Poiredebeurre",
+  "titre": "aubergiste du Poney Fringant",
+  "camp": "peuples_libres",
+  "role": "pnj",
+  "volonte": 30,
+  "douteInitial": 30,
+  "traits": [
+   "peureux"
+  ],
+  "peur": "Que des ennuis entrent dans son auberge.",
+  "destination": "Nulle part : son auberge.",
+  "secrets": [
+   {
+    "id": "sec_prosper_01",
+    "type": "mensonge",
+    "texte": "Il a oublié d’envoyer à Frodon la lettre que Gandalf lui avait confiée."
+   },
+   {
+    "id": "sec_prosper_02",
+    "type": "objet",
+    "texte": "Il a vendu un poney famélique à prix d’or : celui de Bill Fougeron."
+   }
+  ],
+  "relations": {
+   "gandalf": 60
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "bree"
+   }
+  ]
+ },
+ {
+  "id": "bill_fougeron",
+  "nom": "Bill Fougeron",
+  "titre": "mauvais garçon de Bree",
+  "camp": "ombre",
+  "role": "pnj",
+  "volonte": 20,
+  "douteInitial": 60,
+  "traits": [
+   "avide",
+   "desir"
+  ],
+  "connuDeSauron": true,
+  "agentInitial": true,
+  "peur": "Que Grand-Pas revienne lui régler son compte.",
+  "destination": "Là où l’argent du Sud le mènera.",
+  "secrets": [
+   {
+    "id": "sec_bill_01",
+    "type": "relation",
+    "texte": "Il reçoit l’argent d’un Sudiste louche qui loge au Poney."
+   },
+   {
+    "id": "sec_bill_02",
+    "type": "intention",
+    "texte": "Il compte vendre aux voyageurs son vieux poney à un prix scandaleux."
+   }
+  ],
+  "relations": {
+   "sudiste": 70
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "bree"
+   }
+  ]
+ },
+ {
+  "id": "sudiste",
+  "nom": "Le Sudiste louche",
+  "titre": "espion de Saroumane",
+  "camp": "ombre",
+  "role": "pnj",
+  "volonte": 25,
+  "douteInitial": 55,
+  "traits": [
+   "avide"
+  ],
+  "connuDeSauron": true,
+  "peur": "Que son maître d’Isengard apprenne qu’il sert aussi une autre main.",
+  "destination": "Rapporter à Isengard ce qu’il voit à Bree.",
+  "secrets": [
+   {
+    "id": "sec_sudiste_01",
+    "type": "intention",
+    "texte": "Il espionne pour Saroumane, pas pour la Tour."
+   }
+  ],
+  "relations": {
+   "bill_fougeron": 50
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "route_sarn"
+   },
+   {
+    "tour": 6,
+    "region": "bree"
+   }
+  ]
+ },
+ {
+  "id": "l_ancien",
+  "nom": "L’Ancien Gamegie",
+  "titre": "jardinier de Cul-de-Sac",
+  "camp": "peuples_libres",
+  "role": "pnj",
+  "volonte": 40,
+  "douteInitial": 10,
+  "traits": [
+   "loyal"
+  ],
+  "peur": "Que son Sam se fasse dévorer par les gens du dehors.",
+  "destination": "Nulle part : son trou au 3, Rang du Biais.",
+  "secrets": [
+   {
+    "id": "sec_ancien_01",
+    "type": "mensonge",
+    "texte": "Il a dit au Cavalier que M. Sacquet était parti pour Creux-de-Crique."
+   }
+  ],
+  "relations": {
+   "sam": 90
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_ouest"
+   }
+  ]
+ },
+ {
+  "id": "maggotte",
+  "nom": "Le Père Maggotte",
+  "titre": "fermier du Marais",
+  "camp": "peuples_libres",
+  "role": "pnj",
+  "volonte": 45,
+  "douteInitial": 5,
+  "traits": [
+   "loyal"
+  ],
+  "peur": "Ses chiens ne lui font pas peur. Les Cavaliers, si.",
+  "destination": "Nulle part : sa ferme.",
+  "secrets": [
+   {
+    "id": "sec_maggotte_01",
+    "type": "objet",
+    "texte": "Il a mené les hobbits jusqu’au Bac dans sa charrette, sous un panier de champignons."
+   }
+  ],
+  "relations": {
+   "frodon": 40
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "comte_est"
+   }
+  ]
+ },
+ {
+  "id": "gros_bolger",
+  "nom": "Fredegar Bolger",
+  "titre": "dit Gros Bolger",
+  "camp": "peuples_libres",
+  "role": "pnj",
+  "volonte": 35,
+  "douteInitial": 20,
+  "traits": [
+   "peureux"
+  ],
+  "peur": "Rester seul dans la maison quand ils viendront.",
+  "destination": "Creux-de-Crique, pour garder la maison.",
+  "secrets": [
+   {
+    "id": "sec_bolger_01",
+    "type": "mensonge",
+    "texte": "Il garde Creux-de-Crique pour faire croire que Frodon y vit encore."
+   }
+  ],
+  "relations": {
+   "frodon": 70,
+   "merry": 70
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "pays_de_bouc"
+   }
+  ]
+ },
+ {
+  "id": "saroumane",
+  "nom": "Saroumane",
+  "titre": "le Blanc, à Orthanc",
+  "camp": "neutre",
+  "role": "sage",
+  "volonte": 90,
+  "douteInitial": 55,
+  "traits": [
+   "orgueil",
+   "desir"
+  ],
+  "connuDeSauron": true,
+  "horsCarte": true,
+  "peur": "Être un jour le serviteur de la Tour au lieu de son égal.",
+  "destination": "L’Anneau, pour lui-même.",
+  "secrets": [
+   {
+    "id": "sec_saroumane_01",
+    "type": "mensonge",
+    "texte": "Il cherche l’Anneau pour son propre compte et ment à la Tour par le palantír."
+   }
+  ],
+  "relations": {
+   "gandalf": 10
+  },
+  "itineraire": [
+   {
+    "tour": 1,
+    "region": "isengard"
+   }
+  ]
+ }
+]
