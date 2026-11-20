@@ -15,7 +15,7 @@ describe('banque de textes (le jeu sans IA)', () => {
   it('couvre chaque source et chaque type de fait', () => {
     for (const source of ['espion', 'crebain', 'rumeur', 'nazgul', 'agent'] as const) {
       for (const type of ['presence', 'absence', 'terreur', 'passage_porteur', 'nazgul', 'calme'] as const) {
-        expect(BANQUE_FR.murmures[source][type].length, `${source}/${type}`).toBeGreaterThan(0);
+        expect(BANQUE_FR.murmures[source][type]?.length ?? 0, `${source}/${type}`).toBeGreaterThan(0);
       }
     }
   });
@@ -41,7 +41,7 @@ describe('banque de textes (le jeu sans IA)', () => {
       faitsInterdits: [],
       journal: [],
     });
-    expect(texte).toContain('Bill Fougeron ricane');
+    expect(BANQUE_FR.personnages.bill_fougeron!.annatar!.reussite).toContain(texte);
   });
 
   it('remplit les gabarits', () => {
