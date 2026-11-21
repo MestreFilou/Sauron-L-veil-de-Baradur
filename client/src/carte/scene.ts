@@ -882,7 +882,7 @@ export class SceneCarte {
 
       // lumière du jour et vie du monde
       const nuitPasse = t < this.nuitJusqua;
-      const lum = nuitPasse ? { r: 0.5, g: 0.56, b: 0.76, a: 0.62 } : this.teinteLumiere;
+      const lum = nuitPasse ? { r: 0.46, g: 0.52, b: 0.74, a: 0.72 } : this.teinteLumiere;
       const k = Math.min(1, dt * 0.002);
       const cur = this.lumiere.tint as number;
       const cr = ((cur >> 16) & 255) / 255,

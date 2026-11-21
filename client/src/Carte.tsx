@@ -66,6 +66,11 @@ export function Carte() {
           const j = useJeu.getState();
           return j.vue.phase === 'ordres' && j.mode !== 'ombre' && Boolean(j.vue.nazgul.find((n) => n.id === id)?.disponible);
         },
+        clicMurmure(id) {
+          // le sceau cliqué : on amène son murmure sous les yeux, dans le panneau
+          document.querySelector(`[data-murmure="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          useJeu.getState().survolerMurmure(id);
+        },
         survolMurmure(id) {
           useJeu.getState().survolerMurmure(id);
         },
