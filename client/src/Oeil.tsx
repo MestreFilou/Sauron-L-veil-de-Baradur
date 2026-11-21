@@ -5,7 +5,7 @@
  * portera tel quel en shader.
  */
 import { useEffect, useRef } from 'react';
-import { bus, OEIL_Y, regard } from './bus';
+import { bus, regard } from './bus';
 import { cl, fbm, smooth, toile } from './carte/bruit';
 import { useJeu } from './store';
 
@@ -23,7 +23,25 @@ function distanceAmande(x: number, y: number) {
   return Math.hypot(Math.abs(x) - EA, y);
 }
 
-export function Oeil() {
+/** Dernière position du pointeur, pour l'Œil de l'écran titre qui suit la souris. */
+const pointeur = { x: -1, y: -1 };
+if (typeof window !== 'undefined')
+  window.addEventListener('pointermove', (e) => {
+    pointeur.x = e.clientX;
+    pointeur.y = e.clientY;
+  });
+
+interface Props {
+  /** Taille à l'écran par rapport à l'Œil de la barre du haut (1). */
+  echelle?: number;
+  /** Ce que la pupille suit : le Regard posé sur la carte, ou la souris. */
+  suivre?: 'regard' | 'souris';
+  /** Afficher l'état du Regard sous l'Œil. */
+  libelle?: boolean;
+  id?: string;
+}
+
+export function Oeil({ echelle = 1, suivre = 'regard', libelle: avecLibelle = true, id = 'eye' }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const ombre = useJeu((s) => s.mode === 'ombre');
   const phase = useJeu((s) => s.vue.phase);
@@ -89,22 +107,25 @@ export function Oeil() {
     const image = (t: number) => {
       const dt = Math.min(50, t - last);
       last = t;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2) * echelle;
       const w = Math.round(EW * dpr),
         h = Math.round(EH * dpr);
       if (cv.width !== w) {
         cv.width = w;
         cv.height = h;
       }
-      // la pupille suit le Regard
-      const ax = window.innerWidth / 2,
-        an = Math.atan2(regard.y - OEIL_Y, regard.x - ax),
-        dd = Math.min(1, Math.hypot(regard.x - ax, regard.y - OEIL_Y) / 500);
+      // la pupille suit le Regard (ou la souris), depuis le centre de l'Œil à l'écran
+      const rect = cv.getBoundingClientRect(),
+        ax = rect.left + rect.width / 2,
+        ay = rect.top + rect.height / 2,
+        cible = suivre === 'souris' ? (pointeur.x < 0 ? { x: ax, y: ay } : pointeur) : regard,
+        an = Math.atan2(cible.y - ay, cible.x - ax),
+        dd = Math.min(1, Math.hypot(cible.x - ax, cible.y - ay) / (500 * echelle));
       const gaze = { x: Math.cos(an) * dd, y: Math.sin(an) * dd };
       g.x += (gaze.x - g.x) * Math.min(1, dt * 0.008);
       g.y += (gaze.y - g.y) * Math.min(1, dt * 0.008);
       flare = Math.max(0, flare - dt * 0.0009);
-      const tw = (regard.verrouille ? 0.032 : 0.075) * (1 + 0.1 * Math.sin(t * 0.0021)) * (1 + flare * 0.5);
+      const tw = (suivre === 'regard' && regard.verrouille ? 0.032 : 0.075) * (1 + 0.1 * Math.sin(t * 0.0021)) * (1 + flare * 0.5);
       pupW += (tw - pupW) * Math.min(1, dt * 0.006);
       champ(t);
 
@@ -189,15 +210,17 @@ export function Oeil() {
       cancelAnimationFrame(raf);
       off();
     };
-  }, []);
+  }, [echelle, suivre]);
 
   const libelle = repousse ? 'Le Regard est repoussé' : phase === 'oeil' ? 'Le Regard erre' : 'Le Regard est posé';
   return (
-    <div id="eye">
-      <canvas id="eyecv" ref={ref} aria-hidden="true" />
-      <div className="lbl" style={{ opacity: ombre ? 0 : 1 }}>
-        {libelle}
-      </div>
+    <div id={id}>
+      <canvas ref={ref} aria-hidden="true" style={{ display: 'block', width: EW * echelle, height: EH * echelle }} />
+      {avecLibelle && (
+        <div className="lbl" style={{ opacity: ombre ? 0 : 1 }}>
+          {libelle}
+        </div>
+      )}
     </div>
   );
 }
