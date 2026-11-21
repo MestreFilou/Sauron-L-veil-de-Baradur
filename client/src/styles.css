@@ -44,7 +44,6 @@ body.ombre .runes{color:#35546b}
 
 /* ---------- L'Œil ---------- */
 #eye{position:fixed;top:-28px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;filter:drop-shadow(0 0 14px rgba(255,59,10,.45));transition:filter 1s}
-#eyecv{display:block;width:216px;height:136px}
 #eye .lbl{position:absolute;top:112px;left:50%;transform:translateX(-50%);font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.3em;color:#b9542c;white-space:nowrap;transition:opacity .6s}
 body.ombre #eye{filter:drop-shadow(0 0 10px rgba(255,59,10,.25)) grayscale(.6) brightness(.5)}
 

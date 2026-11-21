@@ -17,3 +17,16 @@ audio/musique/**/*.opus
 !audio/musique/libre/
 !audio/musique/libre/*.mp3
 __pycache__/
+
+# Artworks des écrans de chargement : usage privé, jamais versionnés (artworks/LISEZMOI.md)
+artworks/**/*.webp
+artworks/**/*.jpg
+artworks/**/*.jpeg
+artworks/**/*.png
+artworks/**/*.avif
+artworks/**/*.gif
+# … sauf les rendus 3D de la Tour, créés pour le jeu (artworks/3d/LISEZMOI.md)
+!artworks/3d/**/*.webp
+
+# Application de bureau empaquetée
+desktop/dist/

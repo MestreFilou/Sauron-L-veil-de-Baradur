@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Carte } from './Carte';
 import { Cour } from './cour/Cour';
+import { Chargement } from './ecrans/Chargement';
+import { Pause } from './ecrans/Pause';
+import { Titre } from './ecrans/Titre';
+import './ecrans/ecrans.css';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
+import { BoutonOeil, EcranMontDoom } from './montdoom/BoutonOeil';
 import { Murmures } from './panneaux/Murmures';
 import { Neuf } from './panneaux/Neuf';
 import { Voix } from './panneaux/Voix';
@@ -96,6 +101,7 @@ const ISSUES: Record<string, { titre: string; texte: string }> = {
 function Fin() {
   const issue = useJeu((s) => s.vue.issue);
   const nouvelle = useJeu((s) => s.nouvellePartie);
+  const titre = useJeu((s) => s.retourAuTitre);
   if (!issue) return null;
   const i = ISSUES[issue] ?? { titre: issue, texte: '' };
   return (
@@ -108,6 +114,9 @@ function Fin() {
           <p>{i.texte}</p>
         </div>
         <div className="go">
+          <button className="btn mini" onClick={titre}>
+            Menu principal
+          </button>
           <button className="btn mini" onClick={() => nouvelle()}>
             Nouvelle partie
           </button>
@@ -117,12 +126,14 @@ function Fin() {
   );
 }
 
-export function App() {
+/** La partie elle-même : la carte et les panneaux. */
+function Partie() {
   return (
     <>
       <Carte />
       <div className="vignette" />
       <Haut />
+      <BoutonOeil />
       <Oeil />
       <Neuf />
       <Modes />
@@ -136,8 +147,25 @@ export function App() {
       <Duel />
       <Cour />
       <Fin />
-      <Son />
+      <EcranMontDoom />
       <Intro />
+      <Pause />
+    </>
+  );
+}
+
+/**
+ * L'écran titre d'abord ; puis l'écran de chargement, pendant lequel la
+ * partie se monte derrière lui (la carte cuit son parchemin), puis le jeu.
+ */
+export function App() {
+  const ecran = useJeu((s) => s.ecran);
+  return (
+    <>
+      {ecran !== 'titre' && <Partie />}
+      {ecran === 'titre' && <Titre />}
+      {ecran === 'chargement' && <Chargement />}
+      <Son />
     </>
   );
 }

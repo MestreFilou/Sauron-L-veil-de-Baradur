@@ -390,7 +390,7 @@ export class SceneCarte {
         const pion = sceau ? null : this.pions.sous(w.x, w.y, this.tolerance());
         this.pions.survoler(pion, this.regionEn(w.x, w.y));
         this.survolerSceau(sceau);
-        cv.style.cursor = pion || sceau ? 'pointer' : 'crosshair';
+        cv.style.cursor = pion || sceau ? 'var(--curseur-anneau-feu)' : '';
       }
       this.souris = this.borner(w);
     });

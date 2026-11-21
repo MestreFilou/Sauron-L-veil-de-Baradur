@@ -8,3 +8,10 @@ Un fichier par réplique, produit par la chaîne retenue (`../outils/chaine_rete
 Une fois le fichier livré, passer la réplique à `"statut": "enregistre"` et renseigner `duree_s` (`soxi -D voix/<id>.mp3`). `npm test` vérifie que chaque réplique enregistrée a bien son fichier.
 
 Dans le jeu (`client/src/son/`), une réplique est jouée dès que son fichier est présent ici (recharger la page après l'ajout). Sans fichier, son sous-titre s'affiche seul, marqué « voix à enregistrer ». Les répliques `enregistre` passent avant les autres de leur registre.
+
+## Enregistrer en série
+
+Le script à lire au micro est `SCRIPT_LECTURE.md` (11 séances, une prise par séance, 2 s de silence entre les phrases). Il est généré depuis la banque : `node outils/seances/script_lecture.mjs`.
+Après une séance, depuis `audio/` :
+- `outils/seances/decouper_seance.sh prise.wav <séance>` découpe la prise sur les silences, applique la chaîne (inversée ou non selon la méthode) et range `voix/<id>.mp3` ;
+- `node outils/seances/marquer_enregistrees.mjs` renseigne `statut` et `duree_s` et régénère le script.
