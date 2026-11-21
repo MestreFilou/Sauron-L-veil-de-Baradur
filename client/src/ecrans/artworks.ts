@@ -3,6 +3,11 @@
  * (dossier non versionné, comme la musique) et leurs crédits, lus dans
  * artworks/ecrans.json. Une image sans entrée dans le manifeste s'affiche sans
  * légende ; une entrée sans image est ignorée.
+ *
+ * Une entrée peut nommer un « fond » : une seconde image, large, affichée net
+ * derrière le cadre au lieu de la même image floutée (les rendus 3D de la Tour,
+ * dans artworks/3d/, en ont un). Une image qui sert de fond n'entre pas dans
+ * la rotation des artworks.
  */
 import manifeste from '../../../artworks/ecrans.json';
 import { indexer } from '../son/fichiers';
@@ -14,6 +19,7 @@ export interface EntreeManifeste {
   source?: string | null;
   licence?: string | null;
   cadrage?: string | null;
+  fond?: string | null;
 }
 
 export interface Artwork {
@@ -24,13 +30,15 @@ export interface Artwork {
   source: string | null;
   licence: string | null;
   cadrage: string;
+  /** URL de l'image de fond, si l'entrée en nomme une et qu'elle est présente. */
+  fond: string | null;
 }
 
 const fichiers = import.meta.glob('../../../artworks/**/*.{webp,jpg,jpeg,png,avif,gif}', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 
 /** Associe les images présentes à leurs crédits ; l'ordre du manifeste d'abord, puis les images inconnues par nom. */
 export function associer(entrees: EntreeManifeste[], urls: Map<string, string>): Artwork[] {
-  const vues = new Set<string>();
+  const vues = new Set<string>(entrees.map((e) => e.fond).filter((f): f is string => !!f));
   const r: Artwork[] = [];
   for (const e of entrees) {
     const url = urls.get(e.fichier);
@@ -44,15 +52,31 @@ export function associer(entrees: EntreeManifeste[], urls: Map<string, string>):
       source: e.source ?? null,
       licence: e.licence ?? null,
       cadrage: e.cadrage ?? 'center',
+      fond: (e.fond && urls.get(e.fond)) || null,
     });
   }
   for (const [fichier, url] of [...urls].sort(([a], [b]) => a.localeCompare(b))) {
-    if (!vues.has(fichier)) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center' });
+    // les rendus 3D (fonds, écran titre, Œil de l'interface) n'entrent que par le manifeste
+    if (!vues.has(fichier) && !fichier.startsWith('3d/')) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center', fond: null });
   }
   return r;
 }
 
-export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManifeste[] }).ecrans, indexer(fichiers, '/artworks/'));
+const URLS = indexer(fichiers, '/artworks/');
+
+export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManifeste[] }).ecrans, URLS);
+
+/**
+ * Le fond de l'écran titre : le rendu 3D large de la Tour. De préférence la
+ * version sans pupille (artworks/3d/titre/), sur laquelle le jeu dessine une
+ * fente qui suit la souris ; sinon le paysage de l'écran de chargement ; sinon
+ * null, et l'écran titre reprend sa scène WebGL.
+ */
+export const FOND_TITRE: { url: string; pupille: boolean } | null = URLS.has('3d/titre/barad_dur_titre.webp')
+  ? { url: URLS.get('3d/titre/barad_dur_titre.webp')!, pupille: true }
+  : URLS.has('3d/fonds/barad_dur_paysage.webp')
+    ? { url: URLS.get('3d/fonds/barad_dur_paysage.webp')!, pupille: false }
+    : null;
 
 const CLE = 'oeil-de-barad-dur/dernier-artwork';
 

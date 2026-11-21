@@ -65,7 +65,7 @@ export function Chargement() {
   return (
     <div id="chargement" className={pret ? 'pret' : ''} style={{ ['--duree' as string]: `${DUREE_MIN_MS}ms` }}>
       {avecImage ? (
-        <div className="fond-art" style={{ backgroundImage: `url("${art.url}")` }} aria-hidden="true" />
+        <div className={art.fond ? 'fond-art net' : 'fond-art'} style={{ backgroundImage: `url("${art.fond ?? art.url}")` }} aria-hidden="true" />
       ) : (
         <DecorMordor avecOeil={false} />
       )}

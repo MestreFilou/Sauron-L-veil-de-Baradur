@@ -63,6 +63,18 @@ describe('écrans de chargement', () => {
     expect(r[1]).toMatchObject({ titre: null, artiste: null, cadrage: 'center' });
   });
 
+  it('une image de fond accompagne son artwork sans entrer dans la rotation', () => {
+    const urls = new Map([
+      ['3d/rendus/tour.webp', '/assets/tour.webp'],
+      ['3d/fonds/large.webp', '/assets/large.webp'],
+      ['autre.png', '/assets/autre.png'],
+    ]);
+    const r = associer([{ fichier: '3d/rendus/tour.webp', fond: '3d/fonds/large.webp' }, { fichier: 'autre.png', fond: 'absent.webp' }], urls);
+    expect(r.map((x) => x.fichier)).toEqual(['3d/rendus/tour.webp', 'autre.png']);
+    expect(r[0]!.fond).toBe('/assets/large.webp');
+    expect(r[1]!.fond).toBeNull();
+  });
+
   it('ne tire jamais deux fois de suite le même murmure', () => {
     let precedent = null as (typeof MURMURES)[number] | null;
     for (const alea of [0, 0, 0.5, 0.5, 0.99, 0.99]) {
