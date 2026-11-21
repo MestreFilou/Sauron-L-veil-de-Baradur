@@ -10,6 +10,8 @@ Pour ajouter une image :
 
 **Les images de ce dossier sont ignorées par git.** Celles d'aujourd'hui ne sont pas libres de droits (l'une est signée Michael Bielaczyc, les autres sont d'auteurs inconnus) : elles restent un usage privé et n'entrent jamais dans le dépôt. Le manifeste, lui, est versionné, pour garder les crédits. Pour partager le jeu un jour, il suffira de remplacer les images et le manifeste, sans toucher au code.
 
-Sans aucune image, l'écran de chargement montre la Tour dessinée par le jeu, avec l'Œil.
+**Exception : `3d/`.** La Tour modélisée pour le jeu (`3d/barad_dur.py`) est une création du projet : ses rendus WebP sont versionnés et passent en premier. Voir `3d/LISEZMOI.md` pour les refaire.
+
+Sans aucune image (ni rendu 3D), l'écran de chargement montre la Tour dessinée par le jeu, avec l'Œil.
 
 Les quatre images actuelles sont aussi dans les fichiers du projet, dans `artworks/` : il suffit de les copier ici.

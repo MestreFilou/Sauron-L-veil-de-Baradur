@@ -7,9 +7,19 @@
     "artiste": "Auteur, s'il est connu ; null sinon.",
     "source": "D'où vient l'image (lien ou description).",
     "licence": "Droits connus. « usage privé » pour une image protégée gardée hors du dépôt.",
-    "cadrage": "Optionnel : position CSS de l'image dans son cadre (object-position), par défaut « center »."
+    "cadrage": "Optionnel : position CSS de l'image dans son cadre (object-position), par défaut « center ».",
+    "fond": "Optionnel : une image large affichée nette derrière le cadre (sinon, la même image floutée). Elle ne sert alors que de fond."
   },
   "ecrans": [
+    {
+      "fichier": "3d/rendus/barad_dur_portrait.webp",
+      "titre": "Barad-dûr, la Tour et l'Œil",
+      "artiste": "Blender, pour le jeu",
+      "source": "Rendu Cycles du script artworks/3d/barad_dur.py",
+      "licence": "Création originale du projet, versionnée",
+      "cadrage": "center 40%",
+      "fond": "3d/fonds/barad_dur_paysage.webp"
+    },
     {
       "fichier": "barad_dur_bielaczyc.webp",
       "titre": "Barad-dûr",
