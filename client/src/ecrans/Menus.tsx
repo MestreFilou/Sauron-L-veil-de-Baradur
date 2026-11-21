@@ -20,7 +20,7 @@ import {
 } from '../partie/sauvegardes';
 import { romain } from '../panneaux/Haut';
 import { useJeu } from '../store';
-import { ARTWORKS } from './artworks';
+import { ARTWORKS, MODELE_KIJAI } from './artworks';
 
 export function Fenetre({ titre, runes = 6, onFermer, children, className = '' }: { titre: string; runes?: number; onFermer: () => void; children: ReactNode; className?: string }) {
   useEffect(() => {
@@ -258,6 +258,17 @@ export function Credits({ onFermer }: { onFermer: () => void }) {
       ) : (
         <p className="vide">Aucune image dans le dossier artworks/ : la Tour est dessinée par le jeu.</p>
       )}
+      <div className="section">Modèle 3D</div>
+      <p>
+        Barad-dûr modélisée pour le jeu dans Blender (artworks/3d/).
+        {MODELE_KIJAI && (
+          <>
+            {' '}
+            Les rendus de l’écran titre et du chargement sont faits d’après <i>Barad-Dûr, The Dark Tower</i> de Kijai (Kijai Design),
+            printables.com/model/234578, sous licence Creative Commons BY-NC-ND 4.0 : usage non commercial, sans diffusion de version modifiée.
+          </>
+        )}
+      </p>
       <div className="section">Polices</div>
       <p>Uncial Antiqua (Astigmatic), Almendra (Ana Sanfelippo), Fondamento (Astigmatic), sous licence SIL Open Font License. Noir Parler, écriture dessinée pour le jeu, dans le domaine public (CC0).</p>
       <div className="section">Voix et musique</div>

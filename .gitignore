@@ -25,6 +25,12 @@ artworks/**/*.jpeg
 artworks/**/*.png
 artworks/**/*.avif
 artworks/**/*.gif
+# Modèle de Kijai (CC BY-NC-ND 4.0) : ses STL et tous les rendus qui en sortent
+# restent locaux, jamais versionnés (artworks/kijai/LISEZMOI.md)
+artworks/kijai/**
+!artworks/kijai/LISEZMOI.md
+*.stl
+
 # … sauf les rendus 3D de la Tour, créés pour le jeu (artworks/3d/LISEZMOI.md)
 !artworks/3d/**/*.webp
 

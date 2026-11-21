@@ -12,6 +12,15 @@
   },
   "ecrans": [
     {
+      "fichier": "kijai/rendus/barad_dur_portrait.webp",
+      "titre": "Barad-dûr, d'après le modèle de Kijai",
+      "artiste": "Kijai (Kijai Design), rendu Blender pour le jeu",
+      "source": "https://www.printables.com/model/234578-barad-dur-the-dark-tower, rendu par artworks/3d/barad_dur_kijai.py",
+      "licence": "CC BY-NC-ND 4.0, usage privé, jamais versionné",
+      "cadrage": "center 40%",
+      "fond": "kijai/rendus/barad_dur_paysage.webp"
+    },
+    {
       "fichier": "3d/rendus/barad_dur_portrait.webp",
       "titre": "Barad-dûr, la Tour et l'Œil",
       "artiste": "Blender, pour le jeu",

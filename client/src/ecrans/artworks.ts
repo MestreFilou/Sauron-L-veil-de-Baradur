@@ -57,7 +57,7 @@ export function associer(entrees: EntreeManifeste[], urls: Map<string, string>):
   }
   for (const [fichier, url] of [...urls].sort(([a], [b]) => a.localeCompare(b))) {
     // les rendus 3D (fonds, écran titre, Œil de l'interface) n'entrent que par le manifeste
-    if (!vues.has(fichier) && !fichier.startsWith('3d/')) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center', fond: null });
+    if (!vues.has(fichier) && !fichier.startsWith('3d/') && !fichier.startsWith('kijai/')) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center', fond: null });
   }
   return r;
 }
@@ -72,11 +72,33 @@ export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManife
  * fente qui suit la souris ; sinon le paysage de l'écran de chargement ; sinon
  * null, et l'écran titre reprend sa scène WebGL.
  */
-export const FOND_TITRE: { url: string; pupille: boolean } | null = URLS.has('3d/titre/barad_dur_titre.webp')
-  ? { url: URLS.get('3d/titre/barad_dur_titre.webp')!, pupille: true }
-  : URLS.has('3d/fonds/barad_dur_paysage.webp')
-    ? { url: URLS.get('3d/fonds/barad_dur_paysage.webp')!, pupille: false }
-    : null;
+export interface FondTitre {
+  url: string;
+  /** Rendu sans pupille : le jeu dessine la fente qui suit la souris. */
+  pupille: boolean;
+  /** Où est l'Œil dans l'image (fractions de largeur et de hauteur), et la hauteur de sa fente. */
+  oeil: { x: number; y: number; h: number };
+}
+
+/** Les fonds possibles, du préféré au repli. Ceux de Kijai ne sont jamais versionnés (artworks/kijai/). */
+const FONDS: (Omit<FondTitre, 'url'> & { fichier: string })[] = [
+  { fichier: 'kijai/rendus/barad_dur_titre.webp', pupille: true, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
+  { fichier: '3d/titre/barad_dur_titre.webp', pupille: true, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
+  { fichier: '3d/fonds/barad_dur_paysage.webp', pupille: false, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
+];
+
+export function choisirFond(urls: Map<string, string>): FondTitre | null {
+  for (const { fichier, ...f } of FONDS) {
+    const url = urls.get(fichier);
+    if (url) return { url, ...f };
+  }
+  return null;
+}
+
+export const FOND_TITRE = choisirFond(URLS);
+
+/** Les rendus faits d'après le modèle de Kijai sont-ils installés ? (pour les crédits) */
+export const MODELE_KIJAI = [...URLS.keys()].some((f) => f.startsWith('kijai/'));
 
 const CLE = 'oeil-de-barad-dur/dernier-artwork';
 

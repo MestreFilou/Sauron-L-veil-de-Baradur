@@ -110,11 +110,15 @@ function PupilleTitre() {
 }
 
 /** Le rendu 3D en plein écran, qui dérive lentement ; l'Œil y palpite et des braises montent. */
-function FondTitre({ url, pupille, onErreur }: { url: string; pupille: boolean; onErreur: () => void }) {
+function FondTitre({ fond, onErreur }: { fond: NonNullable<typeof FOND_TITRE>; onErreur: () => void }) {
+  const { url, pupille, oeil } = fond;
   const [vu, setVu] = useState(false);
   return (
     <div className="fond-titre" aria-hidden="true">
-      <div className="fond-titre-image">
+      <div
+        className="fond-titre-image"
+        style={{ ['--oeil-x' as string]: `${oeil.x * 100}%`, ['--oeil-y' as string]: `${oeil.y * 100}%`, ['--pupille-h' as string]: `${oeil.h * 100}%` }}
+      >
         <img src={url} alt="" className={vu ? 'vu' : ''} onLoad={() => setVu(true)} onError={onErreur} />
         <div className="lueur-oeil" />
         {pupille && vu && <PupilleTitre />}
@@ -181,7 +185,7 @@ export function Titre() {
   return (
     <div id="titre">
       {rendu && FOND_TITRE ? (
-        <FondTitre url={FOND_TITRE.url} pupille={FOND_TITRE.pupille} onErreur={() => setRendu(false)} />
+        <FondTitre fond={FOND_TITRE} onErreur={() => setRendu(false)} />
       ) : webgl ? (
         <SceneTitre key={version} version={version} onEchec={repli} />
       ) : (
