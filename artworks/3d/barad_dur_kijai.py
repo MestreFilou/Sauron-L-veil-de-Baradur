@@ -46,7 +46,7 @@ ETIRE_SOCLE = 1.15
 ETIRE_TOUR = 1.5
 PIED_TOUR = 117.0  # z du bas de la tour dans le modèle
 ENFONCE = 31.0 * ETIRE_SOCLE
-FENETRES = 1000  # fentes de lumière semées sur les murs : c'est elles qui donnent l'échelle
+FENETRES = 160  # quelques fentes de lumière, surtout en bas : assez pour l'échelle, pas un sapin de Noël
 
 
 def hauteur(z, piece):
@@ -142,7 +142,9 @@ def semer_fenetres(objets, mat, nb=FENETRES):
         if "Lave" in ob.name:
             continue
         for p in ob.data.polygons:
-            if abs(p.normal.z) < 0.25 and p.area > 0.05 and p.center.z > 4:
+            # surtout la forteresse basse, rares dans la tour
+            haut = p.center.z > 150
+            if abs(p.normal.z) < 0.25 and p.area > 0.05 and p.center.z > 4 and (not haut or rng.random() < 0.15):
                 murs.append((p.area, p.center.copy(), p.normal.copy()))
     total = sum(a for a, _, _ in murs)
     tirages = sorted(rng.random() * total for _ in range(nb))
@@ -190,7 +192,7 @@ def construire(cadre):
     bd.monde()
     bd.plaine(bd.matiere_sol())
     pieces = importer(matiere_kijai(), lave_socle)
-    fenetre, _ = bd.matiere_braise(22.0, (1.0, 0.36, 0.08, 1))
+    fenetre, _ = bd.matiere_braise(9.0, (1.0, 0.3, 0.06, 1))
     semer_fenetres(pieces, fenetre)
     _, lum_oeil = bd.poser_oeil(bd.matiere_oeil())
     loger_oeil()
