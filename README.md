@@ -45,6 +45,6 @@ Le jeu se joue **entièrement sans IA** : les murmures, les pensées des personn
 | `client/` | Interface : React pour les panneaux, PixiJS pour la carte, le Regard et le Monde de l'Ombre, l'Œil en champ de feu. Écran titre, chargement et menus dans `client/src/ecrans/`, sauvegardes dans `client/src/partie/`. |
 | `desktop/` | L'application de bureau (Electron) : la fenêtre, les sauvegardes sur disque, le plein écran, l'empaquetage (`electron-builder`). |
 | `artworks/` | Images des écrans de chargement et leurs crédits (`ecrans.json`). Les images ne sont pas versionnées : usage privé, comme la musique. |
-| `docs/` | Game design document, mécaniques de la boucle de tour, direction artistique et maquette. |
+| `docs/` | Game design document, mécaniques de la boucle de tour, menus de gestion (la Cour), direction artistique et maquette. |
 
 Règle d'or : **le code décide, le texte raconte**. Le moteur tranche chaque issue ; le narrateur (banque ou Claude) ne fait que l'habiller, et son texte n'est jamais relu par le moteur.

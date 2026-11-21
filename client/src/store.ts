@@ -26,6 +26,8 @@ const narrateur = new NarrateurBanque({
 
 export type Mode = 'oeil' | 'ombre';
 
+/** Les onglets de la Cour de Barad-dûr (menus de gestion). */
+export type OngletCour = 'neuf' | 'cachots' | 'decisions';
 /** Où en est le joueur : l'écran titre, l'écran de chargement, ou la partie. */
 export type Ecran = 'titre' | 'chargement' | 'jeu';
 
@@ -43,6 +45,8 @@ interface Store {
   murmureSurvole: string | null;
   introVue: boolean;
   toast: { texte: string; n: number } | null;
+  /** Onglet ouvert de la Cour, ou null si elle est fermée. */
+  cour: OngletCour | null;
   ecran: Ecran;
   /** Le menu de pause est ouvert (Échap). */
   pause: boolean;
@@ -63,6 +67,8 @@ interface Store {
   fermerIntro(): void;
   fermerDuel(): void;
   annoncer(texte: string): void;
+  ouvrirCour(onglet?: OngletCour): void;
+  fermerCour(): void;
 }
 
 const graineAuHasard = () => Math.floor(Math.random() * 2 ** 31);
@@ -118,6 +124,7 @@ export const useJeu = create<Store>((set, get) => {
     murmureSurvole: null,
     introVue: false,
     toast: null,
+    cour: null,
     ecran: 'titre',
     pause: false,
     cartePrete: false,
@@ -191,5 +198,7 @@ export const useJeu = create<Store>((set, get) => {
     fermerIntro: () => set({ introVue: true }),
     fermerDuel: () => set({ duel: null }),
     annoncer: (texte) => set((s) => ({ toast: { texte, n: (s.toast?.n ?? 0) + 1 } })),
+    ouvrirCour: (onglet) => set((s) => ({ cour: onglet ?? s.cour ?? 'neuf' })),
+    fermerCour: () => set({ cour: null }),
   };
 });

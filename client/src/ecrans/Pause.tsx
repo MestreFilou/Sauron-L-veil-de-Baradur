@@ -16,13 +16,13 @@ export function Pause() {
   const retourAuTitre = useJeu((s) => s.retourAuTitre);
   const [sous, setSous] = useState<Sous>(null);
 
-  // Échap : on désélectionne d'abord (région, Nazgûl), puis on ouvre ou ferme le menu.
+  // Échap : on désélectionne d’abord (région, Nazgûl) ou on ferme la Cour, puis on ouvre ou ferme le menu.
   useEffect(() => {
     const clavier = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || sous) return;
       const j = useJeu.getState();
       if (j.ecran !== 'jeu') return;
-      if (!j.pause && (j.regionChoisie || j.nazgulChoisi || j.duel || !j.introVue)) return;
+      if (!j.pause && (j.regionChoisie || j.nazgulChoisi || j.duel || j.cour || !j.introVue)) return;
       const t = e.target as HTMLElement;
       if (!j.pause && (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT') && (t as HTMLInputElement).value) return;
       e.stopImmediatePropagation();

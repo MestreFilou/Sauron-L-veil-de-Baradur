@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Carte } from './Carte';
+import { Cour } from './cour/Cour';
 import { Chargement } from './ecrans/Chargement';
 import { Pause } from './ecrans/Pause';
 import { Titre } from './ecrans/Titre';
@@ -142,6 +143,7 @@ function Partie() {
       <Fiche />
       <Toast />
       <Duel />
+      <Cour />
       <Fin />
       <Intro />
       <Pause />
