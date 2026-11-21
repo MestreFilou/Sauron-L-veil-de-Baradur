@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Écran titre, écran de chargement, menus (pause, options, sauvegardes).
+   Même palette que les panneaux : obsidienne, bronze terni, braise.
+   ========================================================================== */
+
+/* ---------- Le décor du Mordor (titre, et chargement sans artwork) ---------- */
+.decor-mordor{position:absolute;inset:0;overflow:hidden;background:#050303}
+.decor-mordor .ciel{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 68% 36%,rgba(255,77,18,.34) 0%,rgba(156,21,8,.22) 38%,transparent 70%),
+    radial-gradient(ellipse 90% 40% at 60% 100%,rgba(255,61,0,.38) 0%,rgba(105,20,8,.25) 40%,transparent 75%),
+    linear-gradient(180deg,#0a0505 0%,#1a0806 55%,#2a0c06 100%)}
+.decor-mordor .fumee{position:absolute;inset:-20%;opacity:.5;mix-blend-mode:multiply;
+  background:radial-gradient(ellipse 30% 18% at 30% 40%,#000 0%,transparent 70%),radial-gradient(ellipse 26% 14% at 75% 25%,#000 0%,transparent 70%),radial-gradient(ellipse 34% 16% at 55% 70%,#000 0%,transparent 70%);
+  filter:blur(30px);animation:fumee 46s ease-in-out infinite alternate}
+.decor-mordor .fumee.f2{opacity:.35;animation-duration:63s;animation-direction:alternate-reverse;transform:scale(1.3)}
+@keyframes fumee{from{transform:translate(-4%,1%) scale(1.05)}to{transform:translate(5%,-2%) scale(1.15)}}
+.decor-mordor .brume-sol{position:absolute;left:0;right:0;bottom:0;height:26%;
+  background:linear-gradient(0deg,rgba(40,10,5,.95) 0%,rgba(60,14,6,.55) 40%,transparent 100%)}
+.braises{position:absolute;inset:0;pointer-events:none}
+.braises i{position:absolute;bottom:-10px;border-radius:50%;background:#ffb070;box-shadow:0 0 6px 2px rgba(255,90,20,.8);
+  animation:braise linear infinite;opacity:0}
+@keyframes braise{0%{transform:translate(0,0);opacity:0}10%{opacity:.9}70%{opacity:.6}100%{transform:translate(var(--derive),-105vh);opacity:0}}
+
+.scene-tour{position:absolute;right:6vw;bottom:0;height:94vh;width:min(58vw,94vh * .78);display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.scene-tour .tour{width:100%;height:74vh;display:block;filter:drop-shadow(0 0 30px rgba(255,60,10,.25))}
+.oeil-tour{position:relative;margin-bottom:-19vh;z-index:1;display:grid;place-items:center}
+#oeil-titre{position:relative;filter:drop-shadow(0 0 26px rgba(255,59,10,.6))}
+.anneau-feu{position:absolute;left:50%;top:50%;width:calc(310px * var(--echelle,2));height:calc(310px * var(--echelle,2));transform:translate(-50%,-50%) scaleY(.36);pointer-events:none;opacity:.85}
+.anneau-tourne{animation:anneau 90s linear infinite;transform-origin:0 0}
+@keyframes anneau{to{transform:rotate(360deg)}}
+.meurtriere{animation:meurtriere 4s ease-in-out infinite}
+@keyframes meurtriere{0%,100%{opacity:1}45%{opacity:.55}60%{opacity:.9}}
+
+/* ---------- Écran titre ---------- */
+.scene-titre{position:absolute;inset:0;width:100%;height:100%;display:block}
+#titre{position:fixed;inset:0;z-index:40;overflow:hidden}
+/* le rendu 3D de la Tour : couvre l'écran en gardant son 16:9, dérive lentement */
+.fond-titre{position:absolute;inset:0;overflow:hidden;background:#050303}
+.fond-titre-image{--oeil-x:56.2%;--oeil-y:13.1%;--pupille-h:6.8%;--pupille-l:.42%;position:absolute;left:50%;top:50%;width:max(104vw,185vh);height:max(104vh,58.5vw);transform:translate(-50%,-50%);animation:titre-derive 70s ease-in-out infinite alternate}
+.fond-titre-image img{display:block;width:100%;height:100%;opacity:0;transition:opacity 1.8s ease}
+.fond-titre-image img.vu{opacity:1}
+@keyframes titre-derive{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-51.5%,-49.5%) scale(1.05)}}
+.lueur-oeil{position:absolute;left:var(--oeil-x,56.25%);top:var(--oeil-y,15%);width:8%;aspect-ratio:1;border-radius:50%;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(circle,rgba(255,190,90,.5) 0%,rgba(255,90,20,.24) 32%,rgba(160,30,5,.08) 55%,transparent 70%);
+  transform:translate(-50%,-50%);animation:oeil-palpite 4.8s ease-in-out infinite}
+@keyframes oeil-palpite{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.9)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}60%{opacity:.8}}
+.pupille-titre{position:absolute;left:var(--oeil-x,56.25%);top:var(--oeil-y,15%);width:var(--pupille-l,.55%);height:var(--pupille-h,6.6%);overflow:visible;pointer-events:none;
+  transform:translate(-50%,-50%);filter:drop-shadow(0 0 .35vh rgba(255,80,10,.95)) drop-shadow(0 0 .9vh rgba(255,40,0,.6))}
+.pupille-titre path{fill:#060101}
+.fond-titre-voile{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(5,3,2,.82) 0%,rgba(5,3,2,.5) 30%,rgba(5,3,2,0) 52%),radial-gradient(ellipse at 60% 45%,transparent 45%,rgba(4,2,2,.6) 100%)}
+@media (prefers-reduced-motion:reduce){.fond-titre-image,.lueur-oeil{animation:none}}
+.titre-colonne{position:absolute;left:clamp(28px,7vw,120px);top:0;bottom:0;width:min(440px,40vw);display:flex;flex-direction:column;justify-content:center;gap:34px;z-index:2}
+.titre-nom .sur-titre{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.32em;color:var(--texte-2);margin-bottom:14px}
+.titre-nom h1{font-family:var(--police-display);font-weight:700;font-size:clamp(44px,5.4vw,78px);line-height:.95;letter-spacing:.08em;color:#e6c88f;
+  text-shadow:0 0 28px rgba(255,90,31,.35),0 2px 0 #1a0f08}
+.titre-nom h1 span{display:block;font-weight:600;font-size:.42em;letter-spacing:.42em;margin-top:12px;color:var(--bronze-clair)}
+.titre-nom .filet{height:1px;margin-top:22px;width:80%;background:linear-gradient(90deg,rgba(201,164,106,.7),rgba(140,106,63,.2) 70%,transparent)}
+.menu-titre{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.menu-titre button{background:none;border:none;cursor:var(--curseur-anneau-feu);text-align:left;padding:7px 0 7px 22px;position:relative;
+  font-family:var(--police-titre);text-transform:uppercase;font-size:clamp(16px,1.1vw,24px);font-weight:600;letter-spacing:.2em;color:var(--texte);transition:color .25s,text-shadow .25s,padding .25s}
+.menu-titre button::before{content:"";position:absolute;left:0;top:50%;width:9px;height:9px;margin-top:-5px;transform:rotate(45deg) scale(.4);border:1px solid var(--bronze);opacity:0;transition:all .25s}
+.menu-titre button:hover,.menu-titre button:focus-visible{color:#ffd7bd;text-shadow:0 0 14px rgba(255,90,31,.7);outline:none;padding-left:28px}
+.menu-titre button:hover::before,.menu-titre button:focus-visible::before{opacity:1;transform:rotate(45deg) scale(1);background:var(--oeil);border-color:#ffb070;box-shadow:0 0 10px var(--oeil)}
+.menu-titre button small{display:block;font-family:var(--police-texte);font-weight:400;font-style:italic;font-size:14px;letter-spacing:0;text-transform:none;color:var(--texte-2);margin-top:2px}
+.inscription-fr{font-family:var(--police-texte);font-style:italic;font-size:14.5px;line-height:1.45;color:#8f6a4c;max-width:380px}
+.titre-pied{position:absolute;left:clamp(28px,7vw,120px);bottom:18px;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.22em;color:#5d4a36;z-index:2}
+@media (max-width:900px){.scene-tour{right:-12vw;opacity:.55}.titre-colonne{width:auto;right:28px}}
+
+/* ---------- Écran de chargement ---------- */
+#chargement{position:fixed;inset:0;z-index:45;overflow:hidden;background:#050303;cursor:progress;animation:apparait .6s ease-out}
+#chargement.pret{cursor:var(--curseur-anneau-feu)}
+@keyframes apparait{from{opacity:0}}
+#chargement .fond-art{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(38px) saturate(.9) brightness(.42);transform:scale(1.1)}
+/* un fond peint pour l'écran (les rendus 3D) : net, sombre, qui dérive lentement */
+#chargement .fond-art.net{inset:-2%;filter:saturate(1.05) brightness(.62);transform:scale(1.04);animation:fond-derive 40s ease-in-out infinite alternate}
+@keyframes fond-derive{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.1) translate(-1.5%,-1%)}}
+@media (prefers-reduced-motion:reduce){#chargement .fond-art.net{animation:none}}
+#chargement .voile{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%,transparent 30%,rgba(4,2,2,.82) 100%),linear-gradient(90deg,rgba(5,3,2,.2) 0%,rgba(5,3,2,.55) 60%,rgba(5,3,2,.75) 100%)}
+.chargement-scene{position:absolute;inset:0 0 96px;display:flex;align-items:center;justify-content:center;gap:clamp(28px,6vw,96px);padding:4vh 6vw 0}
+.cadre-art{position:relative;height:min(76vh,1100px);aspect-ratio:3/5;flex:none;margin:0;
+  background:#0a0807;border:1px solid var(--line);
+  box-shadow:0 0 0 1px #0a0807, inset 0 0 0 3px rgba(10,8,7,.9), 0 0 0 5px rgba(10,8,7,.85), 0 0 0 6px rgba(140,106,63,.35), 0 30px 80px rgba(0,0,0,.8), 0 0 90px rgba(255,59,10,.12)}
+.cadre-art::before,.cadre-art::after{content:"";position:absolute;width:18px;height:18px;border:1px solid var(--bronze-clair);z-index:2}
+.cadre-art::before{top:-9px;left:-9px;border-right:none;border-bottom:none}
+.cadre-art::after{bottom:-9px;right:-9px;border-left:none;border-top:none}
+.cadre-art img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease, transform 14s ease-out;transform:scale(1.04)}
+.cadre-art img.vu{opacity:1;transform:scale(1)}
+.cadre-art figcaption{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.21em;color:#7d6449}
+.chargement-texte{max-width:540px;flex:1 1 360px;min-width:260px}
+.ptitle-libre{font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;font-weight:600;letter-spacing:.24em;color:var(--bronze-clair);display:flex;gap:14px;align-items:center;
+  padding-bottom:12px;border-bottom:1px solid rgba(140,106,63,.3)}
+.chargement-texte blockquote{margin:30px 0 0}
+.chargement-texte blockquote p{font-family:var(--police-texte);font-style:italic;font-size:clamp(24px,2.3vw,34px);line-height:1.32;color:#f0dfc2;text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 30px rgba(255,59,10,.15)}
+.chargement-texte cite{display:block;margin-top:16px;font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:12px;letter-spacing:.22em;color:#b9542c}
+.chargement-texte cite::before{content:"— "}
+.conseil{margin-top:44px;font-size:16px;line-height:1.45;color:var(--texte-2);font-style:italic;max-width:440px}
+.conseil span{display:block;font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:10.5px;letter-spacing:.22em;color:#6d5537;margin-bottom:4px}
+.chargement-pied{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);width:min(560px,80vw);text-align:center}
+.chargement-pied .etat{font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.24em;color:var(--texte-2);margin-bottom:12px;transition:color .5s}
+#chargement.pret .etat{color:#ffd7bd;animation:respire 2.4s ease-in-out infinite}
+@keyframes respire{0%,100%{opacity:1}50%{opacity:.55}}
+.ligne-braise{height:2px;background:rgba(74,58,40,.55);position:relative;overflow:visible}
+.ligne-braise i{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:left;transform:scaleX(.02);
+  background:linear-gradient(90deg,#7d2414,#ff6e28 85%,#fff3b8);box-shadow:0 0 10px #ff3d00,0 0 2px #ffb347;animation:braise-avance linear forwards}
+@keyframes braise-avance{to{transform:scaleX(.92)}}
+#chargement.pret .ligne-braise i{transform:scaleX(1);animation:none;transition:transform .4s}
+@media (max-width:900px){.chargement-scene{flex-direction:column;gap:22px;padding-top:3vh}.cadre-art{height:46vh}.chargement-texte blockquote{margin-top:18px}.conseil{margin-top:20px}}
+
+/* ---------- Fenêtres des menus ---------- */
+.modal.fenetre-menu{z-index:62}
+.modal.pause{z-index:60}
+.fenetre-menu .panel{width:min(560px,92vw)}
+.fenetre-menu .body{max-height:70vh;overflow:auto}
+.fenetre-menu .section{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.22em;color:var(--bronze-clair);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(140,106,63,.18)}
+.fenetre-menu .section:first-child{margin-top:2px}
+.options-corps{position:static;width:auto;display:flex;flex-direction:column;gap:8px;font-size:15px}
+.options-corps .curseur{display:grid;grid-template-columns:90px 1fr 30px;align-items:center;gap:10px;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.18em;color:var(--texte-2)}
+.options-corps .curseur b{font-weight:400;text-align:right;color:var(--texte)}
+.options-corps input[type=range]{accent-color:var(--braise);width:100%}
+.options-corps .case{display:flex;gap:10px;align-items:center;color:var(--texte);cursor:var(--curseur-anneau-feu)}
+.options-corps input[type=checkbox]{accent-color:var(--braise);width:15px;height:15px}
+.btn.lien{align-self:flex-start;padding:6px 10px}
+.emplacements{list-style:none;margin:0!important;padding:0}
+.emplacement{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(140,106,63,.14)}
+.emplacement:last-child{border-bottom:none}
+.emplacement .nom{display:block;font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.2em;color:var(--bronze-clair)}
+.emplacement .detail{font-family:var(--police-texte);font-size:15px;color:var(--texte)}
+.emplacement .detail b{font-family:var(--police-titre);text-transform:uppercase;font-weight:600;letter-spacing:.1em}
+.emplacement .detail em{display:block;font-family:var(--police-texte);font-size:13px;color:var(--texte-2)}
+.emplacement.vide .nom{color:#6d5537}
+.emplacement .gestes{display:flex;gap:6px;align-items:center;flex:none}
+.emplacement .question{font-style:italic;color:#ffb89a;font-size:14px}
+.fenetre-menu .message{margin-top:12px;font-style:italic;color:#ffd7bd}
+.fenetre-menu .note{margin-top:10px;font-size:13.5px;font-style:italic;color:var(--texte-2)}
+.credits ul{margin:4px 0 0 18px;font-size:15px}
+.credits .licence{color:var(--texte-2);font-size:13.5px}
+.modal.pause .panel{width:min(340px,90vw);padding:0 0 16px}
+.menu-pause{display:flex;flex-direction:column;gap:7px;padding:16px 22px 4px}
+.menu-pause .btn{flex:none;padding:11px 8px;font-size:11px;letter-spacing:.22em}
+.modal.pause .hint{padding:6px 22px 0;text-align:center}

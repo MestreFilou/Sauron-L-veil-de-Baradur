@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReglagesSon, type ReglagesSon } from './reglages';
 
-function Curseur({ nom, cle }: { nom: string; cle: 'general' | 'musique' | 'voix' }) {
+export function Curseur({ nom, cle }: { nom: string; cle: 'general' | 'musique' | 'voix' }) {
   const v = useReglagesSon((s) => s[cle]);
   const regler = useReglagesSon((s) => s.regler);
   return (
@@ -14,7 +14,7 @@ function Curseur({ nom, cle }: { nom: string; cle: 'general' | 'musique' | 'voix
   );
 }
 
-function Case({ nom, cle }: { nom: string; cle: 'coupe' | 'sousTitres' | 'glose' }) {
+export function Case({ nom, cle }: { nom: string; cle: 'coupe' | 'sousTitres' | 'glose' }) {
   const v = useReglagesSon((s) => s[cle]);
   const regler = useReglagesSon((s) => s.regler);
   return (

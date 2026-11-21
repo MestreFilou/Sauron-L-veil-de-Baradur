@@ -13,3 +13,16 @@ audio/musique/**/*.wav
 audio/musique/**/*.flac
 audio/musique/**/*.m4a
 audio/musique/**/*.opus
+
+# Artworks des écrans de chargement : usage privé, jamais versionnés (artworks/LISEZMOI.md)
+artworks/**/*.webp
+artworks/**/*.jpg
+artworks/**/*.jpeg
+artworks/**/*.png
+artworks/**/*.avif
+artworks/**/*.gif
+# … sauf les rendus 3D de la Tour, créés pour le jeu (artworks/3d/LISEZMOI.md)
+!artworks/3d/**/*.webp
+
+# Application de bureau empaquetée
+desktop/dist/

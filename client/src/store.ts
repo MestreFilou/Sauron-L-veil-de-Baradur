@@ -5,11 +5,12 @@
  * qu'à rejouer le moteur et à sauvegarder.
  */
 import type { Action, EtatJeu, Evenement, Monde, ResultatDuel, ResultatVoix, VueJoueur } from '@sauron/engine';
-import { appliquer, charger, creerPartie, ErreurRegle, indexerMonde, personnage, sauvegarder, vueJoueur } from '@sauron/engine';
+import { appliquer, creerPartie, ErreurRegle, indexerMonde, personnage, vueJoueur } from '@sauron/engine';
 import { NarrateurBanque } from '@sauron/narrative/banque';
 import { eriador } from '@sauron/world';
 import { create } from 'zustand';
 import { bus } from './bus';
+import { sauvegardeAuto } from './partie/sauvegardes';
 
 export const monde: Monde = indexerMonde(eriador);
 
@@ -23,9 +24,10 @@ const narrateur = new NarrateurBanque({
   regions: Object.fromEntries(eriador.regions.map((r) => [r.id, r.nom])),
 });
 
-const CLE = 'oeil-de-barad-dur/partie';
-
 export type Mode = 'oeil' | 'ombre';
+
+/** Où en est le joueur : l'écran titre, l'écran de chargement, ou la partie. */
+export type Ecran = 'titre' | 'chargement' | 'jeu';
 
 export const cleEvenement = (e: Evenement) => `${e.tour}|${e.texte}`;
 
@@ -41,9 +43,19 @@ interface Store {
   murmureSurvole: string | null;
   introVue: boolean;
   toast: { texte: string; n: number } | null;
+  ecran: Ecran;
+  /** Le menu de pause est ouvert (Échap). */
+  pause: boolean;
+  /** La scène PixiJS est montée et le parchemin cuit. */
+  cartePrete: boolean;
 
   agir(action: Action): boolean;
   nouvellePartie(graine?: number): void;
+  /** Lance une partie (nouvelle ou chargée) en passant par l'écran de chargement. */
+  lancer(etat: EtatJeu): void;
+  entrer(): void;
+  retourAuTitre(): void;
+  setPause(p: boolean): void;
   setMode(m: Mode): void;
   choisirNazgul(id: string | null): void;
   choisirRegion(id: string | null): void;
@@ -53,25 +65,13 @@ interface Store {
   annoncer(texte: string): void;
 }
 
-function demarrer(): EtatJeu {
-  try {
-    const s = localStorage.getItem(CLE);
-    if (s) return charger(s);
-  } catch {
-    /* sauvegarde illisible ou stockage bloqué : nouvelle partie */
-  }
-  return creerPartie(monde, Math.floor(Math.random() * 2 ** 31));
-}
+const graineAuHasard = () => Math.floor(Math.random() * 2 ** 31);
 
-function enregistrer(etat: EtatJeu) {
-  try {
-    localStorage.setItem(CLE, sauvegarder(etat));
-  } catch {
-    /* stockage indisponible : la partie continue sans sauvegarde */
-  }
-}
+/** Sauvegarde automatique après chaque geste (la date du jeu sert au menu). */
+const enregistrer = (etat: EtatJeu) => void sauvegardeAuto(etat, vueJoueur(monde, etat).date);
 
-const initial = demarrer();
+/** Une partie fraîche, en attendant que l'écran titre en lance une. Rien n'est sauvegardé tant qu'on n'y joue pas. */
+const initial = creerPartie(monde, graineAuHasard());
 
 export const useJeu = create<Store>((set, get) => {
   /** Écrit les murmures qui n'ont pas encore de texte (banque, synchrone en pratique). */
@@ -106,8 +106,6 @@ export const useJeu = create<Store>((set, get) => {
     set({ duel: { cible: nom, ...n, victoire: duel.victoire } });
   };
 
-  void habillerMurmures(initial);
-
   return {
     etat: initial,
     vue: vueJoueur(monde, initial),
@@ -120,6 +118,9 @@ export const useJeu = create<Store>((set, get) => {
     murmureSurvole: null,
     introVue: false,
     toast: null,
+    ecran: 'titre',
+    pause: false,
+    cartePrete: false,
 
     agir(action) {
       const avant = get().etat;
@@ -133,8 +134,9 @@ export const useJeu = create<Store>((set, get) => {
         }
         throw e;
       }
-      set({ etat, vue: vueJoueur(monde, etat) });
-      enregistrer(etat);
+      const vue = vueJoueur(monde, etat);
+      set({ etat, vue });
+      void sauvegardeAuto(etat, vue.date);
       void habillerMurmures(etat);
 
       if (action.type === 'poser_oeil') {
@@ -156,11 +158,31 @@ export const useJeu = create<Store>((set, get) => {
     },
 
     nouvellePartie(graine) {
-      const etat = creerPartie(monde, graine ?? Math.floor(Math.random() * 2 ** 31));
-      set({ etat, vue: vueJoueur(monde, etat), textes: {}, reactions: {}, duel: null, nazgulChoisi: null, regionChoisie: null });
+      get().lancer(creerPartie(monde, graine ?? graineAuHasard()));
+    },
+
+    lancer(etat) {
+      set({
+        etat,
+        vue: vueJoueur(monde, etat),
+        textes: {},
+        reactions: {},
+        duel: null,
+        mode: 'oeil',
+        nazgulChoisi: null,
+        regionChoisie: null,
+        murmureSurvole: null,
+        introVue: false,
+        pause: false,
+        ecran: 'chargement',
+      });
       enregistrer(etat);
       void habillerMurmures(etat);
     },
+
+    entrer: () => set({ ecran: 'jeu' }),
+    retourAuTitre: () => set({ ecran: 'titre', pause: false, duel: null, mode: 'oeil', introVue: false }),
+    setPause: (pause) => set({ pause }),
 
     setMode: (mode) => set({ mode }),
     choisirNazgul: (nazgulChoisi) => set({ nazgulChoisi }),
