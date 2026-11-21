@@ -63,7 +63,7 @@ describe('Banque audio', () => {
   });
 
   it('signale une incohérence (fichier mal nommé, Noir Parler hors lexique, durée absente)', () => {
-    const r: Replique = { id: 'x', registre: 'fer', methode: 'noir_parler', lu: '', noir_parler: 'Ash elendil', sous_titre: 'x', fichier: 'voix/y.mp3', statut: 'enregistre', duree_s: null, reperes: null };
+    const r: Replique = { id: 'x', registre: 'fer', methode: 'noir_parler', lu: '', noir_parler: 'Ash elendil', sous_titre: 'x', intention: 'x', seance: 1, fichier: 'voix/y.mp3', statut: 'enregistre', duree_s: null, reperes: null };
     expect(verifierBanqueVoix([r]).length).toBe(3);
   });
 

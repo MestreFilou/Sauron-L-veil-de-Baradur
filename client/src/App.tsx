@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Carte } from './Carte';
 import { Cour } from './cour/Cour';
+import { Chargement } from './ecrans/Chargement';
+import { Pause } from './ecrans/Pause';
+import { Titre } from './ecrans/Titre';
+import './ecrans/ecrans.css';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
@@ -54,7 +58,7 @@ function Intro() {
             </li>
           </ul>
         </div>
-        <div className="go" style={{ fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
+        <div className="go" style={{ fontFamily: 'var(--police-titre)', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
           Cliquer pour entrer
         </div>
       </div>
@@ -96,6 +100,7 @@ const ISSUES: Record<string, { titre: string; texte: string }> = {
 function Fin() {
   const issue = useJeu((s) => s.vue.issue);
   const nouvelle = useJeu((s) => s.nouvellePartie);
+  const titre = useJeu((s) => s.retourAuTitre);
   if (!issue) return null;
   const i = ISSUES[issue] ?? { titre: issue, texte: '' };
   return (
@@ -108,6 +113,9 @@ function Fin() {
           <p>{i.texte}</p>
         </div>
         <div className="go">
+          <button className="btn mini" onClick={titre}>
+            Menu principal
+          </button>
           <button className="btn mini" onClick={() => nouvelle()}>
             Nouvelle partie
           </button>
@@ -117,7 +125,8 @@ function Fin() {
   );
 }
 
-export function App() {
+/** La partie elle-même : la carte et les panneaux. */
+function Partie() {
   return (
     <>
       <Carte />
@@ -136,8 +145,24 @@ export function App() {
       <Duel />
       <Cour />
       <Fin />
-      <Son />
       <Intro />
+      <Pause />
+    </>
+  );
+}
+
+/**
+ * L'écran titre d'abord ; puis l'écran de chargement, pendant lequel la
+ * partie se monte derrière lui (la carte cuit son parchemin), puis le jeu.
+ */
+export function App() {
+  const ecran = useJeu((s) => s.ecran);
+  return (
+    <>
+      {ecran !== 'titre' && <Partie />}
+      {ecran === 'titre' && <Titre />}
+      {ecran === 'chargement' && <Chargement />}
+      <Son />
     </>
   );
 }

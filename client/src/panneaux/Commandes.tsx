@@ -62,6 +62,7 @@ export function Modes() {
       if (t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.tagName === 'INPUT') return;
       const k = e.key.toLowerCase();
       const j = useJeu.getState();
+      if (j.ecran !== 'jeu' || j.pause) return;
       if (k === 's') j.setMode(j.mode === 'ombre' ? 'oeil' : 'ombre');
       if (k === 'escape') {
         j.choisirRegion(null);

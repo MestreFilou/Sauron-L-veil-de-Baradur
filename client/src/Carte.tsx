@@ -36,15 +36,28 @@ export function Carte() {
       const j = useJeu.getState();
       s.maj({ vue: j.vue, mode: j.mode, nazgulChoisi: j.nazgulChoisi, regionChoisie: j.regionChoisie, murmureSurvole: j.murmureSurvole });
     };
-    void s.monter(hote.current!).then(() => {
-      if (annule) s.detruire();
-      else pousser();
-    });
-    const desabonner = useJeu.subscribe(pousser);
+    // Le montage part au tour suivant : en mode strict, React monte, démonte et
+    // remonte aussitôt ; une seule scène est alors créée (deux applications PixiJS
+    // qui s'initialisent en même temps, dont l'une détruite, cassent l'autre).
+    // On ne pousse rien à la scène tant qu'elle n'est pas montée (le parchemin
+    // cuit pendant l'écran de chargement).
+    let desabonner = () => {};
+    let monte = false;
+    const depart = setTimeout(() => {
+      monte = true;
+      void s.monter(hote.current!).then(() => {
+        if (annule) return s.detruire();
+        pousser();
+        desabonner = useJeu.subscribe(pousser);
+        useJeu.setState({ cartePrete: true });
+      });
+    }, 0);
     return () => {
       annule = true;
+      clearTimeout(depart);
       desabonner();
-      if (s.app.renderer) s.detruire();
+      useJeu.setState({ cartePrete: false });
+      if (monte && s.app.renderer) s.detruire();
     };
   }, []);
 

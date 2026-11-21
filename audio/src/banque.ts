@@ -8,7 +8,15 @@ import voixJson from '../banque/voix.json';
 import pistesJson from '../musique/pistes.json';
 import { verifierLigne } from './noirParler';
 
-export type RegistreVoix = 'inscription' | 'paranoia' | 'annatar' | 'fer' | 'cri' | 'duel';
+/**
+ * Registres joués aujourd'hui : inscription, paranoia, annatar, fer, cri, duel.
+ * Prévus pour les écrans à venir : nazgul (affectations), prison, forge (Montagne
+ * du Destin), aube (début de tour), triomphe et colere (réussite ou échec d'une
+ * action), accueil (écran titre), fin (fin de partie, ids fin_victoire_* / fin_defaite_*).
+ */
+export type RegistreVoix =
+  | 'inscription' | 'paranoia' | 'annatar' | 'fer' | 'cri' | 'duel'
+  | 'nazgul' | 'prison' | 'forge' | 'aube' | 'triomphe' | 'colere' | 'accueil' | 'fin';
 
 export interface Repere {
   mot: string;
@@ -26,6 +34,10 @@ export interface Replique {
   /** Transcription affichée au-dessus du sous-titre ; null pour l'anglais inversé. */
   noir_parler: string | null;
   sous_titre: string;
+  /** Indication de jeu pour Lucas au micro. */
+  intention: string;
+  /** Séance d'enregistrement (voix/SCRIPT_LECTURE.md) ; l'ordre de la banque est l'ordre de lecture. */
+  seance: number;
   /** Relatif au dossier audio/. */
   fichier: string;
   statut: 'a_enregistrer' | 'enregistre';
@@ -97,6 +109,8 @@ export function verifierBanqueVoix(banque: Replique[] = REPLIQUES, existe?: (fic
     vus.add(r.id);
     if (r.fichier !== `voix/${r.id}.mp3`) pb.push(`${r.id} : le fichier devrait être voix/${r.id}.mp3`);
     if (!r.sous_titre.trim()) pb.push(`${r.id} : sous-titre vide`);
+    if (!r.intention?.trim()) pb.push(`${r.id} : intention de jeu manquante`);
+    if (!Number.isInteger(r.seance) || r.seance < 1) pb.push(`${r.id} : séance manquante`);
     if (r.methode === 'noir_parler') {
       if (!r.noir_parler) pb.push(`${r.id} : transcription en Noir Parler manquante`);
       else if (!verifierLigne(r.noir_parler).valide) pb.push(`${r.id} : mots hors lexique (${verifierLigne(r.noir_parler).inconnus.join(', ')})`);
