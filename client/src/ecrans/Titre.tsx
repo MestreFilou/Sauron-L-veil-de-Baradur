@@ -12,6 +12,7 @@ import { bureau, estBureau } from '../plateforme';
 import { moteurSon } from '../son/moteur';
 import { useJeu } from '../store';
 import { Credits, Options, Sauvegardes } from './Menus';
+import { SceneTitre, useWebGL2 } from './SceneTitre';
 import { AnneauDeFeu, INSCRIPTION_FR, Tour } from './Tour';
 
 type Fenetre = 'options' | 'charger' | 'credits' | 'confirmer' | null;
@@ -77,6 +78,7 @@ export function Titre() {
   const [reprise, setReprise] = useState<Enveloppe | null | undefined>(undefined);
   const nouvellePartie = useJeu((s) => s.nouvellePartie);
   const lancer = useJeu((s) => s.lancer);
+  const [webgl, sansWebgl] = useWebGL2();
 
   useEffect(() => {
     let vivant = true;
@@ -100,7 +102,7 @@ export function Titre() {
 
   return (
     <div id="titre">
-      <DecorMordor />
+      {webgl ? <SceneTitre onEchec={sansWebgl} /> : <DecorMordor />}
       <div className="titre-colonne">
         <div className="titre-nom">
           <div className="sur-titre">Acte I · L’Eriador · automne 3018</div>
