@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
-"""Génère la police « Noir Parler » : une écriture runique originale, à la manière des Cirth.
+"""Génère la police « Noir Parler » : une écriture originale dans l'esprit des Tengwar.
 
-Chaque lettre latine (accents compris) reçoit une rune : le texte reste le même texte,
+Chaque lettre latine (accents compris) reçoit un signe : le texte reste le même texte,
 seule la police change. C'est ce qui permet au client d'afficher tout en Noir Parler puis
 de basculer en clair, lettre pour lettre, sans rien traduire.
 
-Les runes sont dessinées ici, trait par trait, sur une grille : consonnes à pleine hauteur
-autour d'une hampe, voyelles plus basses et sans hampe, quelques jambages qui descendent.
+Les signes sont dessinés ici, trait par trait, comme une écriture elfique à la plume :
+- les consonnes sont une hampe (courte, montante ou descendante) et une ou deux panses,
+  fermées ou ouvertes, à droite ou à gauche de la hampe ;
+- quelques consonnes sans hampe (une vague, une arche, un crochet) ;
+- les voyelles sont un petit porteur surmonté d'une marque (point, accent, boucle),
+  comme les tehtar ; les accents français se posent sous le porteur.
 Le tracé imite une plume large tenue à 45° : les traits s'épaississent selon leur angle.
+Ce n'est pas une copie des Tengwar : l'alphabet et les formes sont propres au jeu.
 Les chiffres et la ponctuation rare sont laissés à la police de repli : ils restent lisibles.
 
 Usage :  pip install fonttools brotli && python3 client/outils/police_noir_parler.py
@@ -21,68 +26,84 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 
 U = 112            # une case de la grille, en unités de fonte
 EM = 1000
-EPAIS = 84         # épaisseur nominale du trait
-APPROCHE = 70      # blanc de chaque côté de la rune
+EPAIS = 64         # épaisseur nominale du trait
+APPROCHE = 60      # blanc de chaque côté du signe
 
-# ---------- Les branches autour d'une hampe en x = c ----------
-def hampe(c, bas=0, haut=7):
-    return [[(c, bas), (c, haut)]]
+X = 4.6            # hauteur d'x : le haut des panses
+PANSE = 2.3        # largeur d'une panse
 
-def TR(c, h=7): return [[(c, h), (c + 1.6, h - 1.6)]]
-def TL(c, h=7): return [[(c, h), (c - 1.6, h - 1.6)]]
-def MR(c): return [[(c, 3.5), (c + 1.6, 5.1)]]
-def ML(c): return [[(c, 3.8), (c - 1.6, 2.2)]]
-def BR(c): return [[(c, 0), (c + 1.6, 1.6)]]
-def PK(c, h=7): return [[(c, h), (c + 1.7, h - 1.4), (c, h - 2.8)]]
-def PK2(c): return [[(c, 4.2), (c + 1.7, 2.8), (c, 1.4)]]
+# ---------- Hampes et panses ----------
+HAMPES = {'C': (0, X), 'M': (0, 7.6), 'D': (-2.9, X)}   # courte, montante, descendante
 
-def jambe(c, haut=7): return hampe(c, -2.2, haut)
+def arc(cx, cy, rx, ry, a0, a1, n=14):
+    return [(cx + rx * math.cos(a0 + (a1 - a0) * k / n), cy + ry * math.sin(a0 + (a1 - a0) * k / n)) for k in range(n + 1)]
 
-C = 1.7  # hampe des consonnes
-D = 2.2  # hampe des runes à deux hampes (la seconde en D + 2)
+def panse(s, sens, ouverte=False, haut=X, bas=0.35):
+    """Une panse accrochée à la hampe en x = s, du haut de l'x vers la ligne de base."""
+    cy, ry = (haut + bas) / 2, (haut - bas) / 2
+    fin = -math.pi / 2 * (0.25 if ouverte else 1)       # ouverte : la plume quitte avant de revenir
+    pts = arc(s, cy, PANSE, ry, math.pi / 2, fin)
+    if ouverte:  # petite queue qui s'écarte de la hampe
+        x, y = pts[-1]
+        pts.append((x + 0.15, y - 0.5))
+    return [[(s + (x - s) * sens, y) for x, y in pts]]
 
-RUNES = {
-    # voyelles : basses (hauteur 4.6), sans hampe
-    'a': [[(0, 4.6), (1.5, 0), (3, 4.6)]],
-    'e': [[(1.5, 4.6), (3, 2.3), (1.5, 0), (0, 2.3), (1.5, 4.6)]],
-    'i': [[(0.3, 0), (0.3, 4.6), (1.6, 3.4)]],
-    'o': [[(0, 0), (1.5, 4.6), (3, 0)], [(1.5, 4.6), (1.5, 6.2)]],
-    'u': [[(0, 0), (0, 4.6), (2.6, 2.3), (0, 0)]],
-    'y': [[(0, 4.6), (1.5, 1.4), (3, 4.6)], [(1.5, 1.4), (1.5, -2.2)]],
-    # consonnes : une hampe et ses branches
-    'b': hampe(C) + PK(C) + PK2(C),
-    'c': hampe(C) + TL(C) + BR(C),
-    'd': hampe(C) + PK(C),
-    'f': hampe(C) + TR(C) + MR(C),
-    'g': jambe(C, 4.6) + TR(C, 4.6) + [[(C, 4.6), (C, 6.4)]],
-    'h': hampe(D) + hampe(D + 2) + [[(D, 2.6), (D + 2, 4.6)]],
-    'j': jambe(C, 4.6) + TL(C, 4.6),
-    'k': hampe(C) + MR(C) + BR(C),
-    'l': hampe(C) + TL(C),
-    'm': hampe(D) + hampe(D + 2) + [[(D, 7), (D + 2, 4.8)], [(D + 2, 7), (D, 4.8)]],
-    'n': hampe(C) + TR(C) + ML(C),
-    'p': jambe(C) + PK(C),
-    'q': jambe(C) + TL(C) + TR(C),
-    'r': hampe(C) + TR(C) + BR(C),
-    's': [[(2.2, 7), (0, 4.7), (2.2, 2.3), (0, 0)]],
-    't': hampe(C) + TL(C) + TR(C),
-    'v': hampe(C) + ML(C) + BR(C),
-    'w': hampe(D) + hampe(D + 2) + [[(D, 7), (D + 2, 5)]],
-    'x': [[(0, 7), (2.8, 0)], [(2.8, 7), (0, 0)]],
-    'z': hampe(C) + TL(C) + ML(C),
+def consonne(hampe, panses, cote):
+    """hampe C/M/D ; panses '1', '2' ou 'O' (ouverte) ; côté 'R' ou 'L'."""
+    sens = 1 if cote == 'R' else -1
+    s = PANSE * 2 + 0.3 if (cote == 'L' and panses == '2') else (PANSE + 0.3 if cote == 'L' else 0)
+    bas, haut = HAMPES[hampe]
+    traits = [[(s, bas), (s, haut)]]
+    if panses == '1':
+        traits += panse(s, sens)
+    elif panses == '2':
+        traits += panse(s, sens) + panse(s + PANSE * sens * 0.95, sens)
+    else:
+        traits += panse(s, sens, ouverte=True)
+    return traits
+
+# ---------- Les voyelles : un porteur et sa marque ----------
+PORTEUR = [[(0.6, 0), (0.6, 2.3), (1.0, 2.7)]]
+def point(cx, cy, r=0.36): return [[(cx, cy + r), (cx + r, cy), (cx, cy - r), (cx - r, cy), (cx, cy + r)]]
+def boucle(cx, cy, sens): return [arc(cx, cy, 0.7 * sens, 0.7, math.pi * 0.9, -math.pi * 0.6, 10)]
+
+TEHTAR = {
+    'a': point(-0.1, 4.1) + point(1.3, 4.1) + point(0.6, 5.2),
+    'e': [[(0.1, 3.8), (1.3, 5.2)]],
+    'i': point(0.6, 4.4),
+    'o': boucle(0.6, 4.6, 1),
+    'u': boucle(0.6, 4.6, -1),
+    'y': point(0.0, 4.4) + point(1.3, 4.4),
 }
-# ligatures du français
-RUNES['œ'] = RUNES['o'] + [[(x + 3.4, y) for x, y in t] for t in RUNES['e']]
-RUNES['æ'] = RUNES['a'] + [[(x + 3.4, y) for x, y in t] for t in RUNES['e']]
 
-# ---------- Diacritiques : des marques posées au-dessus (ou sous) la rune ----------
-def marque(nom, cx, haut):
-    y = haut + 0.9
-    if nom == 'aigu': return [[(cx - 0.5, y), (cx + 0.6, y + 1.0)]]
-    if nom == 'grave': return [[(cx + 0.5, y), (cx - 0.6, y + 1.0)]]
-    if nom == 'circ': return [[(cx - 0.8, y), (cx, y + 0.8), (cx + 0.8, y)]]
-    if nom == 'trema': return [[(cx - 0.7, y), (cx - 0.7, y + 0.5)], [(cx + 0.7, y), (cx + 0.7, y + 0.5)]]
-    if nom == 'cedille': return [[(cx, 0), (cx + 0.5, -1.0), (cx - 0.3, -1.6)]]
+RUNES = {v: PORTEUR + t for v, t in TEHTAR.items()}
+RUNES.update({
+    't': consonne('D', '1', 'R'), 'd': consonne('D', '2', 'R'),
+    'p': consonne('D', '1', 'L'), 'b': consonne('D', '2', 'L'),
+    'c': consonne('D', 'O', 'R'), 'k': consonne('D', 'O', 'L'),
+    'f': consonne('M', '1', 'R'), 'v': consonne('M', '2', 'R'),
+    'g': consonne('M', '1', 'L'), 'j': consonne('M', '2', 'L'),
+    'q': consonne('M', 'O', 'R'), 'x': consonne('M', 'O', 'L'),
+    'w': consonne('C', '1', 'R'), 'n': consonne('C', '2', 'R'),
+    'm': consonne('C', '2', 'L'), 'h': consonne('C', 'O', 'R'),
+    'z': consonne('C', 'O', 'L'),
+    # sans hampe : la vague, l'arche, le crochet
+    'r': [[(0.2, 0), (0.2, 2.8)] + arc(1.35, 2.8, 1.15, 1.7, math.pi, 0.15, 12)],
+    'l': [arc(1.4, 0, 1.4, X, math.pi, 0, 16)],
+    's': [arc(1.3, 3.4, 1.1, 1.0, 0.2, math.pi * 1.5, 12) + arc(1.3, 1.2, 1.2, 1.2, math.pi * 0.5, -math.pi * 0.9, 12)],
+})
+# ligatures du français
+RUNES['œ'] = RUNES['o'] + [[(x + 1.9, y) for x, y in t] for t in RUNES['e']]
+RUNES['æ'] = RUNES['a'] + [[(x + 1.9, y) for x, y in t] for t in RUNES['e']]
+
+# ---------- Accents : une marque sous le signe ----------
+def marque(nom, cx):
+    y = -0.9
+    if nom == 'aigu': return [[(cx - 0.5, y - 0.6), (cx + 0.5, y + 0.3)]]
+    if nom == 'grave': return [[(cx + 0.5, y - 0.6), (cx - 0.5, y + 0.3)]]
+    if nom == 'circ': return [[(cx - 0.7, y + 0.3), (cx, y - 0.4), (cx + 0.7, y + 0.3)]]
+    if nom == 'trema': return point(cx - 0.55, y, 0.34) + point(cx + 0.55, y, 0.34)
+    if nom == 'cedille': return point(cx, y, 0.36)
     raise KeyError(nom)
 
 ACCENTS = {
@@ -101,10 +122,9 @@ def bornes(traits):
 
 for lettre, (base, nom) in ACCENTS.items():
     t = RUNES[base]
-    x0, x1, _, y1 = bornes(t)
-    haut = 4.6 if base in 'aeiuy' else 7
-    if base == 'o': haut = 4.6
-    RUNES[lettre] = t + marque(nom, (x0 + x1) / 2, haut if nom != 'cedille' else 0)
+    cx = 0.6 if base in TEHTAR else (bornes(t)[0] + bornes(t)[1]) / 2
+    RUNES[lettre] = t + marque(nom, cx)
+
 
 # ponctuation dessinée (le reste tombe sur la police de repli)
 LOSANGE = lambda cx, cy, r=0.45: [[(cx, cy + r), (cx + r, cy), (cx, cy - r), (cx - r, cy), (cx, cy + r)]]
@@ -145,8 +165,10 @@ def contours(traits, dx):
             polys.append([(x0 - ex + nx, y0 - ey + ny), (x1 + ex + nx, y1 + ey + ny),
                           (x1 + ex - nx, y1 + ey - ny), (x0 - ex - nx, y0 - ey - ny)])
         # un nœud à chaque articulation : un octogone du diamètre du trait
-        for x, y in pts[1:-1]:
-            r = EPAIS * 0.5
+        for k, (x, y) in enumerate(pts[1:-1], 1):
+            ax, ay = pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]
+            bx, by = pts[k + 1][0] - pts[k][0], pts[k + 1][1] - pts[k][1]
+            r = min(epaisseur(ax, ay), epaisseur(bx, by)) * 0.5
             polys.append([(x + r * math.cos(k * math.pi / 4 + math.pi / 8), y + r * math.sin(k * math.pi / 4 + math.pi / 8)) for k in range(8)])
     out = []
     for p in polys:

@@ -1,19 +1,23 @@
 /* ==========================================================================
-   Typographie : deux polices libres (OFL) embarquées, et le Noir Parler.
-   - Grenze : titres, étiquettes, boutons. Une romaine taillée comme une gothique.
-   - Alegreya : tout ce qui se lit. Calligraphique, mais nette en petit corps.
-   - Noir Parler : les runes dessinées pour le jeu (outils/police_noir_parler.py).
+   Typographie : trois polices libres (OFL) embarquées, et le Noir Parler.
+   Une main de scribe elfique plutôt qu'une capitale romaine :
+   - Uncial Antiqua : les grands titres (nom du jeu, titres des panneaux), une onciale.
+   - Almendra : étiquettes et boutons, une calligraphie de livre ancien.
+   - Fondamento : tout ce qui se lit, une écriture à la plume large, nette en petit corps.
+   - Noir Parler : l'écriture du jeu, dans l'esprit des Tengwar (outils/police_noir_parler.py).
    ========================================================================== */
 @font-face{font-family:'Noir Parler';src:url('./NoirParler.woff2') format('woff2');font-display:block}
 
 :root{
-  --police-titre:'Grenze',Georgia,serif;
-  --police-texte:'Alegreya',Georgia,serif;
+  --police-display:'Uncial Antiqua',Georgia,serif;
+  --police-titre:'Almendra',Georgia,serif;
+  --police-texte:'Fondamento',Georgia,serif;
   --police-runes:'Noir Parler';
 }
+:root .ptitle,:root .brand h1{font-family:var(--police-display);font-weight:400}
 
 /* Le texte en runes : la police change, le texte non. Les chiffres et la ponctuation rare
-   n'ont pas de rune et restent lisibles (repli sur la police d'origine). */
+   n'ont pas de signe et restent lisibles (repli sur la police d'origine). */
 [data-np="r"]{font-family:var(--police-runes),var(--police-texte) !important;font-style:normal !important;font-weight:400 !important;
   text-shadow:0 0 7px rgba(255,90,31,.28)}
 /* La bascule en clair : une brûlure brève, comme une inscription qui s'éteint. */
@@ -37,3 +41,11 @@ body.ombre [data-np="r"]{text-shadow:0 0 7px rgba(158,201,230,.3)}
 .np-menu button:hover{background:linear-gradient(90deg,rgba(140,106,63,.16),transparent)}
 .np-menu button.on{border-left-color:var(--braise)}
 .np-menu button.on b{color:#ffd7bd}
+
+/* ---------- Le curseur : l'Anneau ----------
+   Un anneau d'or (le point au centre est le point visé) ; il s'embrase sur ce qui se clique. */
+:root{--curseur-anneau:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='o' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff1b8'/%3E%3Cstop offset='.45' stop-color='%23e2a93b'/%3E%3Cstop offset='1' stop-color='%237a4a10'/%3E%3C/linearGradient%3E%3Cfilter id='f' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.6'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='%231a0e05' stroke-width='5.6'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='url%28%23o%29' stroke-width='4'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='%23ff7a2a' stroke-width='.7' stroke-dasharray='1.6 1.1' stroke-opacity='0.55'/%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%23ffd27a' stroke='%231a0e05' stroke-width='.6'/%3E%3C/svg%3E") 16 16,auto;--curseur-anneau-feu:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='o' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff1b8'/%3E%3Cstop offset='.45' stop-color='%23e2a93b'/%3E%3Cstop offset='1' stop-color='%237a4a10'/%3E%3C/linearGradient%3E%3Cfilter id='f' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.6'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%23ff5a1f' stroke-opacity='.55' stroke-width='5' filter='url%28%23f%29'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='%231a0e05' stroke-width='5.6'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='url%28%23o%29' stroke-width='4'/%3E%3Ccircle cx='16' cy='16' r='10.5' fill='none' stroke='%23ff7a2a' stroke-width='.7' stroke-dasharray='1.6 1.1' stroke-opacity='0.95'/%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%23ffd27a' stroke='%231a0e05' stroke-width='.6'/%3E%3C/svg%3E") 16 16,pointer}
+html,body,#map{cursor:var(--curseur-anneau)}
+button,a,select,label,[role=button],.rum,.chip,#nine li,.tabs button,#intro{cursor:var(--curseur-anneau-feu)}
+textarea,input[type=text]{cursor:text}
+button:disabled{cursor:var(--curseur-anneau)}
