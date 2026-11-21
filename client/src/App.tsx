@@ -3,6 +3,7 @@ import { Carte } from './Carte';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
+import { BoutonOeil, EcranMontDoom } from './montdoom/BoutonOeil';
 import { Murmures } from './panneaux/Murmures';
 import { Neuf } from './panneaux/Neuf';
 import { Voix } from './panneaux/Voix';
@@ -122,6 +123,7 @@ export function App() {
       <Carte />
       <div className="vignette" />
       <Haut />
+      <BoutonOeil />
       <Oeil />
       <Neuf />
       <Modes />
@@ -134,6 +136,7 @@ export function App() {
       <Toast />
       <Duel />
       <Fin />
+      <EcranMontDoom />
       <Son />
       <Intro />
     </>

@@ -238,6 +238,22 @@ export const REGLES = {
     visibilite: [0, 8, 12, 18, 30] as const,
   },
 
+  /**
+   * Les ouvrages du Mont Destin, bâtis avec l'Essence depuis l'écran de gestion
+   * (cliquer sur l'Œil). Un seul chantier par tour ; `couts[n]` est le prix du
+   * niveau n + 1, et la longueur du tableau donne le niveau maximal.
+   */
+  ouvrages: {
+    /** Forges de l'Orodruin : Essence en plus à chaque nuit, par niveau. */
+    forges: { couts: [4, 9, 15] as const, essenceParNiveau: 1 },
+    /** Voile de cendres : la Visibilité décroît plus vite quand l'Ombre se tait, par niveau. */
+    cendres: { couts: [6, 12] as const, decroissanceParNiveau: 1 },
+    /** Écuries noires : les Nazgûl démontés rentrent plus tôt, en tours par niveau. */
+    ecuries: { couts: [7, 14] as const, retourParNiveau: 3 },
+    /** Chambre du Regard : PA en plus à chaque aube (toujours plafonnés à pa.max). */
+    chambre: { couts: [18] as const, paParNiveau: 1 },
+  },
+
   pnj: {
     /** Aragorn évite les régions Sous l'Ombre : chance de retarder le groupe d'un tour. */
     evitementAragorn: 50,

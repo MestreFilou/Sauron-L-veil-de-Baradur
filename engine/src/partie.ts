@@ -1,7 +1,8 @@
-import { etatInitial, nazgulDisponibles } from './etat';
+import { etatInitial, evenement, nazgulDisponibles } from './etat';
 import type { Monde } from './monde';
 import { indexerMonde, nazgulDef, personnage, region } from './monde';
 import { poserOeil } from './oeil';
+import { chantierCeTour, coutOuvrage, niveauOuvrage, NOMS_OUVRAGES } from './ouvrages';
 import { cloner } from './outils';
 import { REGLES } from './regles';
 import { recoitOrdres } from './signal';
@@ -137,6 +138,23 @@ export function appliquer(monde: Monde, etatEntree: EtatJeu, action: Action): Et
       etat.jauges.pa = 0;
       etat.rituel = true;
       phaseMurmures(monde, etat);
+      return etat;
+    }
+    case 'batir_ouvrage': {
+      const def = REGLES.ouvrages[action.ouvrage];
+      if (!def) throw new ErreurRegle('Ouvrage inconnu.');
+      const cout = coutOuvrage(etat, action.ouvrage);
+      if (cout === null) throw new ErreurRegle('Cet ouvrage est achevé.');
+      if (chantierCeTour(etat)) throw new ErreurRegle('Les esclaves de l’Orodruin ne tiennent qu’un chantier par tour.');
+      const reste = essenceRestante(etat);
+      if (cout > reste) throw new ErreurRegle(`Le chantier demande ${cout} Essence (il en reste ${reste}).`);
+      const niveau = niveauOuvrage(etat, action.ouvrage) + 1;
+      etat.jauges.essence -= cout;
+      etat.ouvrages = { ...etat.ouvrages, [action.ouvrage]: niveau };
+      etat.dernierChantier = etat.tour;
+      evenement(etat, 'ouvrage', `Chantier achevé au Mont Destin : ${NOMS_OUVRAGES[action.ouvrage]}, niveau ${niveau}.`, {
+        donnees: { ouvrage: action.ouvrage, niveau, cout },
+      });
       return etat;
     }
     case 'classer_murmure': {

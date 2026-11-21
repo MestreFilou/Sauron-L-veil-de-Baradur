@@ -19,6 +19,7 @@ import {
 import type { Monde } from './monde';
 import { aRegle, nazgulDef, personnage, region, regionsJouables } from './monde';
 import { genererMurmures } from './murmures';
+import { decroissanceDesCendres, essenceDesForges } from './ouvrages';
 import {
   crier,
   deplacerNazgul,
@@ -138,7 +139,7 @@ export function aube(monde: Monde, etat: EtatJeu): void {
   if (etat.tour > 1) deplacerPnj(monde, etat, rng);
 
   // 3. Décroissances.
-  if (etat.tour > 1 && !etat.actionVisible) ajouterVisibilite(etat, -REGLES.visibilite.decroissance, 'l’Ombre se fait discrète');
+  if (etat.tour > 1 && !etat.actionVisible) ajouterVisibilite(etat, -(REGLES.visibilite.decroissance + decroissanceDesCendres(etat)), 'l’Ombre se fait discrète');
   etat.actionVisible = false;
   if (etat.tour > 1) {
     for (const r of regionsJouables(monde)) {
@@ -337,6 +338,8 @@ export function nuit(monde: Monde, etat: EtatJeu): void {
     }
   }
   ajouterEssence(etat, essence, 'tribut de la nuit');
+  const forges = essenceDesForges(etat);
+  if (forges) ajouterEssence(etat, forges, 'forges de l’Orodruin');
   if (visPassive) ajouterVisibilite(etat, visPassive, 'régions sous l’Ombre');
 
   // Doute des héros : peur, lame de Morgul, Sages, repos à Fondcombe.

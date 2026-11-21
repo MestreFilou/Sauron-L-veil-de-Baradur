@@ -23,7 +23,7 @@ Le jeu se joue **entièrement sans IA** : les murmures, les pensées des personn
 | `world/` | Données de l'Eriador en JSON : régions, personnages, les Neuf, calendrier canon, géographie de la carte. |
 | `narrative/` | Banque de textes (narrateur par défaut), prompts et appels à Claude (Haiku 5.5 pour les murmures et le Journal, Sonnet 5.5 pour la Voix et les duels). |
 | `audio/` | Lexique du Noir Parler ; banque des voix enregistrées par Lucas (`banque/voix.json`, fichiers dans `voix/`, effets appliqués hors ligne par `outils/chaine_retenue/render_rec.sh`) ; musique par ambiance dans `musique/`, dossier remplaçable et non versionné. |
-| `client/` | Interface : React pour les panneaux, PixiJS pour la carte, le Regard et le Monde de l'Ombre, l'Œil en champ de feu. |
+| `client/` | Interface : React pour les panneaux, PixiJS pour la carte, le Regard et le Monde de l'Ombre, l'Œil en champ de feu. Cliquer sur l'Œil descend au Mont Destin (`client/src/montdoom/`, Three.js) : on y bâtit les ouvrages, et de nouvelles salles de gestion s'y ajoutent dans `salles.ts`. |
 | `docs/` | Game design document, mécaniques de la boucle de tour, direction artistique et maquette. |
 
 Règle d'or : **le code décide, le texte raconte**. Le moteur tranche chaque issue ; le narrateur (banque ou Claude) ne fait que l'habiller, et son texte n'est jamais relu par le moteur.

@@ -16,6 +16,7 @@ export { profilVerite, nombreMurmures, texteFait, classementJuste } from './murm
 export { estIsole, forceSignal } from './signal';
 export { estimerPiste } from './piste';
 export type { EstimationPiste } from './piste';
+export { OUVRAGES, NOMS_OUVRAGES, niveauOuvrage, niveauMaxOuvrage, coutOuvrage, chantierCeTour } from './ouvrages';
 export { vueJoueur } from './vue';
 export type { VueJoueur } from './vue';
 export { sauvegarder, charger } from './sauvegarde';

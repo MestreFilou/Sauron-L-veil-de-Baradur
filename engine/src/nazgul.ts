@@ -16,6 +16,7 @@ import {
 import type { Monde } from './monde';
 import { aRegle, nazgulDef, personnage, region } from './monde';
 import { creerMurmure, verifierMurmures } from './murmures';
+import { retourDesEcuries } from './ouvrages';
 import { borner } from './outils';
 import { REGLES } from './regles';
 import type { Rng } from './rng';
@@ -27,10 +28,11 @@ const nom = (monde: Monde, id: IdNazgul) => nazgulDef(monde, id).nom;
 export function demonter(monde: Monde, etat: EtatJeu, id: IdNazgul, raison: string): void {
   const n = etat.nazgul[id]!;
   n.region = monde.donnees.regionRetraite;
-  n.indisponibleJusquA = etat.tour + REGLES.nazgul.demonte.duree;
+  const duree = Math.max(1, REGLES.nazgul.demonte.duree - retourDesEcuries(etat));
+  n.indisponibleJusquA = etat.tour + duree;
   for (const r of Object.values(etat.regions)) r.embuscades = r.embuscades.filter((e) => e.nazgul !== id);
   ajouterVisibilite(etat, REGLES.nazgul.demonte.visibilite, `${nom(monde, id)} démonté`);
-  evenement(etat, 'nazgul', `${nom(monde, id)} est démonté (${raison}). Il rentre au Mordor pour ${REGLES.nazgul.demonte.duree} tours.`);
+  evenement(etat, 'nazgul', `${nom(monde, id)} est démonté (${raison}). Il rentre au Mordor pour ${duree} tours.`);
 }
 
 /* ------------------------------------------------------------------ */
