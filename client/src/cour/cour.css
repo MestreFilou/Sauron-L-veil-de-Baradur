@@ -1,0 +1,131 @@
+/* ---------- La Cour de Barad-dûr (menus de gestion) ----------
+   Même matière que les panneaux (obsidienne, bronze, braise), mais en pleine
+   page : des sièges voûtés pour les Neuf, des cellules à barreaux, des sceaux. */
+
+.modal.cour-fond{z-index:11;background:radial-gradient(ellipse at 50% 40%,rgba(30,10,4,.55),rgba(3,2,1,.86) 70%)}
+.modal.cour-fond .panel.cour-fenetre{position:relative;width:min(1120px,95vw);height:min(760px,90vh);padding:0;display:flex}
+.cour{display:flex;flex-direction:column;width:100%;height:100%;min-height:0}
+
+.cour-tete{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:12px 18px 0;border-bottom:1px solid rgba(140,106,63,.3)}
+.cour-tete .titre{display:flex;align-items:center;gap:12px;padding-bottom:10px}
+.cour-tete h2{font-family:Cinzel,serif;font-weight:600;font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:#d9b77a;text-shadow:0 0 14px rgba(255,90,31,.25);white-space:nowrap}
+.cour-tete nav{display:flex;gap:4px;justify-content:center;align-self:end}
+.cour-tete nav button{display:flex;align-items:center;gap:8px;font-family:Cinzel,serif;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--texte-2);
+  background:linear-gradient(180deg,rgba(42,36,33,.6),rgba(21,17,15,.2));border:1px solid #3a2e22;border-bottom:none;padding:8px 14px 9px;cursor:pointer;transition:all .25s;margin-bottom:-1px}
+.cour-tete nav button:hover{color:#fff3dc;border-color:#5a4630}
+.cour-tete nav button.on{color:#ffd2b8;border-color:var(--bronze);background:linear-gradient(180deg,rgba(58,22,16,.75),rgba(14,11,10,1));box-shadow:inset 0 2px 0 var(--oeil)}
+.cour-tete nav small{font-family:'IM Fell English',serif;font-size:13px;letter-spacing:0;color:var(--bronze-clair)}
+.cour-tete .sigle svg{width:13px;height:13px;fill:currentColor;display:block}
+.cour-tete .bourse{font-family:Cinzel,serif;font-size:10px;letter-spacing:.2em;color:var(--texte-2);white-space:nowrap;display:flex;align-items:center;gap:6px;padding-bottom:10px}
+.cour-tete .bourse b{font-family:'IM Fell English',serif;font-size:15px;letter-spacing:0;color:var(--texte)}
+.cour-tete .fermer{margin-left:12px;background:none;border:1px solid #5a4630;color:var(--bronze-clair);width:26px;height:26px;cursor:pointer;font-size:12px}
+.cour-tete .fermer:hover{border-color:var(--oeil);color:#ffd2b8}
+
+.onglet{flex:1;min-height:0;overflow:auto;padding:16px 18px 18px}
+.cour h3{font-family:'IM Fell English',serif;font-weight:400;font-size:19px;color:var(--texte);line-height:1.1}
+.cour h4{font-family:Cinzel,serif;font-size:9.5px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--bronze-clair);margin:16px 0 7px;display:flex;align-items:center;gap:10px}
+.cour h4::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(140,106,63,.4),transparent)}
+.cour .note{font-style:italic;color:var(--texte-2);font-size:14px;line-height:1.4}
+.cour .note.bandeau{margin-bottom:12px;padding:8px 12px;border:1px dashed #4a3a28;color:#e8c9a8}
+.cour .vide{padding:28px 10px;text-align:center;font-family:'IM Fell English',serif;font-size:17px}
+.tok.grand{width:58px;height:58px}
+.tok.grand svg{width:30px;height:30px}
+.tok.petit{width:20px;height:20px}
+.tok.petit svg{width:11px;height:11px}
+
+/* --- Les Neuf : le cercle et la fiche --- */
+.onglet.neuf{display:grid;grid-template-columns:minmax(300px,1fr) minmax(360px,1.25fr);gap:18px;overflow:hidden}
+.cercle{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start;overflow:auto;padding:4px}
+.siege{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px 10px;cursor:pointer;color:var(--texte);
+  background:linear-gradient(180deg,rgba(40,32,28,.9),rgba(12,10,9,.95));border:1px solid #4a3a28;border-radius:46px 46px 2px 2px;transition:all .25s;text-align:center}
+.siege:hover{border-color:var(--bronze-clair)}
+.siege.sel{border-color:var(--oeil);box-shadow:0 0 0 1px rgba(255,59,10,.35),0 0 22px -6px var(--oeil),inset 0 -24px 30px -20px rgba(255,59,10,.35)}
+.siege.absent{opacity:.5}
+.siege .qui b{display:block;font-family:'IM Fell English',serif;font-weight:400;font-size:15px;line-height:1.1}
+.siege .qui small{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--texte-2);margin-top:2px}
+.siege .mission{font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze-clair);border-top:1px solid rgba(140,106,63,.25);padding-top:5px;width:100%}
+.siege .nb{position:absolute;top:8px;right:12px;min-width:16px;height:16px;border-radius:8px;background:var(--sang);color:#ffd2b8;font-family:Cinzel,serif;font-size:9px;display:grid;place-items:center}
+
+.fiche{overflow:auto;padding:4px 6px 4px 18px;border-left:1px solid rgba(140,106,63,.22)}
+.fiche .portrait{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.fiche .portrait i{display:block;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--texte-2);margin-top:2px}
+.fiche .portrait .etat{font-size:14px;color:#ecdcbf;margin-top:4px}
+.fiche .dons{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.fiche .dons li{font-size:13.5px;border:1px solid #4a3a28;background:rgba(10,8,7,.6);padding:3px 9px;color:var(--texte)}
+.fiche .dons li b{font-family:Cinzel,serif;font-weight:600;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze-clair);margin-right:4px}
+.fiche .dons li.mauvais{border-color:#5a2418}
+.fiche .dons li.mauvais b{color:#e07a52}
+.missions{display:flex;flex-direction:column;gap:4px}
+.mis{display:grid;grid-template-columns:18px 1fr;gap:8px;padding:7px 10px;border:1px solid transparent;cursor:pointer;transition:all .2s}
+.mis:hover{border-color:#3a2e22;background:rgba(140,106,63,.06)}
+.mis.on{border-color:var(--bronze);background:linear-gradient(90deg,rgba(140,106,63,.16),transparent)}
+.mis input{accent-color:var(--oeil);margin-top:3px}
+.mis b{display:block;font-family:'IM Fell English',serif;font-weight:400;font-size:15.5px;color:var(--texte)}
+.mis em{display:block;font-size:13.5px;color:var(--texte-2);line-height:1.3}
+.mis em.vise{color:var(--anneau);margin-top:3px}
+.mis select,.cour select{margin-top:6px;font-family:'IM Fell English',serif;font-size:14px;background:#120f0d;color:var(--texte);border:1px solid #5a4630;padding:2px 6px}
+.cour .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.cour .chip{font-family:'IM Fell English',serif;font-size:14px;color:var(--texte);border:1px solid #5a4630;padding:2px 4px 2px 8px;display:inline-flex;gap:6px;align-items:center;background:rgba(10,8,7,.6)}
+.cour .chip button{background:none;border:none;color:#b8402a;cursor:pointer;font-size:12px}
+.cour .gestes{display:flex;flex-wrap:wrap;gap:5px}
+.faits{list-style:none;display:flex;flex-direction:column;gap:5px}
+.faits li{font-family:'IM Fell English',serif;font-size:14.5px;line-height:1.35;color:#e2d3b8}
+.faits li b{font-family:Cinzel,serif;font-weight:400;font-size:9px;letter-spacing:.18em;color:var(--bronze-clair);text-transform:uppercase;margin-right:6px}
+
+/* --- Les Cachots --- */
+.onglet.cachots{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;align-items:start}
+.cellules{display:flex;flex-direction:column;gap:10px}
+.cellule{border:1px solid #4a3a28;padding:12px 14px;position:relative;
+  background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(0,0,0,.25) 46px 49px),linear-gradient(180deg,rgba(24,20,18,.92),rgba(9,7,6,.96))}
+.cellule.plie{border-color:#6d3a1c;box-shadow:inset 0 0 26px -10px rgba(255,90,31,.5)}
+.cellule header{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.cellule .num{font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;color:var(--bronze-clair);text-transform:uppercase;margin-right:6px;vertical-align:2px}
+.cellule header i{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--texte-2)}
+.cellule .statut{font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;border:1px solid #5a4630;color:var(--texte-2);padding:2px 7px}
+.cellule .statut.plie{border-color:var(--braise);color:#ffb89a;transform:rotate(-4deg)}
+.cellule .doute{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:10px 0 4px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;color:var(--texte-2);text-transform:uppercase}
+.cellule .doute b{font-family:'IM Fell English',serif;font-weight:400;font-size:15px;letter-spacing:0;color:var(--texte)}
+.cellule .barre{position:relative;height:6px;background:#15110f;border:1px solid #3a2e22}
+.cellule .barre i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#4a3470,#9a7bd0);box-shadow:0 0 8px #9a7bd0}
+.cellule .barre em{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--braise);box-shadow:0 0 6px var(--braise)}
+.cellule .gestes{margin-top:8px}
+.cellule .prevu{margin-top:8px;display:flex;gap:10px;align-items:center;font-style:italic;color:#ffd7bd}
+.cellule .prevu b{font-style:normal;font-family:Cinzel,serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.proies{border-left:1px solid rgba(140,106,63,.22);padding-left:18px}
+.proies h4{margin-top:0}
+.proies ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.proies li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-size:14.5px}
+.proies li b{font-family:'IM Fell English',serif;font-weight:400}
+.proies li em{color:var(--texte-2)}
+
+/* --- Les Décisions --- */
+.decisions .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.decision{display:flex;flex-direction:column;border:1px solid #4a3a28;padding:12px 14px;background:linear-gradient(180deg,rgba(30,24,21,.92),rgba(10,8,7,.96))}
+.decision.fermee{opacity:.62}
+.decision.ordonnee{border-color:var(--oeil);box-shadow:0 0 18px -6px var(--oeil)}
+.decision header{display:flex;gap:10px;align-items:center}
+.decision .desc{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;line-height:1.35;color:#ecdcbf;margin-top:8px}
+.decision .effet{font-size:14px;line-height:1.35;color:var(--texte);margin-top:6px}
+.decision .conditions{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:3px;font-size:13.5px}
+.decision .conditions li{display:flex;gap:6px;align-items:baseline}
+.decision .conditions li.ok{color:#d6c7a6}
+.decision .conditions li.ko{color:#e07a52}
+.marque{width:11px;height:11px;flex:none;align-self:center}
+.decision footer{margin-top:auto;padding-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.decision .recharge{font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--texte-2)}
+.decision .project{padding:6px 16px}
+
+/* --- Accès depuis le panneau des Neuf --- */
+#nine .ptitle .ouvrir-cour{background:none;border:1px solid #5a4630;color:var(--bronze-clair);font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:2px 6px;cursor:pointer}
+#nine .ptitle .ouvrir-cour:hover{border-color:var(--oeil);color:#ffd2b8}
+.nm .post.mission{border-style:dashed;color:var(--texte-2)}
+
+body.ombre .siege.sel,body.ombre .cour-tete nav button.on{border-color:var(--spectre);box-shadow:0 0 18px -6px var(--spectre)}
+
+@media (max-width:900px){
+  .onglet.neuf,.onglet.cachots{grid-template-columns:1fr;overflow:auto}
+  .cercle{overflow:visible}
+  .fiche,.proies{border-left:none;padding-left:0}
+  .cour-tete{grid-template-columns:1fr;gap:8px}
+  .cour-tete nav{justify-content:flex-start;flex-wrap:wrap}
+}

@@ -27,6 +27,9 @@ const CLE = 'oeil-de-barad-dur/partie';
 
 export type Mode = 'oeil' | 'ombre';
 
+/** Les onglets de la Cour de Barad-dûr (menus de gestion). */
+export type OngletCour = 'neuf' | 'cachots' | 'decisions';
+
 export const cleEvenement = (e: Evenement) => `${e.tour}|${e.texte}`;
 
 interface Store {
@@ -41,6 +44,8 @@ interface Store {
   murmureSurvole: string | null;
   introVue: boolean;
   toast: { texte: string; n: number } | null;
+  /** Onglet ouvert de la Cour, ou null si elle est fermée. */
+  cour: OngletCour | null;
 
   agir(action: Action): boolean;
   nouvellePartie(graine?: number): void;
@@ -51,6 +56,8 @@ interface Store {
   fermerIntro(): void;
   fermerDuel(): void;
   annoncer(texte: string): void;
+  ouvrirCour(onglet?: OngletCour): void;
+  fermerCour(): void;
 }
 
 function demarrer(): EtatJeu {
@@ -120,6 +127,7 @@ export const useJeu = create<Store>((set, get) => {
     murmureSurvole: null,
     introVue: false,
     toast: null,
+    cour: null,
 
     agir(action) {
       const avant = get().etat;
@@ -169,5 +177,7 @@ export const useJeu = create<Store>((set, get) => {
     fermerIntro: () => set({ introVue: true }),
     fermerDuel: () => set({ duel: null }),
     annoncer: (texte) => set((s) => ({ toast: { texte, n: (s.toast?.n ?? 0) + 1 } })),
+    ouvrirCour: (onglet) => set((s) => ({ cour: onglet ?? s.cour ?? 'neuf' })),
+    fermerCour: () => set({ cour: null }),
   };
 });

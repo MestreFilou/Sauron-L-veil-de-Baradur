@@ -207,7 +207,42 @@ export interface EtatNazgul {
   /** Démonté ou pas encore arrivé : indisponible jusqu'à ce tour (inclus). */
   indisponibleJusquA: number;
   lameMorgulUtilisee: boolean;
+  /**
+   * Mission permanente confiée par la Tour (menu des Neuf). À chaque tour, le
+   * moteur en tire des ordres pré-remplis que le joueur peut annuler.
+   * Absente des anciennes sauvegardes : pas de mission.
+   */
+  affectation?: Affectation | null;
 }
+
+/** Missions permanentes d'un Nazgûl (voir engine/src/affectations.ts). */
+export type Affectation =
+  /** Traquer chaque tour là où il se trouve. */
+  | { type: 'battre_campagne' }
+  /** Gagner une région et y rester tapi en embuscade. */
+  | { type: 'tenir_passage'; region: IdRegion }
+  /** Chevaucher vers la dernière trace connue de l'Anneau et y traquer. */
+  | { type: 'suivre_piste' }
+  /** Gagner une région et y pousser le Cri chaque nuit. */
+  | { type: 'semer_effroi'; region: IdRegion };
+
+/** Ce que la Tour peut faire d'un prisonnier (voir engine/src/cachots.ts). */
+export type GesteCachot = 'interroger' | 'tourmenter' | 'relacher' | 'executer';
+
+export interface Captif {
+  personnage: IdPersonnage;
+  /** Tour de la capture. */
+  depuis: number;
+  /** Région où il a été pris : il y retourne s'il est relâché. */
+  origine: IdRegion;
+  par: IdNazgul;
+  interrogatoires: number;
+  /** Doute ≥ seuil après les tourments : relâché, il servira la Tour. */
+  plie: boolean;
+}
+
+/** Identifiant d'une décision de la Tour (voir engine/src/decisions.ts). */
+export type IdDecision = 'presser_les_neuf' | 'silence_de_la_tour' | 'langues_des_tavernes' | 'crebains_de_dun' | 'montures_ailees';
 
 export type EtapeAnneau = 'A0' | 'A1' | 'A2' | 'A3';
 
@@ -334,8 +369,13 @@ export type Ordre =
   | { type: 'nazgul_embuscade'; nazgul: IdNazgul; cible?: IdPersonnage }
   | { type: 'nazgul_cri'; nazgul: IdNazgul }
   | { type: 'nazgul_fleau'; nazgul: IdNazgul }
+  | { type: 'nazgul_capturer'; nazgul: IdNazgul; pnj: IdPersonnage }
   | { type: 'agent_placer'; pnj: IdPersonnage }
-  | { type: 'corruption'; region: IdRegion };
+  | { type: 'corruption'; region: IdRegion }
+  /** Un geste sur un prisonnier des cachots. */
+  | { type: 'cachot'; geste: GesteCachot; pnj: IdPersonnage }
+  /** Une décision de la Tour (conditions, coût, recharge). */
+  | { type: 'decision'; decision: IdDecision };
 
 export type TypeEvenement =
   | 'aube'
@@ -354,6 +394,8 @@ export type TypeEvenement =
   | 'forme'
   | 'seuil'
   | 'essence'
+  | 'cachot'
+  | 'decision'
   | 'fin';
 
 export interface Evenement {
@@ -430,6 +472,10 @@ export interface EtatJeu {
   /** Historique des événements publics des tours passés (le Journal de Barad-dûr s'en nourrit). */
   journal: { tour: number; evenements: Evenement[]; resume?: string }[];
   issue: IssueActe | null;
+  /** Prisonniers des cachots de Barad-dûr. Absent des anciennes sauvegardes : aucun. */
+  captifs?: Captif[];
+  /** Décisions déjà prises : tour de la dernière prise. */
+  decisions?: Partial<Record<IdDecision, number>>;
 }
 
 export type Action =
@@ -438,6 +484,8 @@ export type Action =
   | { type: 'classer_murmure'; murmure: string; classement: Classement }
   | { type: 'ordonner'; ordre: Ordre }
   | { type: 'annuler_ordre'; index: number }
+  /** Confier (ou retirer, avec `null`) une mission permanente à un Nazgûl. Gratuit, à tout moment. */
+  | { type: 'affecter'; nazgul: IdNazgul; affectation: Affectation | null }
   | { type: 'fin_des_ordres' };
 
 export class ErreurRegle extends Error {
