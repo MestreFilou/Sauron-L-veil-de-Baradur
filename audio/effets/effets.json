@@ -1,0 +1,32 @@
+{
+ "version": 1,
+ "_note": "Effets sonores et fonds d'ambiance, tous générés par synthèse (audio/outils/generer_sons/generer.py) : œuvres originales du projet, sans droits extérieurs. Pour changer un son, remplacer le fichier ou pointer ici vers un autre.",
+ "_format": {
+  "fichier": "Chemin relatif à audio/effets/.",
+  "volume_db": "Gain à la lecture (0 = tel quel).",
+  "variation": "Écart de vitesse tiré au hasard à chaque lecture (0,05 = ±5 %), pour qu'un son répété ne lasse pas.",
+  "intervalle_s": "Délai minimal entre deux lectures du même son."
+ },
+ "effets": {
+  "ui_survol": { "fichier": "ui_survol.mp3", "volume_db": -22, "variation": 0.08, "intervalle_s": 0.06 },
+  "ui_clic": { "fichier": "ui_clic.mp3", "volume_db": -13, "variation": 0.06, "intervalle_s": 0.04 },
+  "ui_onglet": { "fichier": "ui_onglet.mp3", "volume_db": -14, "variation": 0.08, "intervalle_s": 0.05 },
+  "ordre": { "fichier": "ordre.mp3", "volume_db": -8, "variation": 0.05, "intervalle_s": 0.1 },
+  "ordre_annule": { "fichier": "ordre_annule.mp3", "volume_db": -10, "variation": 0.05, "intervalle_s": 0.1 },
+  "fin_tour": { "fichier": "fin_tour.mp3", "volume_db": -5, "variation": 0, "intervalle_s": 1 },
+  "regard": { "fichier": "regard.mp3", "volume_db": -6, "variation": 0.04, "intervalle_s": 0.5 },
+  "anneau": { "fichier": "anneau.mp3", "volume_db": -7, "variation": 0, "intervalle_s": 1 },
+  "repousse": { "fichier": "repousse.mp3", "volume_db": -7, "variation": 0, "intervalle_s": 1 },
+  "ombre_entrer": { "fichier": "ombre_entrer.mp3", "volume_db": -8, "variation": 0.03, "intervalle_s": 0.3 },
+  "ombre_sortir": { "fichier": "ombre_sortir.mp3", "volume_db": -9, "variation": 0.03, "intervalle_s": 0.3 },
+  "murmure": { "fichier": "murmure.mp3", "volume_db": -12, "variation": 0.1, "intervalle_s": 0.1 },
+  "refus": { "fichier": "refus.mp3", "volume_db": -10, "variation": 0.04, "intervalle_s": 0.2 },
+  "rituel": { "fichier": "rituel.mp3", "volume_db": -6, "variation": 0, "intervalle_s": 1 },
+  "duel": { "fichier": "duel.mp3", "volume_db": -6, "variation": 0, "intervalle_s": 1 },
+  "entree": { "fichier": "entree.mp3", "volume_db": -6, "variation": 0, "intervalle_s": 1 }
+ },
+ "fonds": {
+  "oeil": { "fichier": "fond_forge.mp3", "volume_db": -4 },
+  "ombre": { "fichier": "fond_vent.mp3", "volume_db": -12 }
+ }
+}

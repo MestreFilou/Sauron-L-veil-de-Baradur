@@ -22,7 +22,7 @@ Le jeu se joue **entièrement sans IA** : les murmures, les pensées des personn
 | `engine/` | Moteur de règles pur et testé : boucle de tour, jauges, jets à graine, vue du joueur. Aucune interface, aucun réseau. Tous les chiffres sont dans `engine/src/regles.ts`. |
 | `world/` | Données de l'Eriador en JSON : régions, personnages, les Neuf, calendrier canon, géographie de la carte. |
 | `narrative/` | Banque de textes (narrateur par défaut), prompts et appels à Claude (Haiku 5.5 pour les murmures et le Journal, Sonnet 5.5 pour la Voix et les duels). |
-| `audio/` | Lexique du Noir Parler ; banque des voix enregistrées par Lucas (`banque/voix.json`, fichiers dans `voix/`, effets appliqués hors ligne par `outils/chaine_retenue/render_rec.sh`) ; musique par ambiance dans `musique/`, dossier remplaçable et non versionné. |
+| `audio/` | Lexique du Noir Parler ; banque des voix enregistrées par Lucas (`banque/voix.json`, fichiers dans `voix/`, effets appliqués hors ligne par `outils/chaine_retenue/render_rec.sh`) ; musique par ambiance dans `musique/` (six pistes originales dans `musique/libre/`, le reste du dossier remplaçable et non versionné) ; effets et fonds d'ambiance dans `effets/`. Musique et effets sont générés par synthèse (`outils/generer_sons/`), sans droits extérieurs. |
 | `client/` | Interface : React pour les panneaux, PixiJS pour la carte, le Regard et le Monde de l'Ombre, l'Œil en champ de feu. |
 | `docs/` | Game design document, mécaniques de la boucle de tour, menus de gestion (la Cour), direction artistique et maquette. |
 
