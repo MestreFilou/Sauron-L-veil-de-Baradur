@@ -40,6 +40,10 @@ interface Store {
   duel: { cible: string; manches: string[]; final: string; victoire: boolean } | null;
   mode: Mode;
   nazgulChoisi: string | null;
+  /** Les autres Nazgûl sélectionnés avec Maj+clic : ils marchent avec le premier. */
+  groupe: string[];
+  /** Destinations lointaines : l'ordre de marche est redonné chaque soir jusqu'à l'arrivée. */
+  caps: Record<string, string>;
   regionChoisie: string | null;
   murmureSurvole: string | null;
   introVue: boolean;
@@ -51,6 +55,10 @@ interface Store {
   nouvellePartie(graine?: number): void;
   setMode(m: Mode): void;
   choisirNazgul(id: string | null): void;
+  /** Maj+clic : ajoute un Nazgûl à la sélection, ou l'en retire. */
+  basculerGroupe(id: string): void;
+  /** Ordre de marche pour un ou plusieurs Nazgûl ; remplace l'ordre de marche déjà donné. */
+  ordonnerMarche(ids: string[], destination: string): boolean;
   choisirRegion(id: string | null): void;
   survolerMurmure(id: string | null): void;
   fermerIntro(): void;
@@ -79,6 +87,58 @@ function enregistrer(etat: EtatJeu) {
 }
 
 const initial = demarrer();
+
+const CLE_CAPS = `${CLE}/caps`;
+
+function lireCaps(etat: EtatJeu): Record<string, string> {
+  try {
+    const c = JSON.parse(localStorage.getItem(CLE_CAPS) ?? '{}') as Record<string, string>;
+    return Object.fromEntries(Object.entries(c).filter(([id, r]) => etat.nazgul[id] && monde.regions.has(r)));
+  } catch {
+    return {};
+  }
+}
+
+function ecrireCaps(caps: Record<string, string>) {
+  try {
+    localStorage.setItem(CLE_CAPS, JSON.stringify(caps));
+  } catch {
+    /* stockage indisponible : les caps vivent le temps de la session */
+  }
+}
+
+/** Applique une action sans bruit : le nouvel état, ou le message de la règle enfreinte. */
+function essayer(etat: EtatJeu, action: Action): EtatJeu | string {
+  try {
+    return appliquer(monde, etat, action);
+  } catch (e) {
+    if (e instanceof ErreurRegle) return e.message;
+    throw e;
+  }
+}
+
+const indexMarche = (etat: EtatJeu, id: string) => etat.ordres.findIndex((o) => o.type === 'nazgul_deplacer' && o.nazgul === id);
+
+/** Les caps qui tiennent encore : Nazgûl disponible, pas encore arrivé. */
+function capsVivants(etat: EtatJeu, caps: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(caps).filter(([id, r]) => {
+      const n = etat.nazgul[id];
+      return n && n.indisponibleJusquA < etat.tour && n.region !== r;
+    }),
+  );
+}
+
+/** À l'heure des ordres, chaque Nazgûl qui a un cap reprend la route d'office. */
+function relancerCaps(etat: EtatJeu, caps: Record<string, string>): EtatJeu {
+  let e = etat;
+  for (const [id, r] of Object.entries(caps)) {
+    if (indexMarche(e, id) >= 0) continue;
+    const suite = essayer(e, { type: 'ordonner', ordre: { type: 'nazgul_deplacer', nazgul: id, destination: r } });
+    if (typeof suite !== 'string') e = suite;
+  }
+  return e;
+}
 
 export const useJeu = create<Store>((set, get) => {
   /** Écrit les murmures qui n'ont pas encore de texte (banque, synchrone en pratique). */
@@ -123,6 +183,8 @@ export const useJeu = create<Store>((set, get) => {
     duel: null,
     mode: 'oeil',
     nazgulChoisi: null,
+    groupe: [],
+    caps: lireCaps(initial),
     regionChoisie: null,
     murmureSurvole: null,
     introVue: false,
@@ -141,7 +203,12 @@ export const useJeu = create<Store>((set, get) => {
         }
         throw e;
       }
-      set({ etat, vue: vueJoueur(monde, etat) });
+      // Les marches au long cours : relancées à l'heure des ordres, oubliées à l'arrivée ou si l'ordre est annulé.
+      let caps = capsVivants(etat, get().caps);
+      if (etat.phase === 'ordres' && avant.phase !== 'ordres') etat = relancerCaps(etat, caps);
+      if (action.type === 'annuler_ordre') caps = Object.fromEntries(Object.entries(caps).filter(([id]) => indexMarche(etat, id) >= 0));
+      if (caps !== get().caps) ecrireCaps(caps);
+      set({ etat, vue: vueJoueur(monde, etat), caps });
       enregistrer(etat);
       void habillerMurmures(etat);
 
@@ -158,20 +225,65 @@ export const useJeu = create<Store>((set, get) => {
       }
       if (action.type === 'fin_des_ordres') {
         void penser(etat.journal.at(-1)?.evenements ?? []);
-        set({ nazgulChoisi: null, regionChoisie: null });
+        set({ nazgulChoisi: null, groupe: [], regionChoisie: null });
       }
       return true;
     },
 
+    ordonnerMarche(ids, destination) {
+      let etat = get().etat;
+      const caps = { ...get().caps };
+      const partis: string[] = [];
+      for (const id of ids) {
+        const n = etat.nazgul[id];
+        if (!n) continue;
+        const ancien = indexMarche(etat, id);
+        let sans = etat;
+        if (ancien >= 0) {
+          const s = essayer(etat, { type: 'annuler_ordre', index: ancien });
+          if (typeof s !== 'string') sans = s;
+        }
+        if (n.region === destination) {
+          // Rester sur place : la marche en cours est annulée.
+          etat = sans;
+          delete caps[id];
+          continue;
+        }
+        const suite = essayer(sans, { type: 'ordonner', ordre: { type: 'nazgul_deplacer', nazgul: id, destination } });
+        if (typeof suite === 'string') {
+          get().annoncer(suite);
+          continue;
+        }
+        etat = suite;
+        caps[id] = destination;
+        partis.push(id);
+      }
+      if (etat === get().etat) return false;
+      ecrireCaps(caps);
+      set({ etat, vue: vueJoueur(monde, etat), caps });
+      enregistrer(etat);
+      const lieu = (monde.regions.get(destination)?.nom ?? destination).split(' · ')[0];
+      if (partis.length === 1) get().annoncer(`${monde.nazgul.get(partis[0]!)?.nom ?? partis[0]} chevauche vers ${lieu}.`);
+      else if (partis.length > 1) get().annoncer(`${partis.length} des Neuf chevauchent vers ${lieu}.`);
+      return partis.length > 0;
+    },
+
     nouvellePartie(graine) {
       const etat = creerPartie(monde, graine ?? Math.floor(Math.random() * 2 ** 31));
-      set({ etat, vue: vueJoueur(monde, etat), textes: {}, reactions: {}, duel: null, nazgulChoisi: null, regionChoisie: null });
+      set({ etat, vue: vueJoueur(monde, etat), textes: {}, reactions: {}, duel: null, nazgulChoisi: null, groupe: [], caps: {}, regionChoisie: null });
+      ecrireCaps({});
       enregistrer(etat);
       void habillerMurmures(etat);
     },
 
     setMode: (mode) => set({ mode }),
-    choisirNazgul: (nazgulChoisi) => set({ nazgulChoisi }),
+    choisirNazgul: (nazgulChoisi) => set({ nazgulChoisi, groupe: [] }),
+    basculerGroupe: (id) =>
+      set((s) => {
+        if (!s.nazgulChoisi) return { nazgulChoisi: id, groupe: [] };
+        if (s.nazgulChoisi === id) return { nazgulChoisi: s.groupe[0] ?? null, groupe: s.groupe.slice(1) };
+        return { groupe: s.groupe.includes(id) ? s.groupe.filter((x) => x !== id) : [...s.groupe, id] };
+      }),
     choisirRegion: (regionChoisie) => set({ regionChoisie }),
     survolerMurmure: (murmureSurvole) => set({ murmureSurvole }),
     fermerIntro: () => set({ introVue: true }),
