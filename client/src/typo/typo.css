@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Typographie : deux polices libres (OFL) embarquées, et le Noir Parler.
+   - Grenze : titres, étiquettes, boutons. Une romaine taillée comme une gothique.
+   - Alegreya : tout ce qui se lit. Calligraphique, mais nette en petit corps.
+   - Noir Parler : les runes dessinées pour le jeu (outils/police_noir_parler.py).
+   ========================================================================== */
+@font-face{font-family:'Noir Parler';src:url('./NoirParler.woff2') format('woff2');font-display:block}
+
+:root{
+  --police-titre:'Grenze',Georgia,serif;
+  --police-texte:'Alegreya',Georgia,serif;
+  --police-runes:'Noir Parler';
+}
+
+/* Le texte en runes : la police change, le texte non. Les chiffres et la ponctuation rare
+   n'ont pas de rune et restent lisibles (repli sur la police d'origine). */
+[data-np="r"]{font-family:var(--police-runes),var(--police-texte) !important;font-style:normal !important;font-weight:400 !important;
+  text-shadow:0 0 7px rgba(255,90,31,.28)}
+/* La bascule en clair : une brûlure brève, comme une inscription qui s'éteint. */
+[data-np="c"]{animation:np-brule .7s ease-out}
+@keyframes np-brule{
+  0%{opacity:.25;filter:blur(1.4px);text-shadow:0 0 10px rgba(255,110,40,.9)}
+  45%{opacity:.85;filter:blur(0);text-shadow:0 0 8px rgba(255,90,31,.55)}
+  100%{opacity:1;text-shadow:none}
+}
+body.ombre [data-np="r"]{text-shadow:0 0 7px rgba(158,201,230,.3)}
+@media (prefers-reduced-motion:reduce){[data-np="c"]{animation:none}}
+
+/* Le choix du mode, dans la barre du haut */
+.np-choix{position:relative;display:flex;align-items:center}
+.np-choix>.btn.mini{width:28px;height:24px;padding:0;display:grid;place-items:center;font-family:var(--police-runes);font-size:15px;letter-spacing:0;color:var(--bronze-clair)}
+.np-menu{position:absolute;top:32px;right:0;width:270px;z-index:8;padding:0 0 10px}
+.np-menu .body{padding:8px 10px 0;display:flex;flex-direction:column;gap:2px}
+.np-menu button{all:unset;cursor:pointer;padding:7px 8px;border-left:2px solid transparent}
+.np-menu button b{display:block;font-family:var(--police-titre);font-weight:500;font-size:13px;letter-spacing:.08em;color:var(--texte)}
+.np-menu button span{display:block;font-family:var(--police-texte);font-size:13.5px;line-height:1.3;color:var(--texte-2);margin-top:1px}
+.np-menu button:hover{background:linear-gradient(90deg,rgba(140,106,63,.16),transparent)}
+.np-menu button.on{border-left-color:var(--braise)}
+.np-menu button.on b{color:#ffd7bd}
