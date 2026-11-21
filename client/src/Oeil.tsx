@@ -132,7 +132,9 @@ export function Oeil({ echelle = 1, suivre = 'regard', libelle: avecLibelle = tr
       const rect = cv.getBoundingClientRect(),
         ax = rect.left + rect.width / 2,
         ay = rect.top + rect.height / 2,
-        cible = suivre === 'souris' ? (pointeur.x < 0 ? { x: ax, y: ay } : pointeur) : regard,
+        // dans la barre du jeu, l'Œil suit la souris tant que le Regard n'est pas posé quelque part
+        cible =
+          suivre === 'souris' || !regard.verrouille ? (pointeur.x < 0 ? { x: ax, y: ay } : pointeur) : regard,
         an = Math.atan2(cible.y - ay, cible.x - ax),
         dd = Math.min(1, Math.hypot(cible.x - ax, cible.y - ay) / (500 * echelle));
       const gaze = { x: Math.cos(an) * dd, y: Math.sin(an) * dd };
