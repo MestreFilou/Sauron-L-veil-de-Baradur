@@ -11,7 +11,8 @@
  */
 import type { VueJoueur } from '@sauron/engine';
 import type { Geographie } from '@sauron/world';
-import { Container, Graphics, Text } from 'pixi.js';
+import { Container, Graphics, Sprite, Text, Texture } from 'pixi.js';
+import { ANCRE_CAVALIER, cuireCavalier, HAUTEUR_FIGURINE } from './encre';
 import { CINZ, FELL } from './bruit';
 import type { Trajet } from './marche';
 
@@ -37,6 +38,13 @@ const VITESSE_ANIM = 240; // unités monde par seconde
 const OR = 0xd6b47c;
 const BRONZE = 0xa17c48;
 const BRAISE = 0xff7a38;
+
+/** Textures des figurines des Neuf, cuites à la première demande. */
+const cache: Partial<Record<'nazgul' | 'roi', Texture>> = {};
+const TEX = {
+  nazgul: () => (cache.nazgul ??= Texture.from(cuireCavalier(false))),
+  roi: () => (cache.roi ??= Texture.from(cuireCavalier(true))),
+};
 
 /** Décalage du k-ième des `n` pions d'une même région : en rangs de quatre, comme une troupe. */
 function emplacement(k: number, n: number): Point {
@@ -107,7 +115,6 @@ export class Pions {
     private readonly geo: Geographie,
     private readonly outils: OutilsPions,
   ) {
-    this.halos.blendMode = 'add';
     this.calque.addChild(this.traces, this.apercu, this.halos, this.jetons, this.textes);
   }
 
@@ -180,7 +187,8 @@ export class Pions {
     let best: string | null = null,
       d = tolerance;
     for (const [id, p] of this.affiche) {
-      const dd = Math.hypot(p.x - x, p.y - y);
+      // on saisit la figurine par le corps, un peu au-dessus du socle
+      const dd = Math.hypot(p.x - x, p.y - 9 - y) * 0.85;
       if (dd < d) {
         d = dd;
         best = id;
@@ -227,42 +235,37 @@ export class Pions {
       const j = new Container();
       j.label = n.id;
       const g = new Graphics();
-      // ombre portée
-      g.ellipse(1.5, RAYON - 1, RAYON * 0.95, RAYON * 0.38).fill({ color: 0x000000, alpha: 0.35 });
-      // socle
-      g.circle(0, 0, RAYON + 2).fill({ color: 0x000000, alpha: 0.45 });
-      g.circle(0, 0, RAYON)
-        .fill(0x161311)
-        .stroke({ width: sel ? 2 : 1.4, color: n.roiSorcier ? OR : sel || survol ? 0xe8c38a : BRONZE });
-      g.circle(-3, -3.5, RAYON * 0.55).fill({ color: 0x4a443e, alpha: 0.35 });
+      // Une figurine peinte sur son socle : plus de jeton plat. Au sol, à l'encre :
+      // un ovale rouge si on l'a choisi, des tirets s'il traque.
+      if (sel || survol) g.ellipse(0, 1, RAYON * 1.25, RAYON * 0.5).stroke({ width: sel ? 1.5 : 1, color: sel ? 0x7d2414 : 0x3a2a1c, alpha: 0.9 });
       if (n.posture === 'traque') {
-        for (let i = 0; i < 16; i++) {
-          const a = (i / 16) * Math.PI * 2;
-          g.circle(Math.cos(a) * (RAYON + 3.2), Math.sin(a) * (RAYON + 3.2), 0.7).fill({ color: 0xc9a46a, alpha: 0.55 });
+        for (let i = 0; i < 14; i++) {
+          const a0 = (i / 14) * Math.PI * 2,
+            a1 = a0 + 0.22;
+          g.moveTo(Math.cos(a0) * RAYON * 1.45, 1 + Math.sin(a0) * RAYON * 0.62).lineTo(Math.cos(a1) * RAYON * 1.45, 1 + Math.sin(a1) * RAYON * 0.62);
         }
-      }
-      // le cavalier capuchonné (couronne pour le Roi-Sorcier)
-      if (n.roiSorcier) {
-        g.poly([-6.5, -2, -4.4, -7.5, -2, -3.5, 0, -8.5, 2, -3.5, 4.4, -7.5, 6.5, -2, 5.2, 6.5, -5.2, 6.5]).fill(OR);
-        g.ellipse(0, 1.5, 2.2, 2.6).fill(0x0a0908);
-      } else {
-        g.moveTo(0, -8.5).bezierCurveTo(-5.6, -8.5, -6.2, -1.5, -7, 7.5).lineTo(7, 7.5).bezierCurveTo(6.2, -1.5, 5.6, -8.5, 0, -8.5).closePath().fill(OR);
-        g.ellipse(0, -2, 2.6, 3.3).fill(0x0a0908);
-        g.circle(-1, -2.4, 0.5).fill({ color: BRAISE, alpha: 0.9 });
-        g.circle(1, -2.4, 0.5).fill({ color: BRAISE, alpha: 0.9 });
-      }
-      // ordre de marche reçu : un petit fanion
-      if (enMarche) {
-        g.moveTo(RAYON - 2, -RAYON + 1).lineTo(RAYON - 2, -RAYON - 11).stroke({ width: 1.1, color: 0x1a0c06 });
-        g.poly([RAYON - 2, -RAYON - 11, RAYON + 7, -RAYON - 8, RAYON - 2, -RAYON - 5]).fill(0x8e1d10);
+        g.stroke({ width: 0.9, color: 0x3a2a1c, alpha: 0.55 });
       }
       j.addChild(g);
+      const fig = new Sprite(n.roiSorcier ? TEX.roi() : TEX.nazgul());
+      fig.anchor.set(ANCRE_CAVALIER.x, ANCRE_CAVALIER.y);
+      fig.scale.set(36 / HAUTEUR_FIGURINE);
+      j.addChild(fig);
+      // ordre de marche reçu : un petit fanion
+      if (enMarche) {
+        const f = new Graphics();
+        f.moveTo(RAYON - 3, 2).lineTo(RAYON - 3, -26).stroke({ width: 1.1, color: 0x1a0c06 });
+        f.poly([RAYON - 3, -26, RAYON + 6, -23, RAYON - 3, -20]).fill(0x8e1d10);
+        j.addChild(f);
+      }
       // touche de sélection rapide
       const touche = new Text({ text: String(index + 1), style: { fontFamily: CINZ, fontWeight: '600', fontSize: 8, fill: 0xf0dfc0 }, resolution: 3 });
       touche.anchor.set(0.5);
-      const badge = new Graphics().circle(0, 0, 5.2).fill(0x2a1a10).stroke({ width: 0.8, color: BRONZE });
-      badge.position.set(-RAYON + 1, -RAYON + 1);
-      touche.position.set(-RAYON + 1, -RAYON + 1.3);
+      touche.style.fill = 0x3a2a1c;
+      const badge = new Graphics().rect(-4.2, -4.6, 8.4, 9.2).fill(0xe8d8b2).stroke({ width: 0.7, color: 0x5a4630 });
+      badge.position.set(-RAYON - 1, -4);
+      badge.rotation = -0.08;
+      touche.position.set(-RAYON - 1, -3.7);
       j.addChild(badge, touche);
       j.alpha = this.tenu?.id === n.id ? 0.9 : 1;
       this.jetons.addChild(j);
@@ -270,7 +273,7 @@ export class Pions {
       if (n.roiSorcier || sel || survol || n.nom.startsWith('Khamûl')) {
         const t = new Text({
           text: n.roiSorcier ? 'Le Roi-Sorcier' : n.nom,
-          style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: sel ? 0xffe6bf : 0xf0dfc0, stroke: { color: 0x0a0605, width: 3, alpha: 0.7 } },
+          style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: sel ? 0x7d2414 : 0x2e2015, stroke: { color: 0xe8d8b2, width: 3, alpha: 0.8 } },
           resolution: 3,
         });
         t.anchor.set(0.5, 0);
@@ -378,7 +381,7 @@ export class Pions {
     }
     for (const t of this.textes.children) {
       const p = this.tenu?.id === t.label ? this.tenu : this.affiche.get(t.label);
-      if (p) t.position.set(p.x, p.y + RAYON + 3);
+      if (p) t.position.set(p.x, p.y + 6);
     }
   }
 
@@ -416,16 +419,12 @@ export class Pions {
     h.clear();
     const e = this.etat;
     if (!e) return;
-    const pouls = 0.5 + 0.5 * Math.sin(t * 0.005);
+    // le choisi : un second trait d'encre qui respire doucement autour du socle
+    const pouls = 0.5 + 0.5 * Math.sin(t * 0.004);
     for (const id of e.choisis) {
       const p = this.tenu?.id === id ? this.tenu : this.affiche.get(id);
       if (!p) continue;
-      h.circle(p.x, p.y, RAYON + 5 + pouls * 2.5).stroke({ width: 1.6, color: BRAISE, alpha: 0.45 + 0.35 * pouls });
-      h.ellipse(p.x, p.y + RAYON - 1, RAYON * 1.4, RAYON * 0.5).fill({ color: BRAISE, alpha: 0.12 + 0.08 * pouls });
-    }
-    if (this.survolPion && !e.choisis.includes(this.survolPion)) {
-      const p = this.affiche.get(this.survolPion);
-      if (p) h.circle(p.x, p.y, RAYON + 4).stroke({ width: 1.2, color: 0xffe6bf, alpha: 0.5 });
+      h.ellipse(p.x, p.y + 1, RAYON * (1.45 + pouls * 0.08), RAYON * (0.6 + pouls * 0.03)).stroke({ width: 0.9, color: 0x7d2414, alpha: 0.5 + 0.3 * pouls });
     }
   }
 }
