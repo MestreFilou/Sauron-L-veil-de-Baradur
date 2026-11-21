@@ -5,6 +5,7 @@
  * reste silencieux, sans requête vers un fichier qui n'existe pas.
  */
 const voix = import.meta.glob('../../../audio/voix/**/*.{mp3,ogg,wav,m4a,opus}', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
+const effets = import.meta.glob('../../../audio/effets/**/*.{mp3,ogg,wav,m4a,opus}', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 const musique = import.meta.glob('../../../audio/musique/**/*.{mp3,ogg,wav,flac,m4a,opus}', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 
 /** Indexe les URL par chemin relatif à un dossier de base (« voix/x.mp3 », « barad_dur/y.mp3 »). */
@@ -19,8 +20,11 @@ export function indexer(urls: Record<string, string>, base: string): Map<string,
 
 const VOIX = indexer(voix, '/audio/');
 const MUSIQUE = indexer(musique, '/audio/musique/');
+const EFFETS = indexer(effets, '/audio/effets/');
 
 /** URL d'une réplique (chemin relatif à audio/, comme dans voix.json), ou undefined si le fichier manque. */
 export const urlVoix = (fichier: string) => VOIX.get(fichier);
 /** URL d'une piste (chemin relatif à audio/musique/, comme dans pistes.json), ou undefined. */
 export const urlMusique = (fichier: string) => MUSIQUE.get(fichier);
+/** URL d'un effet ou d'un fond (chemin relatif à audio/effets/, comme dans effets.json), ou undefined. */
+export const urlEffet = (fichier: string) => EFFETS.get(fichier);

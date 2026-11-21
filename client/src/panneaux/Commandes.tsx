@@ -1,5 +1,5 @@
 import type { Ordre } from '@sauron/engine';
-import { REGLES } from '@sauron/engine';
+import { DECISIONS, REGLES } from '@sauron/engine';
 import { geographieEriador } from '@sauron/world';
 import { useEffect, useRef } from 'react';
 import { ancre } from '../carte/scene';
@@ -8,6 +8,8 @@ import { monde, useJeu } from '../store';
 
 const nom = (id: string) => monde.regions.get(id)?.nom ?? monde.personnages.get(id)?.nom ?? monde.nazgul.get(id)?.nom ?? id;
 const court = (id: string) => nom(id).split(' · ')[0]!;
+
+const GESTES = { interroger: 'Interroger', tourmenter: 'Tourmenter', relacher: 'Relâcher', executer: 'Exécuter' } as const;
 
 export function libelleOrdre(o: Ordre): string {
   switch (o.type) {
@@ -29,6 +31,12 @@ export function libelleOrdre(o: Ordre): string {
       return `Placer ${court(o.pnj)}`;
     case 'corruption':
       return `Corrompre ${court(o.region)}`;
+    case 'nazgul_capturer':
+      return `${court(o.nazgul)} enlève ${court(o.pnj)}`;
+    case 'cachot':
+      return `${GESTES[o.geste]} ${court(o.pnj)}`;
+    case 'decision':
+      return DECISIONS.find((d) => d.id === o.decision)?.nom ?? o.decision;
   }
 }
 
@@ -98,7 +106,9 @@ export function Modes() {
           </>
         ) : (
           <>
-            <kbd>Clic</kbd> choisir une région · <kbd>Échap</kbd> relâcher
+            <kbd>Clic</kbd> un pion ou <kbd>1</kbd>–<kbd>9</kbd> choisir un des Neuf · <kbd>Maj</kbd> en ajouter
+            <br />
+            <kbd>Clic droit</kbd> ou glisser le pion : marcher · <kbd>Échap</kbd> relâcher
           </>
         )}
         <br />

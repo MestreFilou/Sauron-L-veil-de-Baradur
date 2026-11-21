@@ -223,6 +223,30 @@ export const REGLES = {
 
   agent: { pa: 1, douteMin: 60, visibilite: 1 },
 
+  /**
+   * Les cachots de Barad-dûr. Un Nazgûl ne capture que des gens du commun
+   * (rôle « pnj ») : les héros et les Sages ne se laissent pas prendre en Acte I.
+   */
+  cachots: {
+    capture: { pa: 2, terreur: 10, visibilite: 4 },
+    interroger: { pa: 1, essence: 0, doute: 10 },
+    tourmenter: { pa: 1, essence: 1, doute: 25, visibilite: 1 },
+    /** Relâché sans avoir plié : il raconte ce qu'il a vu. */
+    relacher: { pa: 0, essence: 0, terreur: 10, mefianceHeros: 10, visibiliteAgent: 1 },
+    executer: { pa: 0, essence: 0, terreur: 20, doutePresents: 5, visibilite: 3, gainEssence: 1 },
+    /** Doute à partir duquel le prisonnier plie (il servira la Tour une fois relâché). */
+    seuilPlier: 60,
+  },
+
+  /** Décisions de la Tour : coût, recharge en tours (null : une seule fois). */
+  decisions: {
+    presser_les_neuf: { pa: 0, essence: 3, recharge: 6, gainTours: 2, visibilite: 2 },
+    silence_de_la_tour: { pa: 0, essence: 0, recharge: 8, visibiliteMin: 25, visibilite: -8, malusPa: 2 },
+    langues_des_tavernes: { pa: 1, essence: 1, recharge: 4, terreur: 10, visibilite: 2 },
+    crebains_de_dun: { pa: 1, essence: 2, recharge: 5, visibiliteMax: 60, visibilite: 2 },
+    montures_ailees: { pa: 0, essence: 15, recharge: null, formeMin: 2 },
+  },
+
   corruption: {
     pa: 2,
     essence: 3,

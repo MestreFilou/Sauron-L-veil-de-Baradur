@@ -1,21 +1,8 @@
 import type { Ordre } from '@sauron/engine';
 import { coutOrdre, REGLES } from '@sauron/engine';
+import { CAPUCHE, COURONNE } from '../cour/sigles';
 import { Runes } from '../Runes';
 import { monde, useJeu } from '../store';
-
-const CAPUCHE = (
-  <svg viewBox="0 0 16 16">
-    <path
-      d="M8 1C5 1 3.4 3.6 3.4 6.6 3.4 9 2.6 11.6 1.5 15h13c-1.1-3.4-1.9-6-1.9-8.4C12.6 3.6 11 1 8 1zm0 4.2c1.2 0 2 1 2 2.3 0 .9-.9 1.6-2 1.6s-2-.7-2-1.6c0-1.3.8-2.3 2-2.3z"
-      fillRule="evenodd"
-    />
-  </svg>
-);
-const COURONNE = (
-  <svg viewBox="0 0 16 16">
-    <path d="M2 5l2.5 2L6 2.5 8 6l2-3.5L11.5 7 14 5l-1 4H3zM3.2 10h9.6c-.8 2-1.3 3.6-1.6 5H4.8c-.3-1.4-.8-3-1.6-5z" />
-  </svg>
-);
 
 const LIBELLES: Partial<Record<Ordre['type'], string>> = {
   nazgul_deplacer: 'MARCHE',
@@ -24,6 +11,7 @@ const LIBELLES: Partial<Record<Ordre['type'], string>> = {
   nazgul_cri: 'CRI',
   nazgul_interroger: 'INTERROGE',
   nazgul_fleau: 'FLÉAU',
+  nazgul_capturer: 'ENLÈVE',
 };
 
 /** Les Neuf : où ils sont, leur signal, et leurs ordres du tour. */
@@ -33,13 +21,20 @@ export function Neuf() {
   const choisi = useJeu((s) => s.nazgulChoisi);
   const choisir = useJeu((s) => s.choisirNazgul);
   const agir = useJeu((s) => s.agir);
+  const ouvrirCour = useJeu((s) => s.ouvrirCour);
   const nomRegion = (id: string) => monde.regions.get(id)?.nom ?? id;
   const ordres = v.phase === 'ordres';
 
   return (
     <aside className="panel" id="nine">
       <div className="ptitle">
-        Les Neuf <Runes n={6} s={9} />
+        Les Neuf
+        <span>
+          <button className="ouvrir-cour" onClick={() => ouvrirCour('neuf')} title="La Cour de Barad-dûr : missions, cachots, décisions (touche C)">
+            La Cour
+          </button>{' '}
+          <Runes n={4} s={9} />
+        </span>
       </div>
       <ul>
         {v.nazgul.map((n) => {
@@ -62,7 +57,14 @@ export function Neuf() {
                     {LIBELLES[o.type]}
                   </span>
                 ))}
-                {!siens.length && <span className="post">{n.posture === 'ombre_ailee' ? 'AILÉ' : 'TRAQUE'}</span>}
+                {!siens.length &&
+                  (n.mission ? (
+                    <span className="post mission" title={`Mission : ${n.mission.libelle}`}>
+                      {n.mission.libelle.toUpperCase()}
+                    </span>
+                  ) : (
+                    <span className="post">{n.posture === 'ombre_ailee' ? 'AILÉ' : 'TRAQUE'}</span>
+                  ))}
                 <small>
                   {n.disponible ? nomRegion(n.region) : 'sur la route du Sud'}
                   {n.titre ? ` · ${n.titre}` : ''}
@@ -98,6 +100,16 @@ export function Neuf() {
                       </button>
                     );
                   })}
+                  {pnj
+                    .filter((p) => monde.personnages.get(p.id)?.role === 'pnj')
+                    .map((p) => {
+                      const o: Ordre = { type: 'nazgul_capturer', nazgul: n.id, pnj: p.id };
+                      return (
+                        <button key={`c-${p.id}`} className="btn mini danger" onClick={() => donner(o)} title="L’emmener aux cachots de la Tour">
+                          Enlever {p.nom.split(' ')[0]} · {coutOrdre(etat, o).pa} PA
+                        </button>
+                      );
+                    })}
                   <p className="hint">
                     <kbd>Clic</kbd> sur la carte : y marcher (gratuit, {n.posture === 'ombre_ailee' ? REGLES.nazgul.vitesseOmbreAilee : REGLES.nazgul.vitesseTraque} jours de route par tour).
                   </p>

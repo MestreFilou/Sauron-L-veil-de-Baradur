@@ -106,8 +106,8 @@ export function poly(c: CanvasRenderingContext2D, p: P[]) {
   for (let i = 1; i < p.length; i++) c.lineTo(p[i]![0], p[i]![1]);
 }
 
-export const FELL = '"IM Fell English", Georgia, serif';
-export const CINZ = 'Cinzel, "Times New Roman", serif';
+export const FELL = 'Fondamento, Georgia, serif';
+export const CINZ = 'Almendra, "Times New Roman", serif';
 export const INK = '#3a2a1c';
 export const RED = '#7d2414';
 export const WATER = '#2f3d47';

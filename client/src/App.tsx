@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Carte } from './Carte';
+import { Cour } from './cour/Cour';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
@@ -53,7 +54,7 @@ function Intro() {
             </li>
           </ul>
         </div>
-        <div className="go" style={{ fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
+        <div className="go" style={{ fontFamily: 'var(--police-titre)', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
           Cliquer pour entrer
         </div>
       </div>
@@ -133,6 +134,7 @@ export function App() {
       <Fiche />
       <Toast />
       <Duel />
+      <Cour />
       <Fin />
       <Son />
       <Intro />

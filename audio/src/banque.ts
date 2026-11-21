@@ -42,6 +42,12 @@ export interface Piste {
   boucle: boolean;
   volume_db: number;
   fondu_s: number;
+  /**
+   * Lecture décodée en mémoire, bouclée à l'échantillon près (aucun blanc à la
+   * couture). Réservé aux pistes courtes, faites pour boucler ; une longue piste
+   * de film se lit en flux, sans cette option.
+   */
+  sans_coupure?: boolean;
 }
 
 export interface ManifesteMusique {

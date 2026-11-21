@@ -1,17 +1,20 @@
 /**
  * Lecture du son en Web Audio : la musique d'ambiance (fondus enchaînés,
- * gain par piste) et les voix déjà traitées par la chaîne « légion ».
- * Rien n'est synthétisé ici (mécaniques 10.3) : on lit des fichiers.
+ * gain par piste), les voix déjà traitées par la chaîne « légion », les
+ * effets et les fonds d'ambiance. Rien n'est synthétisé ici (mécaniques
+ * 10.3) : on lit des fichiers, préparés hors ligne.
  *
  * Graphe : pistes → musique (volume) → baisse sous la voix → sortie
  *          voix → voix (volume) → sortie
+ *          effets → effets (volume) → sortie
+ *          fonds → baisse sous la voix → effets (volume)
  *
  * Tout ce qui manque (fichier absent, navigateur qui refuse la lecture) se
  * traduit par du silence, jamais par une erreur visible.
  */
-import type { Ambiance, Piste, Replique } from '@sauron/audio';
-import { dbVersGain, pisteAmbiance } from '@sauron/audio';
-import { urlMusique, urlVoix } from './fichiers';
+import type { Ambiance, Fond, IdEffet, Piste, Replique } from '@sauron/audio';
+import { dbVersGain, EFFETS, pisteAmbiance, vitesseEffet } from '@sauron/audio';
+import { urlEffet, urlMusique, urlVoix } from './fichiers';
 import { gainBus, type ReglagesSon } from './reglages';
 
 /** Gain de la musique pendant qu'une voix parle. */
@@ -21,7 +24,16 @@ interface Lecture {
   ambiance: Ambiance;
   piste: Piste;
   cle: number;
-  el: HTMLAudioElement;
+  /** Lecture en flux (longues pistes) … */
+  el: HTMLAudioElement | null;
+  /** … ou décodée en mémoire, bouclée sans couture (sans_coupure). */
+  src: AudioBufferSourceNode | null;
+  gain: GainNode;
+}
+
+interface LectureFond {
+  fond: Fond;
+  src: AudioBufferSourceNode | null;
   gain: GainNode;
 }
 
@@ -43,6 +55,12 @@ export class MoteurSon {
   private busMusique: GainNode | null = null;
   private baisse: GainNode | null = null;
   private busVoix: GainNode | null = null;
+  private busEffets: GainNode | null = null;
+  private baisseFond: GainNode | null = null;
+  private tampons = new Map<string, Promise<AudioBuffer | null>>();
+  private derniers = new Map<IdEffet, number>();
+  private fondEnCours: LectureFond | null = null;
+  private fondVoulu: Fond | null = null;
   private lecture: Lecture | null = null;
   private voulue: { ambiance: Ambiance; cle: number } | null = null;
   /** L'ambiance en cours, même si sa piste s'est terminée ou n'existe pas. */
@@ -63,8 +81,18 @@ export class MoteurSon {
         this.busVoix = ctx.createGain();
         this.busMusique.connect(this.baisse).connect(ctx.destination);
         this.busVoix.connect(ctx.destination);
+        this.busEffets = ctx.createGain();
+        this.baisseFond = ctx.createGain();
+        this.busEffets.connect(ctx.destination);
+        this.baisseFond.connect(this.busEffets);
         if (this.reglages) this.regler(this.reglages);
+        // Les effets sont courts : on les décode tous d'avance pour qu'ils partent sans délai.
+        for (const e of Object.values(EFFETS.effets)) {
+          const url = urlEffet(e.fichier);
+          if (url) void this.tampon(url);
+        }
         if (this.voulue) this.ambiance(this.voulue.ambiance, this.voulue.cle);
+        if (this.fondVoulu) this.fond(this.fondVoulu);
       }
       if (this.ctx.state === 'suspended') void this.ctx.resume().catch(() => {});
     } catch {
@@ -82,6 +110,94 @@ export class MoteurSon {
     const t = this.ctx.currentTime;
     this.busMusique!.gain.setTargetAtTime(gainBus(r, 'musique'), t, 0.08);
     this.busVoix!.gain.setTargetAtTime(gainBus(r, 'voix'), t, 0.08);
+    this.busEffets!.gain.setTargetAtTime(gainBus(r, 'effets'), t, 0.08);
+  }
+
+  /** Décode un fichier une fois pour toutes (null s'il est illisible). */
+  private tampon(url: string): Promise<AudioBuffer | null> {
+    let p = this.tampons.get(url);
+    if (!p) {
+      const ctx = this.ctx!;
+      p = fetch(url)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+        .then((b) => ctx.decodeAudioData(b))
+        .catch(() => null);
+      this.tampons.set(url, p);
+    }
+    return p;
+  }
+
+  /**
+   * Joue un effet. Un même effet ne se répète pas plus vite que son
+   * intervalle_s, et sa vitesse varie un peu à chaque fois.
+   */
+  effet(id: IdEffet, { retard = 0 } = {}) {
+    const e = EFFETS.effets[id];
+    const url = e && urlEffet(e.fichier);
+    if (!url || !this.ctx || this.ctx.state === 'closed') return;
+    const maintenant = performance.now();
+    if (maintenant - (this.derniers.get(id) ?? -Infinity) < e.intervalle_s * 1000) return;
+    this.derniers.set(id, maintenant);
+    const ctx = this.ctx;
+    void this.tampon(url).then((buf) => {
+      if (!buf) return;
+      // Trop tard (décodage lent, premier geste) : un son d'interface n'a plus de sens,
+      // un son d'événement peut encore arriver un peu après.
+      if (performance.now() - maintenant > (id.startsWith('ui_') ? 400 : 2500) + retard * 1000) return;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.playbackRate.value = vitesseEffet(e, Math.random());
+      const g = ctx.createGain();
+      g.gain.value = dbVersGain(e.volume_db);
+      src.connect(g).connect(this.busEffets!);
+      src.onended = () => g.disconnect();
+      src.start(ctx.currentTime + Math.max(0, retard - (performance.now() - maintenant) / 1000));
+    });
+  }
+
+  /** Le fond d'ambiance (forge ou vent), en boucle, en fondu enchaîné ; null l'éteint. */
+  fond(f: Fond | null) {
+    this.fondVoulu = f;
+    if (!this.ctx) return;
+    if (this.fondEnCours?.fond === f) return;
+    const ancien = this.fondEnCours;
+    this.fondEnCours = null;
+    const ctx = this.ctx;
+    if (ancien) {
+      const t = ctx.currentTime;
+      ancien.gain.gain.cancelScheduledValues(t);
+      ancien.gain.gain.setValueAtTime(ancien.gain.gain.value, t);
+      ancien.gain.gain.linearRampToValueAtTime(0, t + 2);
+      setTimeout(() => {
+        try {
+          ancien.src?.stop();
+        } catch {
+          /* déjà arrêté */
+        }
+        ancien.gain.disconnect();
+      }, 2100);
+    }
+    const def = f && EFFETS.fonds[f];
+    const url = def && urlEffet(def.fichier);
+    if (!f || !def || !url) return;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.connect(this.baisseFond!);
+    const lecture: LectureFond = { fond: f, src: null, gain };
+    this.fondEnCours = lecture;
+    void this.tampon(url).then((buf) => {
+      if (!buf || this.fondEnCours !== lecture) return gain.disconnect();
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.loop = true;
+      src.connect(gain);
+      lecture.src = src;
+      const t = ctx.currentTime;
+      // On n'entre pas toujours au même endroit de la boucle.
+      src.start(t, Math.random() * buf.duration);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(dbVersGain(def.volume_db), t + 2.5);
+    });
   }
 
   /** Demande une ambiance. Même ambiance : rien ne change. Ambiance sans piste : la musique s'éteint en fondu. */
@@ -103,28 +219,56 @@ export class MoteurSon {
     if (!piste || !url || !this.ctx) return;
 
     const ctx = this.ctx;
-    const el = new Audio(url);
-    el.loop = piste.boucle;
-    el.preload = 'auto';
     const gain = ctx.createGain();
     gain.gain.value = 0;
-    try {
-      ctx.createMediaElementSource(el).connect(gain).connect(this.busMusique!);
-    } catch {
-      return;
-    }
-    const lecture: Lecture = { ambiance, piste, cle, el, gain };
+    gain.connect(this.busMusique!);
+    const lecture: Lecture = { ambiance, piste, cle, el: null, src: null, gain };
     this.lecture = lecture;
-    const t = ctx.currentTime;
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(dbVersGain(piste.volume_db), t + Math.max(0.05, piste.fondu_s));
+    const monter = () => {
+      const t = ctx.currentTime;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(dbVersGain(piste.volume_db), t + Math.max(0.05, piste.fondu_s));
+    };
     // Piste sans boucle : à la fin, la suivante de la même ambiance (s'il y en a une autre).
-    el.addEventListener('ended', () => {
+    const finie = () => {
       if (this.lecture !== lecture) return;
       const suivante = pisteAmbiance(ambiance, cle + 1);
       this.lecture = null;
       if (suivante && suivante !== piste) this.enchainer(ambiance, cle + 1);
-    });
+    };
+
+    if (piste.sans_coupure) {
+      void this.tampon(url).then((buf) => {
+        if (this.lecture !== lecture) return;
+        if (!buf) {
+          this.lecture = null;
+          return;
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = piste.boucle;
+        src.connect(gain);
+        src.onended = finie;
+        lecture.src = src;
+        src.start();
+        monter();
+      });
+      return;
+    }
+
+    const el = new Audio(url);
+    el.loop = piste.boucle;
+    el.preload = 'auto';
+    try {
+      ctx.createMediaElementSource(el).connect(gain);
+    } catch {
+      this.lecture = null;
+      gain.disconnect();
+      return;
+    }
+    lecture.el = el;
+    monter();
+    el.addEventListener('ended', finie);
     el.addEventListener('error', () => {
       if (this.lecture === lecture) this.lecture = null;
     });
@@ -139,9 +283,19 @@ export class MoteurSon {
     l.gain.gain.setValueAtTime(l.gain.gain.value, t);
     l.gain.gain.linearRampToValueAtTime(0, t + d);
     setTimeout(() => {
-      l.el.pause();
-      l.el.removeAttribute('src');
-      l.el.load();
+      if (l.el) {
+        l.el.pause();
+        l.el.removeAttribute('src');
+        l.el.load();
+      }
+      if (l.src) {
+        l.src.onended = null;
+        try {
+          l.src.stop();
+        } catch {
+          /* pas encore démarrée */
+        }
+      }
       l.gain.disconnect();
     }, d * 1000 + 100);
   }
@@ -194,11 +348,13 @@ export class MoteurSon {
   private baisser() {
     if (!this.ctx) return;
     this.baisse!.gain.setTargetAtTime(BAISSE_SOUS_VOIX, this.ctx.currentTime, 0.1);
+    this.baisseFond!.gain.setTargetAtTime(BAISSE_SOUS_VOIX, this.ctx.currentTime, 0.1);
   }
 
   private relever() {
     if (!this.ctx) return;
     this.baisse!.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4);
+    this.baisseFond!.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4);
   }
 }
 

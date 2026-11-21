@@ -8,6 +8,7 @@
 import type { Geographie } from '@sauron/world';
 import { Alea, catmull, CINZ, FELL, fbm, hash2, INK, jit, lerp, PAPER, poly, rangeeRunes, RED, smooth, texte, toile, WATER } from './bruit';
 import type { P } from './bruit';
+import { bree, butte, fondcombe, maison, moulin, murRuine, OMBRE, ombreSol, phare, pont, smial, tour } from './lieux';
 
 export const W = 1600;
 export const H = 1000;
@@ -137,12 +138,54 @@ function pic(c: CanvasRenderingContext2D, x: number, y: number, s: number) {
     rx = x + s * R(0.9, 1.3),
     ax = x + R(-0.2, 0.2) * s,
     ay = y - h;
+  // ombre portée vers l'est (lumière du nord-ouest)
+  c.save();
+  c.globalCompositeOperation = 'multiply';
   c.beginPath();
-  c.moveTo(lx, y);
-  c.quadraticCurveTo(lx + (ax - lx) * 0.55, y - h * 0.6, ax, ay);
-  c.quadraticCurveTo(ax + (rx - ax) * 0.4, y - h * 0.55, rx, y);
+  c.moveTo(ax, ay);
+  c.lineTo(rx + s * 0.9, y + s * 0.12);
+  c.lineTo(lx + s * 0.4, y + s * 0.12);
+  c.closePath();
+  c.fillStyle = 'rgba(95,65,35,.13)';
+  c.fill();
+  c.restore();
+  const silhouette = () => {
+    c.beginPath();
+    c.moveTo(lx, y);
+    c.quadraticCurveTo(lx + (ax - lx) * 0.55, y - h * 0.6, ax, ay);
+    c.quadraticCurveTo(ax + (rx - ax) * 0.4, y - h * 0.55, rx, y);
+  };
+  silhouette();
   c.fillStyle = PAPER;
   c.fill();
+  // flanc à l'ombre : de la crête au pied, côté est
+  c.save();
+  silhouette();
+  c.closePath();
+  c.clip();
+  c.beginPath();
+  c.moveTo(ax, ay);
+  c.quadraticCurveTo(ax + s * 0.05, y - h * 0.4, ax + s * 0.12 + (rx - ax) * 0.1, y);
+  c.lineTo(rx + 2, y);
+  c.lineTo(rx + 2, ay - 2);
+  c.closePath();
+  c.fillStyle = OMBRE;
+  c.fill();
+  // neige au sommet des grands pics
+  if (s > 14) {
+    c.beginPath();
+    c.moveTo(ax, ay);
+    c.lineTo(ax - s * 0.3, ay + h * 0.28);
+    c.lineTo(ax - s * 0.12, ay + h * 0.22);
+    c.lineTo(ax, ay + h * 0.32);
+    c.lineTo(ax + s * 0.14, ay + h * 0.2);
+    c.lineTo(ax + s * 0.3, ay + h * 0.3);
+    c.closePath();
+    c.fillStyle = 'rgba(250,246,234,.85)';
+    c.fill();
+  }
+  c.restore();
+  silhouette();
   c.strokeStyle = INK;
   c.lineWidth = 1.05;
   c.stroke();
@@ -182,11 +225,23 @@ function chaine(spine: P[], width: number, s0: number, s1: number, step: number)
   return pk;
 }
 function colline(c: CanvasRenderingContext2D, x: number, y: number, s: number) {
-  c.beginPath();
-  c.moveTo(x - s, y);
-  c.bezierCurveTo(x - s * 0.6, y - s * 1.05, x + s * 0.6, y - s * 1.05, x + s, y);
+  ombreSol(c, x + s * 0.5, y + s * 0.05, s * 1.2, s * 0.32, 0.16);
+  const dome = () => {
+    c.beginPath();
+    c.moveTo(x - s, y);
+    c.bezierCurveTo(x - s * 0.6, y - s * 1.05, x + s * 0.6, y - s * 1.05, x + s, y);
+  };
+  dome();
   c.fillStyle = PAPER;
   c.fill();
+  c.save();
+  dome();
+  c.closePath();
+  c.clip();
+  c.fillStyle = OMBRE;
+  c.fillRect(x + s * 0.08, y - s, s, s);
+  c.restore();
+  dome();
   c.strokeStyle = INK;
   c.lineWidth = 0.9;
   c.stroke();
@@ -355,68 +410,35 @@ function carte(c: CanvasRenderingContext2D, geo: Geographie) {
   foret(1310, 428, 58, 30, 3).forEach((p) => items.push(['t', ...p]));
   foret(455, 514, 30, 14, 4).forEach((p) => items.push(['t', ...p]));
   foret(1430, 445, 16, 10, 5).forEach((p) => items.push(['t', ...p]));
-  items.sort((u, v) => u[2] - v[2]).forEach(([k, x, y, s]) => (k === 'p' ? pic(c, x, y, s) : k === 'h' ? colline(c, x, y, s) : arbre(c, x, y, s)));
-  // lieux
-  const point = (x: number, y: number, r: number) => {
-    c.beginPath();
-    c.arc(x, y, r, 0, 6.283);
-    c.fillStyle = INK;
-    c.fill();
-  };
-  const anneau = (x: number, y: number, r: number) => {
-    c.beginPath();
-    c.arc(x, y, r, 0, 6.283);
-    c.strokeStyle = INK;
-    c.lineWidth = 1;
-    c.stroke();
-  };
-  point(360, 450, 2.6);
-  point(300, 488, 2.2);
-  point(585, 478, 2.2);
-  point(790, 450, 3.4);
-  anneau(790, 450, 6.2);
-  const ruine = (x: number, y: number) => {
+  // estompe du relief : un lavis sous chaque massif, plus sombre à l'est
+  c.save();
+  c.globalCompositeOperation = 'multiply';
+  for (const [k, x, y, s] of items) {
+    if (k === 't') continue;
+    const r = s * (k === 'p' ? 2.4 : 1.9),
+      ox = x + s * 0.5,
+      oy = y - s * 0.3;
+    const g = c.createRadialGradient(ox, oy, 0, ox, oy, r);
+    g.addColorStop(0, `rgba(120,85,45,${k === 'p' ? 0.07 : 0.05})`);
+    g.addColorStop(1, 'rgba(120,85,45,0)');
+    c.fillStyle = g;
+    c.fillRect(ox - r, oy - r, 2 * r, 2 * r);
+  }
+  c.restore();
+  items.sort((u, v) => u[2] - v[2]).forEach(([k, x, y, s]) => (k === 'p' ? pic(c, x, y, s) : k === 'h' ? colline(c, x, y, s * 1.2) : arbre(c, x, y, s)));
+  // lieux : petits reliefs dessinés, agrandis autour de leur point d'ancrage
+  const grand = (x: number, y: number, k: number, f: () => void) => {
     c.save();
     c.translate(x, y);
-    c.rotate(0.785);
-    c.strokeStyle = INK;
-    c.lineWidth = 1;
-    c.strokeRect(-3, -3, 6, 6);
+    c.scale(k, k);
+    c.translate(-x, -y);
+    f();
     c.restore();
   };
-  ruine(720, 242);
-  ruine(880, 878);
-  c.beginPath();
-  c.moveTo(1060, 436);
-  c.lineTo(1065, 446);
-  c.lineTo(1055, 446);
-  c.closePath();
-  c.fillStyle = RED;
-  c.fill();
-  c.strokeStyle = INK;
-  c.lineWidth = 1.2;
-  c.beginPath();
-  c.moveTo(1236, 466);
-  c.lineTo(1244, 466);
-  c.moveTo(1236, 474);
-  c.lineTo(1244, 474);
-  c.moveTo(1380, 452);
-  c.lineTo(1390, 452);
-  c.moveTo(1380, 463);
-  c.lineTo(1390, 463);
-  c.stroke();
-  c.save();
-  c.translate(1445, 412);
-  c.fillStyle = RED;
-  c.beginPath();
-  for (let i = 0; i < 12; i++) {
-    const r = i % 2 ? 2.4 : 6.5,
-      an = (i / 12) * 6.283 - 1.57;
-    c.lineTo(Math.cos(an) * r, Math.sin(an) * r);
-  }
-  c.closePath();
-  c.fill();
-  c.restore();
+  // Tours Blanches (Emyn Beraid), sur les Collines des Tours
+  grand(258, 474, 1.4, () => tour(c, 258, 474, 4, 16, false, true));
+  // Havres Gris : phare et navire
+  grand(222, 436, 1.4, () => phare(c, 222, 436));
   c.save();
   c.translate(205, 428);
   c.strokeStyle = INK;
@@ -430,6 +452,59 @@ function carte(c: CanvasRenderingContext2D, geo: Geographie) {
   c.lineTo(0, 1);
   c.stroke();
   c.restore();
+  // Le Comté
+  grand(360, 454, 1.6, () => {
+    smial(c, 352, 452, 8);
+    smial(c, 368, 455, 6.5);
+    moulin(c, 378, 446);
+  });
+  grand(450, 460, 1.5, () => {
+    maison(c, 430, 466, 5);
+    maison(c, 470, 448, 5, true);
+    maison(c, 497, 470, 4.5);
+  });
+  grand(300, 492, 1.6, () => {
+    smial(c, 296, 491, 6.5);
+    smial(c, 308, 493, 5);
+  });
+  grand(588, 482, 1.6, () => {
+    maison(c, 585, 481, 6, true);
+    maison(c, 594, 484, 4.5);
+  });
+  // Bree
+  grand(790, 452, 1.6, () => bree(c, 790, 450));
+  // Fornost Erain : ruines sur la colline
+  grand(720, 250, 1.5, () => {
+    butte(c, 720, 250, 14);
+    murRuine(c, 708, 245, 9, 5);
+    tour(c, 724, 243, 5, 11, true);
+  });
+  // Amon Sûl : tour brisée au sommet du Mont Venteux
+  grand(1060, 446, 1.4, () => tour(c, 1060, 446, 6, 12, true));
+  c.save();
+  c.globalCompositeOperation = 'multiply';
+  c.fillStyle = 'rgba(125,36,20,.5)';
+  c.beginPath();
+  c.arc(1060, 429, 3, 0, 6.283);
+  c.fill();
+  c.restore();
+  // Dernier Pont et gué de Bruinen
+  grand(1240, 474, 1.5, () => pont(c, 1240, 474, 14, 3));
+  c.strokeStyle = INK;
+  c.lineWidth = 1.2;
+  c.beginPath();
+  c.moveTo(1380, 452);
+  c.lineTo(1390, 452);
+  c.moveTo(1380, 463);
+  c.lineTo(1390, 463);
+  c.stroke();
+  // Fondcombe
+  grand(1445, 418, 1.7, () => fondcombe(c, 1445, 418));
+  // Tharbad : pont brisé et tour en ruine
+  grand(882, 882, 1.5, () => {
+    pont(c, 880, 884, 16, 3, true);
+    tour(c, 894, 878, 4.5, 9, true);
+  });
   // étiquettes
   const BIG = (s: number) => `${s}px ${CINZ}`;
   texte(c, 'ERIADOR', 930, 300, { f: '600 ' + BIG(46), sp: 30, a: 0.16, halo: false });
@@ -455,19 +530,19 @@ function carte(c: CanvasRenderingContext2D, geo: Geographie) {
   texte(c, 'Golfe de Lune', 48, 440, { f: 'italic 13px ' + FELL, r: -Math.PI / 2, c: WATER, halo: false });
   texte(c, 'Grande Route de l’Est', 1150, 460, { f: 'italic 11px ' + FELL, c: '#7d2d19' });
   texte(c, 'Chemin Vert', 812, 640, { f: 'italic 11px ' + FELL, r: 1.48, c: '#7d2d19' });
-  texte(c, 'Hobbitebourg', 360, 436, { f: '13px ' + FELL });
-  texte(c, 'Grand’Cave', 300, 502, { f: '12px ' + FELL });
-  texte(c, 'Creux-de-Crique', 575, 494, { f: '12px ' + FELL });
-  texte(c, 'BREE', 790, 430, { f: `600 15px ${CINZ}`, sp: 4, c: RED });
-  texte(c, 'Mont Venteux', 1060, 420, { f: '15px ' + FELL, c: RED });
-  texte(c, 'Amon Sûl', 1060, 404, { f: 'italic 11px ' + FELL });
+  texte(c, 'Hobbitebourg', 336, 426, { f: '13px ' + FELL });
+  texte(c, 'Grand’Cave', 300, 508, { f: '12px ' + FELL });
+  texte(c, 'Creux-de-Crique', 588, 498, { f: '12px ' + FELL });
+  texte(c, 'BREE', 790, 416, { f: `600 15px ${CINZ}`, sp: 4, c: RED });
+  texte(c, 'Mont Venteux', 1060, 412, { f: '15px ' + FELL, c: RED });
+  texte(c, 'Amon Sûl', 1060, 396, { f: 'italic 11px ' + FELL });
   texte(c, 'Dernier Pont', 1240, 490, { f: '12px ' + FELL });
   texte(c, 'Gué de Bruinen', 1384, 480, { f: '14px ' + FELL, c: RED });
-  texte(c, 'FONDCOMBE', 1445, 392, { f: `600 14px ${CINZ}`, sp: 4, c: RED });
-  texte(c, 'Fornost Erain', 720, 226, { f: '12px ' + FELL });
-  texte(c, 'Chaussée des Morts', 720, 262, { f: 'italic 10px ' + FELL });
-  texte(c, 'Tharbad', 880, 896, { f: '12px ' + FELL });
-  texte(c, 'Havres Gris', 212, 414, { f: 'italic 12px ' + FELL });
+  texte(c, 'FONDCOMBE', 1445, 372, { f: `600 14px ${CINZ}`, sp: 4, c: RED });
+  texte(c, 'Fornost Erain', 720, 212, { f: '12px ' + FELL });
+  texte(c, 'Chaussée des Morts', 720, 266, { f: 'italic 10px ' + FELL });
+  texte(c, 'Tharbad', 880, 902, { f: '12px ' + FELL });
+  texte(c, 'Havres Gris', 205, 400, { f: 'italic 12px ' + FELL });
   texte(c, 'Gué de Sarn', 640, 760, { f: 'italic 12px ' + FELL });
   // cartouche
   c.save();

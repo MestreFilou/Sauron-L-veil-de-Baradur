@@ -5,8 +5,8 @@
   --line:#4a3a28;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#070505;overflow:hidden;color:var(--texte);font-family:'Cormorant Garamond',Georgia,serif}
-#map{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+html,body{height:100%;background:#070505;overflow:hidden;color:var(--texte);font-family:var(--police-texte)}
+#map{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:var(--curseur-anneau)}
 .vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,transparent 50%,rgba(5,3,2,.7) 100%);transition:background 1s}
 body.ombre .vignette{background:radial-gradient(ellipse at 50% 52%,transparent 45%,rgba(1,4,9,.85) 100%)}
 
@@ -16,7 +16,7 @@ body.ombre .vignette{background:radial-gradient(ellipse at 50% 52%,transparent 4
 .panel::before,.panel::after{content:"";position:absolute;width:14px;height:14px;border:1px solid var(--bronze);transition:border-color 1s}
 .panel::before{top:-4px;left:-4px;border-right:none;border-bottom:none}
 .panel::after{bottom:-4px;right:-4px;border-left:none;border-top:none}
-.ptitle{font-family:Cinzel,serif;font-size:11.5px;font-weight:600;letter-spacing:.32em;color:var(--bronze-clair);text-transform:uppercase;padding:12px 16px 9px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(140,106,63,.22);transition:color 1s}
+.ptitle{font-family:var(--police-titre);text-transform:uppercase;font-size:13px;font-weight:600;letter-spacing:.2em;color:var(--bronze-clair);padding:12px 16px 9px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(140,106,63,.22);transition:color 1s}
 .runes{color:#6d5537;display:inline-flex;gap:0;vertical-align:middle;transition:color 1s}
 .runes svg{display:block}
 body.ombre .panel{border-color:#22384a;box-shadow:0 0 0 1px #02060a, inset 0 0 0 3px rgba(2,6,10,.9), inset 0 0 0 4px rgba(110,163,199,.18), 0 18px 40px rgba(0,0,0,.7)}
@@ -29,38 +29,38 @@ body.ombre .runes{color:#35546b}
   background:linear-gradient(180deg,#0a0807 0%,rgba(12,10,9,.95) 72%,rgba(12,10,9,0) 100%)}
 .topbar::after{content:"";position:absolute;left:0;right:0;top:46px;height:1px;background:linear-gradient(90deg,transparent,rgba(140,106,63,.55) 20%,rgba(140,106,63,.15) 42%,transparent 50%,rgba(140,106,63,.15) 58%,rgba(140,106,63,.55) 80%,transparent)}
 .brand{display:flex;align-items:center;gap:18px;margin-top:-8px}
-.brand h1{font-family:Cinzel,serif;font-weight:600;font-size:16px;letter-spacing:.3em;color:#d9b77a;text-shadow:0 0 14px rgba(255,90,31,.25);white-space:nowrap}
+.brand h1{font-family:var(--police-titre);text-transform:uppercase;font-weight:600;font-size:16px;letter-spacing:.22em;color:#d9b77a;text-shadow:0 0 14px rgba(255,90,31,.25);white-space:nowrap}
 .brand .sep{width:1px;height:24px;background:rgba(140,106,63,.4)}
-.turn{font-family:'IM Fell English',serif;font-size:15px;color:var(--texte-2);white-space:nowrap}
-.turn b{font-family:Cinzel,serif;color:var(--texte);font-weight:600;letter-spacing:.12em;margin:0 6px}
+.turn{font-family:var(--police-texte);font-size:15px;color:var(--texte-2);white-space:nowrap}
+.turn b{font-family:var(--police-titre);text-transform:uppercase;color:var(--texte);font-weight:600;letter-spacing:.12em;margin:0 6px}
 .gauges{display:flex;gap:16px;margin-top:-8px}
-.gauge{display:flex;align-items:center;gap:9px;font-family:Cinzel,serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--texte-2)}
+.gauge{display:flex;align-items:center;gap:9px;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.17em;color:var(--texte-2)}
 .gbar{width:64px;height:5px;background:#15110f;border:1px solid #3a2e22;position:relative}
 .gbar i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--v)*100%);background:linear-gradient(90deg,var(--c2),var(--c1));box-shadow:0 0 8px var(--c1)}
 .gbar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 9px,rgba(10,8,7,.9) 9px 10px)}
 .gauge.vis .gbar i{animation:flick 2.6s infinite}
 @keyframes flick{0%,100%{filter:brightness(1)}43%{filter:brightness(1.4)}47%{filter:brightness(.85)}70%{filter:brightness(1.2)}}
-.gv{font-family:'IM Fell English',serif;font-size:14px;letter-spacing:0;color:var(--texte);min-width:22px}
+.gv{font-family:var(--police-texte);font-size:14px;letter-spacing:0;color:var(--texte);min-width:22px}
 
 /* ---------- L'Œil ---------- */
 #eye{position:fixed;top:-28px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;filter:drop-shadow(0 0 14px rgba(255,59,10,.45));transition:filter 1s}
 #eyecv{display:block;width:216px;height:136px}
-#eye .lbl{position:absolute;top:112px;left:50%;transform:translateX(-50%);font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.4em;color:#b9542c;white-space:nowrap;text-transform:uppercase;transition:opacity .6s}
+#eye .lbl{position:absolute;top:112px;left:50%;transform:translateX(-50%);font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.3em;color:#b9542c;white-space:nowrap;transition:opacity .6s}
 body.ombre #eye{filter:drop-shadow(0 0 10px rgba(255,59,10,.25)) grayscale(.6) brightness(.5)}
 
 /* ---------- Les Neuf ---------- */
 #nine{top:84px;left:18px;width:268px;max-height:calc(100vh - 84px - 196px);overflow:auto}
 #nine ul{list-style:none;padding:6px 0}
-#nine li{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:6px 14px;cursor:pointer;transition:background .25s}
+#nine li{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:6px 14px;cursor:var(--curseur-anneau-feu);transition:background .25s}
 #nine li:hover,#nine li.sel{background:linear-gradient(90deg,rgba(140,106,63,.16),transparent)}
 body.ombre #nine li:hover,body.ombre #nine li.sel{background:linear-gradient(90deg,rgba(110,163,199,.14),transparent)}
 .tok{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#45403b,#0b0a09 70%);border:1px solid var(--bronze);display:grid;place-items:center;transition:all 1s}
 .tok svg{width:16px;height:16px;fill:var(--bronze-clair);transition:fill 1s}
 body.ombre .tok{background:radial-gradient(circle,#1d3346,#03070c 75%);border-color:#6fa3c7;box-shadow:0 0 10px rgba(158,201,230,.35)}
 body.ombre .tok svg{fill:#d8ecf8}
-.nm{font-family:'IM Fell English',serif;font-size:15px;line-height:1.1;color:var(--texte)}
-.nm small{display:block;font-family:'Cormorant Garamond',serif;font-size:12.5px;color:var(--texte-2);font-style:italic;margin-top:2px}
-.nm .post{font-family:Cinzel,serif;font-style:normal;font-size:8.5px;letter-spacing:.2em;padding:1px 5px;border:1px solid #5a4630;color:var(--bronze-clair);margin-left:4px;vertical-align:1px}
+.nm{font-family:var(--police-texte);font-size:15px;line-height:1.1;color:var(--texte)}
+.nm small{display:block;font-family:var(--police-texte);font-size:12.5px;color:var(--texte-2);font-style:italic;margin-top:2px}
+.nm .post{font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:10px;letter-spacing:.2em;padding:1px 5px;border:1px solid #5a4630;color:var(--bronze-clair);margin-left:4px;vertical-align:1px}
 .nm .post.fleau{border-color:#8a1c0c;color:#ff7a4a;box-shadow:0 0 6px rgba(255,59,10,.35)}
 .nm .warn{color:#d0703a}
 .sig{display:flex;gap:2px;align-items:flex-end;height:14px}
@@ -74,84 +74,88 @@ body.ombre .sig b.on{background:var(--spectre);box-shadow:0 0 4px var(--spectre)
 /* ---------- Modes ---------- */
 #modes{left:18px;bottom:18px;width:268px;padding:12px 14px 12px}
 #modes .row{display:flex;gap:6px}
-.btn{flex:1;font-family:Cinzel,serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--texte);background:linear-gradient(180deg,#2a2421,#15110f);border:1px solid #5a4630;padding:9px 6px;cursor:pointer;transition:all .25s}
+.btn{flex:1;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.16em;color:var(--texte);background:linear-gradient(180deg,#2a2421,#15110f);border:1px solid #5a4630;padding:9px 6px;cursor:var(--curseur-anneau-feu);transition:all .25s}
 .btn:hover{border-color:var(--bronze-clair);color:#fff3dc}
 .btn.on{border-color:var(--oeil);color:#ffd2b8;box-shadow:inset 0 0 12px rgba(255,59,10,.35),0 0 10px rgba(255,59,10,.25)}
 body.ombre .btn{background:linear-gradient(180deg,#0f1b26,#060b11);border-color:#2b4a60}
 body.ombre .btn.on{border-color:var(--spectre);color:#eaf6ff;box-shadow:inset 0 0 12px rgba(158,201,230,.35),0 0 10px rgba(158,201,230,.25)}
 .hint{font-size:12.5px;font-style:italic;color:var(--texte-2);margin-top:10px;line-height:1.35}
-.hint kbd{font-family:Cinzel,serif;font-style:normal;font-size:9.5px;border:1px solid #5a4630;padding:0 4px;color:var(--bronze-clair)}
+.hint kbd{font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:11px;border:1px solid #5a4630;padding:0 4px;color:var(--bronze-clair)}
 
 /* ---------- Murmures ---------- */
-#rumors{top:84px;right:18px;width:336px;bottom:18px;display:flex;flex-direction:column}
+#rumors{top:84px;right:18px;width:336px;bottom:18px;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(19,16,14,.985),rgba(10,8,7,.99));backdrop-filter:blur(3px)}
 .trace{padding:10px 16px 12px;border-bottom:1px solid rgba(140,106,63,.18)}
-.trace .t{font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.24em;color:var(--texte-2);display:flex;justify-content:space-between}
-.trace .t span:last-child{color:var(--anneau);font-family:'IM Fell English',serif;font-size:14px;letter-spacing:0}
+.trace .t{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.16em;align-items:baseline;gap:8px;color:var(--texte-2);display:flex;justify-content:space-between}
+.trace .t span:last-child{color:var(--anneau);font-family:var(--police-texte);font-size:15px;letter-spacing:0;text-transform:none;white-space:nowrap}
 .trace .bar{height:4px;margin-top:6px;background:#15110f;border:1px solid #3a2e22;position:relative;overflow:hidden}
 .trace .bar i{position:absolute;left:0;top:0;bottom:0;width:62%;background:linear-gradient(90deg,#7a5a1c,var(--anneau));box-shadow:0 0 10px var(--anneau)}
 #rlist{overflow:auto;padding:6px 0 10px;flex:1}
-.rum{padding:12px 16px 12px 18px;border-left:2px solid transparent;cursor:default;transition:background .25s,border-color .25s;position:relative}
-.rum:hover{background:linear-gradient(90deg,rgba(140,106,63,.12),transparent);border-left-color:var(--bronze-clair)}
+.rum{padding:14px 16px 14px 18px;border-bottom:1px solid rgba(140,106,63,.12);border-left:2px solid transparent;cursor:var(--curseur-anneau);transition:background .25s,border-color .25s;position:relative}
+.rum:hover,.rum.vise{background:linear-gradient(90deg,rgba(140,106,63,.12),transparent);border-left-color:var(--bronze-clair)}
 body.ombre .rum:hover{background:linear-gradient(90deg,rgba(110,163,199,.1),transparent);border-left-color:var(--spectre)}
-.rum .src{font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze-clair);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
-.rum .src em{font-family:'Cormorant Garamond',serif;font-style:italic;text-transform:none;letter-spacing:0;font-size:12px;color:var(--texte-2)}
-.rum .txt{font-family:'IM Fell English',serif;font-size:15.5px;line-height:1.38;color:#e2d3b8;margin-top:6px}
-.rum .txt .f{opacity:.38}
-.rum .txt .g{opacity:.07;filter:blur(1.2px)}
-.rum .txt .blot{color:transparent;background:radial-gradient(ellipse at 50% 55%,rgba(5,3,2,.95) 35%,rgba(5,3,2,.0) 72%);text-shadow:none}
-.rum .rel{display:flex;gap:3px;margin-top:8px;align-items:center;font-size:11.5px;font-style:italic;color:var(--texte-2)}
-.rum .rel b{width:9px;height:3px;background:#3a2e22}
+.rum .src{font-family:var(--police-titre);font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#d8b47a;line-height:1.25;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.rum .src em{font-family:var(--police-texte);font-style:italic;text-transform:none;letter-spacing:0;font-size:13.5px;color:#b9a789;white-space:nowrap}
+.rum .txt{font-family:var(--police-texte);font-size:17px;line-height:1.45;color:#f3e7d0;margin-top:7px;text-shadow:0 1px 2px #000}
+/* L'érosion des murmures peu fiables reste visible, mais le texte se lit toujours ; au survol, il se lit en entier. */
+.rum .txt .f{opacity:.7}
+.rum .txt .g{opacity:.45;color:#cdb89a}
+.rum .txt .blot{color:rgba(243,231,208,.42);background:radial-gradient(ellipse at 50% 55%,rgba(5,3,2,.9) 30%,rgba(5,3,2,.0) 75%);text-shadow:none}
+.rum .txt span{transition:opacity .25s,color .25s}
+.rum:hover .txt .f,.rum:hover .txt .g,.rum.vise .txt .f,.rum.vise .txt .g{opacity:1;color:inherit}
+.rum:hover .txt .blot{color:rgba(243,231,208,.9)}
+.rum .rel{display:flex;gap:3px;margin-top:9px;align-items:center;font-size:13.5px;font-style:italic;color:var(--texte-2)}
+.rum .rel b{width:10px;height:3px;background:#4a3a2a}
 .rum .rel b.on{background:var(--bronze-clair)}
-.rum .stamp{position:absolute;right:14px;bottom:10px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;color:#b8402a;border:1px solid #b8402a;padding:2px 6px;transform:rotate(-6deg);opacity:.85}
+.rum .stamp{position:absolute;right:14px;bottom:12px;font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.2em;color:#b8402a;border:1px solid #b8402a;padding:2px 6px;transform:rotate(-6deg);opacity:.85}
 body.ombre .rum .txt{color:#a9c3d3}
 
 /* ---------- La Voix ---------- */
 #voice{left:304px;right:372px;bottom:18px;padding:0 0 12px;--accent:#9a7bd0}
 #voice .head{display:flex;justify-content:space-between;align-items:center;padding:11px 16px 9px;border-bottom:1px solid rgba(140,106,63,.22)}
 #voice .head .ptitle{padding:0;border:none}
-.target{font-family:'IM Fell English',serif;font-size:14.5px;color:var(--texte)}
-.target i{font-family:'Cormorant Garamond',serif;color:var(--texte-2);font-size:13px}
-.target select{font-family:'IM Fell English',serif;font-size:14.5px;background:#120f0d;color:var(--texte);border:1px solid #5a4630;padding:2px 6px;margin-left:6px}
+.target{font-family:var(--police-texte);font-size:14.5px;color:var(--texte)}
+.target i{font-family:var(--police-texte);color:var(--texte-2);font-size:13px}
+.target select{font-family:var(--police-texte);font-size:14.5px;background:#120f0d;color:var(--texte);border:1px solid #5a4630;padding:2px 6px;margin-left:6px}
 .reg{display:flex;gap:0;padding:10px 16px 0}
-.reg button{flex:1;font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--texte-2);background:transparent;border:none;border-bottom:1px solid #3a2e22;padding:7px 4px;cursor:pointer;transition:all .25s}
+.reg button{flex:1;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.14em;color:var(--texte-2);background:transparent;border:none;border-bottom:1px solid #3a2e22;padding:7px 4px;cursor:var(--curseur-anneau-feu);transition:all .25s}
 .reg button.on{color:var(--accent);border-bottom:2px solid var(--accent);text-shadow:0 0 10px var(--accent)}
 .voicebox{position:relative;margin:10px 16px 0}
-#vtext{width:100%;height:54px;resize:none;background:rgba(5,4,3,.65);border:1px solid #3a2e22;color:#efe2c8;font-family:'IM Fell English',serif;font-style:italic;font-size:16px;padding:8px 10px;outline:none;transition:border-color .3s, box-shadow .3s}
+#vtext{width:100%;height:54px;resize:none;background:rgba(5,4,3,.65);border:1px solid #3a2e22;color:#efe2c8;font-family:var(--police-texte);font-style:italic;font-size:16px;padding:8px 10px;outline:none;transition:border-color .3s, box-shadow .3s}
 #vtext:focus{border-color:var(--accent);box-shadow:0 0 14px -4px var(--accent)}
 #vtext::placeholder{color:#6f604c}
-#vtext.construit{height:auto;min-height:54px;cursor:pointer;user-select:none;line-height:1.35}
+#vtext.construit{height:auto;min-height:54px;cursor:var(--curseur-anneau-feu);user-select:none;line-height:1.35}
 .vfoot{display:flex;justify-content:space-between;align-items:center;margin:9px 16px 0;font-size:13px;font-style:italic;color:var(--texte-2)}
-.vfoot b{font-style:normal;font-family:Cinzel,serif;font-size:10px;letter-spacing:.14em;color:var(--accent)}
-.project{font-family:Cinzel,serif;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#fff0dd;background:linear-gradient(180deg,#3a1610,#1a0805);border:1px solid var(--accent);padding:8px 18px;cursor:pointer;box-shadow:0 0 14px -2px var(--accent)}
+.vfoot b{font-style:normal;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.14em;color:var(--accent)}
+.project{font-family:var(--police-titre);text-transform:uppercase;font-size:12px;letter-spacing:.17em;color:#fff0dd;background:linear-gradient(180deg,#3a1610,#1a0805);border:1px solid var(--accent);padding:8px 18px;cursor:var(--curseur-anneau-feu);box-shadow:0 0 14px -2px var(--accent)}
 .project:hover{filter:brightness(1.25)}
-.ember{position:absolute;pointer-events:none;font-family:'IM Fell English',serif;font-style:italic;font-size:16px;color:#ffb27a;text-shadow:0 0 8px #ff4a10;animation:rise 1.6s ease-out forwards}
+.ember{position:absolute;pointer-events:none;font-family:var(--police-texte);font-style:italic;font-size:16px;color:#ffb27a;text-shadow:0 0 8px #ff4a10;animation:rise 1.6s ease-out forwards}
 @keyframes rise{to{transform:translate(var(--dx),-60px) scale(.6);opacity:0;filter:blur(2px)}}
 
 /* ---------- Carte de région ---------- */
 #card{position:fixed;z-index:4;width:270px;pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .35s, transform .35s}
 #card.show{opacity:1;transform:none}
-#card .ptitle{font-size:12px}
+#card .ptitle{font-size:13px}
 #card .body{padding:10px 14px 12px}
-#card .emp{white-space:nowrap;display:flex;align-items:center;gap:8px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;color:var(--texte-2);text-transform:uppercase}
+#card .emp{white-space:nowrap;display:flex;align-items:center;gap:8px;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.2em;color:var(--texte-2)}
 #card .emp .gbar{width:64px}
-#card p{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;line-height:1.35;color:#ecdcbf;margin-top:9px}
-#card .felt{margin-top:9px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.18em;color:#ff7a4a;text-transform:uppercase}
+#card p{font-family:var(--police-texte);font-style:italic;font-size:15px;line-height:1.35;color:#ecdcbf;margin-top:9px}
+#card .felt{margin-top:9px;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.18em;color:#ff7a4a}
 
 /* ---------- Toast & intro ---------- */
-#toast{position:fixed;top:96px;left:50%;transform:translateX(-50%);z-index:7;font-family:'IM Fell English',serif;font-style:italic;font-size:17px;color:#ffd7bd;text-shadow:0 0 12px rgba(255,59,10,.6),0 2px 4px #000;opacity:0;transition:opacity .5s;pointer-events:none;text-align:center;max-width:560px}
+#toast{position:fixed;top:96px;left:50%;transform:translateX(-50%);z-index:7;font-family:var(--police-texte);font-style:italic;font-size:17px;color:#ffd7bd;text-shadow:0 0 12px rgba(255,59,10,.6),0 2px 4px #000;opacity:0;transition:opacity .5s;pointer-events:none;text-align:center;max-width:560px}
 #toast.show{opacity:1}
-#intro{position:fixed;inset:0;z-index:9;display:grid;place-items:center;background:rgba(4,3,2,.55);cursor:pointer;transition:opacity .6s}
+#intro{position:fixed;inset:0;z-index:9;display:grid;place-items:center;background:rgba(4,3,2,.55);cursor:var(--curseur-anneau-feu);transition:opacity .6s}
 #intro.hide{opacity:0;pointer-events:none}
 #intro .panel{position:relative;width:min(560px,90vw);padding:0 0 18px}
 #intro .body{padding:14px 22px 0;font-size:16px;line-height:1.5}
 #intro .body p+p{margin-top:8px}
 #intro .body ul{margin:10px 0 0 18px;font-size:15px}
 #intro .body li{margin:3px 0}
-#intro .go{margin:14px 22px 0;font-family:Cinzel,serif;font-size:10px;letter-spacing:.3em;color:var(--bronze-clair);text-align:right}
+#intro .go{margin:14px 22px 0;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.22em;color:var(--bronze-clair);text-align:right}
 @media (max-width:1250px){#nine,#modes{width:232px}#voice{left:264px;right:330px}#rumors{width:300px}.gauges{gap:12px}.gbar{width:70px}.brand .turn{display:none}}
 
 /* ---------- Ajouts du client (hors maquette) ---------- */
-#map{cursor:crosshair}
+#map{cursor:var(--curseur-anneau)}
 button:disabled{opacity:.4;cursor:not-allowed}
 .btn.mini{flex:none;padding:4px 7px;font-size:9px;letter-spacing:.12em}
 .btn.danger{border-color:#8a1c0c;color:#ffb89a}
@@ -160,38 +164,39 @@ button:disabled{opacity:.4;cursor:not-allowed}
 #nine li.absent{opacity:.45}
 .nm .post.ordre{border-color:#8c6a3f;color:#ffd2b8;background:rgba(255,59,10,.12)}
 .tabs{display:flex;gap:0}
-.tabs button{background:none;border:none;font-family:Cinzel,serif;font-size:11.5px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:#6d5537;cursor:pointer;padding:0 10px 0 0}
+.tabs button{background:none;border:none;font-family:var(--police-titre);text-transform:uppercase;font-size:13px;font-weight:600;letter-spacing:.2em;color:#8a7050;cursor:var(--curseur-anneau-feu);padding:0 10px 0 0}
 .tabs button.on{color:var(--bronze-clair)}
 body.ombre .tabs button.on{color:var(--spectre)}
-.rum .cls{display:flex;gap:4px;margin-top:8px}
-.rum .cls button{font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;background:transparent;border:1px solid #3a2e22;color:var(--texte-2);padding:2px 6px;cursor:pointer}
+.rum .cls{display:flex;gap:5px;margin-top:9px}
+.rum .cls button:hover{border-color:var(--bronze-clair);color:#fff3dc}
+.rum .cls button{font-family:var(--police-titre);font-size:12px;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid #4a3a2a;color:#bba98b;padding:3px 9px;cursor:var(--curseur-anneau-feu)}
 .rum .cls button.on{border-color:var(--bronze-clair);color:#fff3dc;background:rgba(140,106,63,.18)}
 .rum .stamp.ok{color:#c9a46a;border-color:#c9a46a}
-.rum.ancien{opacity:.6}
-.vide{padding:14px 18px;font-style:italic;color:var(--texte-2);font-size:14px;line-height:1.4}
-.chro{padding:9px 16px;border-bottom:1px solid rgba(140,106,63,.1)}
-.chro .q{font-family:Cinzel,serif;font-size:9px;letter-spacing:.2em;color:var(--bronze-clair);text-transform:uppercase}
-.chro p{font-family:'IM Fell English',serif;font-size:14.5px;line-height:1.35;color:#e2d3b8;margin-top:3px}
+.rum.ancien{opacity:.72}
+.vide{padding:14px 18px;font-style:italic;color:#b9a789;font-size:15.5px;line-height:1.4}
+.chro{padding:11px 16px;border-bottom:1px solid rgba(140,106,63,.1)}
+.chro .q{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.14em;color:var(--bronze-clair)}
+.chro p{font-family:var(--police-texte);font-size:16px;line-height:1.42;color:#f0e3cb;margin-top:4px}
 .chro p.pensee{font-style:italic;color:#c8b3e6;margin-top:5px}
 #orders{padding:8px 12px;display:flex;align-items:center;gap:10px;min-height:46px}
 #orders .lst{flex:1;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-#orders .chip{font-family:'IM Fell English',serif;font-size:13.5px;color:var(--texte);border:1px solid #5a4630;padding:2px 4px 2px 8px;display:inline-flex;gap:6px;align-items:center;background:rgba(10,8,7,.6)}
-#orders .chip button{background:none;border:none;color:#b8402a;cursor:pointer;font-size:12px}
-#orders .etape{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;color:#ffd7bd}
-#orders .pa{font-family:Cinzel,serif;font-size:10px;letter-spacing:.2em;color:var(--texte-2);white-space:nowrap}
-#orders .pa b{color:var(--texte);font-family:'IM Fell English',serif;font-size:15px;letter-spacing:0}
+#orders .chip{font-family:var(--police-texte);font-size:13.5px;color:var(--texte);border:1px solid #5a4630;padding:2px 4px 2px 8px;display:inline-flex;gap:6px;align-items:center;background:rgba(10,8,7,.6)}
+#orders .chip button{background:none;border:none;color:#b8402a;cursor:var(--curseur-anneau-feu);font-size:12px}
+#orders .etape{font-family:var(--police-texte);font-style:italic;font-size:15px;color:#ffd7bd}
+#orders .pa{font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.2em;color:var(--texte-2);white-space:nowrap}
+#orders .pa b{color:var(--texte);font-family:var(--police-texte);font-size:15px;letter-spacing:0}
 .project.fin{--accent:#ff3b0a}
 .vopts{display:flex;gap:8px;margin:8px 16px 0;font-size:13px;color:var(--texte-2);font-style:italic;flex-wrap:wrap;align-items:center}
-.vopts select{font-family:'IM Fell English',serif;font-size:13.5px;background:#120f0d;color:var(--texte);border:1px solid #5a4630;padding:1px 4px;max-width:260px}
+.vopts select{font-family:var(--police-texte);font-size:13.5px;background:#120f0d;color:var(--texte);border:1px solid #5a4630;padding:1px 4px;max-width:260px}
 #card .seen{margin-top:8px;font-size:13.5px;line-height:1.35;color:var(--texte)}
-#card .seen b{font-family:Cinzel,serif;font-weight:400;font-size:9px;letter-spacing:.18em;color:var(--bronze-clair);text-transform:uppercase}
+#card .seen b{font-family:var(--police-titre);text-transform:uppercase;font-weight:400;font-size:10.5px;letter-spacing:.18em;color:var(--bronze-clair)}
 .modal{position:fixed;inset:0;z-index:9;display:grid;place-items:center;background:rgba(4,3,2,.6)}
 .modal .panel{position:relative;width:min(560px,90vw);padding:0 0 18px}
 .modal .body{padding:14px 22px 0;font-size:16px;line-height:1.5}
 .modal .body p+p{margin-top:8px}
 .modal .body ul{margin:10px 0 0 18px;font-size:15px}
 .modal .go{margin:14px 22px 0;display:flex;justify-content:flex-end;gap:8px}
-.duel p{font-family:'IM Fell English',serif;font-size:16px}
+.duel p{font-family:var(--police-texte);font-size:16px}
 .duel p.final{font-style:italic;color:#ffd7bd;margin-top:12px}
 .basmilieu{position:fixed;left:304px;right:372px;bottom:18px;z-index:4;display:flex;flex-direction:column;gap:14px;pointer-events:none}
 .basmilieu .panel,.basmilieu #voice,.basmilieu #orders{position:relative;left:auto;right:auto;bottom:auto;top:auto;pointer-events:auto}
@@ -206,7 +211,7 @@ body.ombre .tabs button.on{color:var(--spectre)}
 .son .btn.coupe svg{fill:#6d5a44}.son .btn.coupe svg .trait{stroke:var(--braise)}
 .reglages-son{position:absolute;top:32px;right:0;width:250px;z-index:8;padding:0 0 12px}
 .reglages-son .body{padding:10px 14px 0;display:flex;flex-direction:column;gap:7px;font-size:14px}
-.reglages-son .curseur{display:grid;grid-template-columns:62px 1fr 26px;align-items:center;gap:8px;font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-2)}
+.reglages-son .curseur{display:grid;grid-template-columns:62px 1fr 26px;align-items:center;gap:8px;font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.18em;color:var(--texte-2)}
 .reglages-son .curseur b{font-weight:400;text-align:right;color:var(--texte)}
 .reglages-son input[type=range]{accent-color:var(--braise);width:100%}
 .reglages-son .case{display:flex;gap:8px;align-items:center;color:var(--texte)}
@@ -215,12 +220,12 @@ body.ombre .tabs button.on{color:var(--spectre)}
   pointer-events:none;opacity:0;transition:opacity .45s;text-shadow:0 2px 6px #000,0 0 14px rgba(0,0,0,.9);
   padding:10px 26px 12px;background:radial-gradient(ellipse at 50% 50%,rgba(6,4,3,.9) 0%,rgba(6,4,3,.72) 55%,transparent 78%)}
 #soustitres.show{opacity:1;pointer-events:auto}
-#soustitres .np{font-family:'IM Fell English',serif;font-style:italic;font-size:15px;color:#b8361f;letter-spacing:.04em;margin-bottom:4px}
+#soustitres .np{font-family:var(--police-texte);font-style:italic;font-size:15px;color:#b8361f;letter-spacing:.04em;margin-bottom:4px}
 #soustitres .np span{opacity:.5;transition:opacity .2s, color .2s}
 #soustitres .np span.dit{opacity:1;color:#e0573a}
 #soustitres .np span.glose{cursor:help;border-bottom:1px dotted rgba(184,54,31,.45)}
-#soustitres .fr{font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;line-height:1.35;color:#f1e4cc}
+#soustitres .fr{font-family:var(--police-texte);font-size:21px;line-height:1.35;color:#f1e4cc}
 #soustitres .fr span{opacity:.45;transition:opacity .2s}
 #soustitres .fr span.dit{opacity:1}
-#soustitres .note{margin-top:4px;font-family:Cinzel,serif;font-size:8.5px;letter-spacing:.25em;text-transform:uppercase;color:#6d5a44}
+#soustitres .note{margin-top:4px;font-family:var(--police-titre);text-transform:uppercase;font-size:10px;letter-spacing:.19em;color:#6d5a44}
 #soustitres.muette .fr span{opacity:1}

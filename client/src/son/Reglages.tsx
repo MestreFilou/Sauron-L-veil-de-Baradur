@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReglagesSon, type ReglagesSon } from './reglages';
 
-function Curseur({ nom, cle }: { nom: string; cle: 'general' | 'musique' | 'voix' }) {
+function Curseur({ nom, cle }: { nom: string; cle: 'general' | 'musique' | 'voix' | 'effets' }) {
   const v = useReglagesSon((s) => s[cle]);
   const regler = useReglagesSon((s) => s.regler);
   return (
@@ -54,6 +54,7 @@ export function BoutonSon() {
             <Curseur nom="Général" cle="general" />
             <Curseur nom="Musique" cle="musique" />
             <Curseur nom="Voix" cle="voix" />
+            <Curseur nom="Effets" cle="effets" />
             <Case nom="Couper le son (M)" cle="coupe" />
             <Case nom="Sous-titres" cle="sousTitres" />
             <Case nom="Glose du Noir Parler au survol" cle="glose" />

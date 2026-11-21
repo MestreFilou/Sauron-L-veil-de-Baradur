@@ -2,6 +2,7 @@ import type { Replique } from '@sauron/audio';
 import { REPLIQUES } from '@sauron/audio';
 import { describe, expect, it } from 'vitest';
 import { ambianceDuJeu, type ContexteAmbiance } from '../src/son/ambiance';
+import { effetsDuChangement, type Instantane } from '../src/son/effets';
 import { indexer } from '../src/son/fichiers';
 import { gainBus, lireReglages, REGLAGES_DEFAUT } from '../src/son/reglages';
 import { choisirReplique, registreDeLOrdre } from '../src/son/repliques';
@@ -76,5 +77,47 @@ describe('fichiers présents', () => {
     const m = indexer({ '../../../audio/musique/barad_dur/oeil.mp3': '/x.mp3' }, '/audio/musique/');
     expect(m.get('barad_dur/oeil.mp3')).toBe('/x.mp3');
     expect(indexer({ '../../../audio/voix/fer_01.mp3': '/v.mp3' }, '/audio/').get('voix/fer_01.mp3')).toBe('/v.mp3');
+  });
+});
+
+describe('effets sonores', () => {
+  const etat = { tour: 3, ordres: [], oeil: null, rituel: false, murmures: [{ id: 'm1', classement: null }], issue: null } as unknown as Instantane['etat'];
+  const base: Instantane = { etat, mode: 'oeil', duel: null, introVue: true, toast: null };
+  const ids = (a: Instantane, b: Instantane) => effetsDuChangement(a, b).map((e) => e.id);
+
+  it('rien ne change, rien ne sonne', () => {
+    expect(ids(base, { ...base })).toEqual([]);
+  });
+
+  it('entrée, fin de tour, mais pas de cloche pour une nouvelle partie', () => {
+    expect(ids({ ...base, introVue: false }, base)).toEqual(['entree']);
+    expect(ids(base, { ...base, etat: { ...etat, tour: 4 } })).toEqual(['fin_tour']);
+    expect(ids(base, { ...base, etat: { ...etat, tour: 1 } })).toEqual([]);
+  });
+
+  it('un ordre donné ou annulé', () => {
+    const o = { ...base, etat: { ...etat, ordres: [{ type: 'nazgul_cri', nazgul: 'khamul' }] } } as Instantane;
+    expect(ids(base, o)).toEqual(['ordre']);
+    expect(ids(o, base)).toEqual(['ordre_annule']);
+  });
+
+  it('le Regard : posé, repoussé, ou l’Anneau senti un peu après', () => {
+    const oeil = (repousse: boolean, anneauSenti: boolean) => ({ ...base, etat: { ...etat, oeil: { repousse, anneauSenti } } }) as unknown as Instantane;
+    expect(ids(base, oeil(false, false))).toEqual(['regard']);
+    expect(ids(base, oeil(true, false))).toEqual(['repousse']);
+    expect(effetsDuChangement(base, oeil(false, true))).toEqual([{ id: 'regard' }, { id: 'anneau', retard: 0.7 }]);
+  });
+
+  it('murmure classé, rituel, duel, Monde de l’Ombre', () => {
+    expect(ids(base, { ...base, etat: { ...etat, murmures: [{ id: 'm1', classement: 'vrai' }] } } as unknown as Instantane)).toEqual(['murmure']);
+    expect(ids(base, { ...base, etat: { ...etat, rituel: true } })).toEqual(['rituel']);
+    expect(ids(base, { ...base, duel: {} })).toEqual(['duel']);
+    expect(ids(base, { ...base, mode: 'ombre' })).toEqual(['ombre_entrer']);
+    expect(ids({ ...base, mode: 'ombre' }, base)).toEqual(['ombre_sortir']);
+  });
+
+  it('une annonce sans changement d’état est un refus', () => {
+    expect(ids(base, { ...base, toast: { n: 1 } })).toEqual(['refus']);
+    expect(ids(base, { ...base, etat: { ...etat, rituel: true }, toast: { n: 1 } })).toEqual(['rituel']);
   });
 });
