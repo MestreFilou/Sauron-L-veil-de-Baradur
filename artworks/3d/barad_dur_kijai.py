@@ -38,13 +38,70 @@ PIECES = {
 }
 # le modèle regarde vers +x ; on le tourne pour qu'il fasse face aux caméras (vers -y)
 ROTATION = -math.pi / 2
-# le modèle est agrandi, et son socle d'impression (un bloc plat de ~27 mm) est
-# enfoncé dans la plaine : la forteresse sort directement de la cendre
+# le modèle est agrandi et étiré en hauteur pour être plus écrasant : la
+# forteresse monte de 15 %, la tour de 50 %. Son socle d'impression (un bloc
+# plat de ~27 mm) est enfoncé dans la plaine : elle sort directement de la cendre.
 ECHELLE = 1.25
-ENFONCE = 27.0
-# l'Œil, entre les deux cornes de la tour (coordonnées du modèle)
+ETIRE_SOCLE = 1.15
+ETIRE_TOUR = 1.5
+PIED_TOUR = 117.0  # z du bas de la tour dans le modèle
+ENFONCE = 31.0 * ETIRE_SOCLE
+FENETRES = 1000  # fentes de lumière semées sur les murs : c'est elles qui donnent l'échelle
+
+
+def hauteur(z, piece):
+    """z du modèle → z étiré (avant l'échelle générale)."""
+    if piece == "tour":
+        return PIED_TOUR * ETIRE_SOCLE + (z - PIED_TOUR) * ETIRE_TOUR
+    return z * ETIRE_SOCLE
+
+
+# l'Œil, entre les deux cornes de la tour
 OEIL_MODELE = 230.0
-OEIL = (0.0, 0.0, (OEIL_MODELE - ENFONCE) * ECHELLE)
+OEIL = (0.0, 0.0, (hauteur(OEIL_MODELE, "tour") - ENFONCE) * ECHELLE)
+
+
+def matiere_kijai():
+    """Fer noir et pierre : appareil de blocs, usure claire sur les arêtes (pointiness)."""
+    m = bpy.data.materials.new("Fer de Kijai")
+    n, l = bd.noeuds(m)
+    p = n["Principled BSDF"]
+    p.inputs["Metallic"].default_value = 0.6
+    geo = n.new("ShaderNodeNewGeometry")
+    arete = n.new("ShaderNodeMapRange")
+    arete.inputs["From Min"].default_value = 0.5
+    arete.inputs["From Max"].default_value = 0.56
+    l.new(geo.outputs["Pointiness"], arete.inputs["Value"])
+    coord = n.new("ShaderNodeTexCoord")
+    briques = n.new("ShaderNodeTexBrick")
+    briques.inputs["Scale"].default_value = 0.9
+    briques.inputs["Mortar Size"].default_value = 0.012
+    briques.inputs["Color1"].default_value = (0.03, 0.026, 0.024, 1)
+    briques.inputs["Color2"].default_value = (0.018, 0.016, 0.015, 1)
+    briques.inputs["Mortar"].default_value = (0.004, 0.003, 0.003, 1)
+    l.new(coord.outputs["Object"], briques.inputs["Vector"])
+    bruit = n.new("ShaderNodeTexNoise")
+    bruit.inputs["Scale"].default_value = 0.35
+    bruit.inputs["Detail"].default_value = 10
+    l.new(coord.outputs["Object"], bruit.inputs["Vector"])
+    usure = n.new("ShaderNodeMix"); usure.data_type = 'RGBA'
+    usure.inputs["B"].default_value = (0.16, 0.12, 0.09, 1)  # fer poli par le vent de cendre
+    l.new(arete.outputs["Result"], usure.inputs["Factor"])
+    l.new(briques.outputs["Color"], usure.inputs["A"])
+    l.new(usure.outputs["Result"], p.inputs["Base Color"])
+    rug = n.new("ShaderNodeMapRange")
+    rug.inputs["To Min"].default_value = 0.65
+    rug.inputs["To Max"].default_value = 0.3
+    l.new(arete.outputs["Result"], rug.inputs["Value"])
+    l.new(rug.outputs["Result"], p.inputs["Roughness"])
+    relief = n.new("ShaderNodeBump")
+    relief.inputs["Strength"].default_value = 0.35
+    somme = n.new("ShaderNodeMath"); somme.operation = 'MULTIPLY_ADD'; somme.inputs[1].default_value = 0.3
+    l.new(bruit.outputs["Fac"], somme.inputs[0])
+    l.new(briques.outputs["Fac"], somme.inputs[2])
+    l.new(somme.outputs["Value"], relief.inputs["Height"])
+    l.new(relief.outputs["Normal"], p.inputs["Normal"])
+    return m
 
 
 def importer(fer, lave):
@@ -56,17 +113,49 @@ def importer(fer, lave):
         bpy.ops.wm.stl_import(filepath=str(chemin))
         ob = bpy.context.selected_objects[0]
         ob.name = nom
-        ob.rotation_euler = (0, 0, ROTATION)
-        ob.scale = (ECHELLE,) * 3
-        ob.location.z = -ENFONCE * ECHELLE
+        piece = "tour" if "Tour" in nom else "socle"
+        # tout est appliqué aux sommets : rotation, étirement, échelle, enfoncement
+        rot = bd.Matrix.Rotation(ROTATION, 4, 'Z')
+        for v in ob.data.vertices:
+            x, y, z = v.co
+            z = hauteur(z, piece) - ENFONCE + (0.6 if "Lave" in nom else 0.0)
+            v.co = (rot @ bd.Vector((x, y, z))) * ECHELLE
+        ob.data.update()
         ob.data.materials.clear()
         ob.data.materials.append(lave if "Lave" in nom else fer)
-        if "Lave" in nom:
-            ob.location.z += 0.6 * ECHELLE  # les plaques de lave affleurent dans le socle
-        for p in ob.data.polygons:
-            p.use_smooth = False
+        bpy.context.view_layer.objects.active = ob
+        try:  # lisse les grandes surfaces, garde les arêtes vives
+            bpy.ops.object.shade_auto_smooth(angle=math.radians(35))
+        except Exception:
+            for p in ob.data.polygons:
+                p.use_smooth = False
         objets.append(ob)
     return objets
+
+
+def semer_fenetres(objets, mat, nb=FENETRES):
+    """Des fentes de braise sur les murs verticaux, au hasard, pondérées par la surface."""
+    import random
+    rng = random.Random(bd.GRAINE + 7)
+    murs = []
+    for ob in objets:
+        if "Lave" in ob.name:
+            continue
+        for p in ob.data.polygons:
+            if abs(p.normal.z) < 0.25 and p.area > 0.05 and p.center.z > 4:
+                murs.append((p.area, p.center.copy(), p.normal.copy()))
+    total = sum(a for a, _, _ in murs)
+    tirages = sorted(rng.random() * total for _ in range(nb))
+    bm = bd.bmesh.new()
+    acc, k = 0.0, 0
+    for a, c, nrm in murs:
+        acc += a
+        while k < len(tirages) and tirages[k] <= acc:
+            k += 1
+            h = rng.uniform(0.6, 1.4)
+            ang = math.atan2(nrm.y, nrm.x)
+            bd.boite(bm, c + nrm * 0.12, (0.3, 0.32, h), ang)
+    return bd.objet_bmesh("Fenêtres (Kijai)", bm, mat)
 
 
 def loger_oeil():
@@ -76,8 +165,8 @@ def loger_oeil():
     lueur = bpy.data.objects["Lueur de l'Œil"]
     for ob in (oeil, halo, lueur):
         ob.location = OEIL
-    oeil.scale = (7.4 * ECHELLE, 1.9 * ECHELLE, 10.5 * ECHELLE)
-    halo.scale = (12.0 * ECHELLE, 6.0 * ECHELLE, 18.0 * ECHELLE)
+    oeil.scale = (7.4 * ECHELLE, 1.9 * ECHELLE, 10.5 * ECHELLE * ETIRE_TOUR * 0.85)
+    halo.scale = (12.0 * ECHELLE, 6.0 * ECHELLE, 18.0 * ECHELLE * ETIRE_TOUR * 0.85)
 
 
 def construire(cadre):
@@ -100,7 +189,9 @@ def construire(cadre):
 
     bd.monde()
     bd.plaine(bd.matiere_sol())
-    importer(fer, lave_socle)
+    pieces = importer(matiere_kijai(), lave_socle)
+    fenetre, _ = bd.matiere_braise(22.0, (1.0, 0.36, 0.08, 1))
+    semer_fenetres(pieces, fenetre)
     _, lum_oeil = bd.poser_oeil(bd.matiere_oeil())
     loger_oeil()
     bd.orodruin(pierre, lave)
@@ -110,15 +201,20 @@ def construire(cadre):
     cam = bd.camera(cadre)
     if cadre == "portrait":
         # un peu plus de recul : la forteresse de Kijai est plus large que la mienne
-        cam.location = (40, -300, 4)
-        cam.rotation_euler = (bd.Vector((0, 0, 150)) - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        cam.location = (40, -330, 3)
+        cam.data.lens = 22
+        cam.rotation_euler = (bd.Vector((0, 0, 185)) - cam.location).to_track_quat('-Z', 'Y').to_euler()
+    elif cadre == "paysage":
+        cam.location = (100, -440, 8)
+        cam.data.lens = 21
+        cam.rotation_euler = (bd.Vector((-50, 0, 185)) - cam.location).to_track_quat('-Z', 'Y').to_euler()
     elif cadre == "couronne":
         cam.location = (14, -150, OEIL[2] - 18)
         cam.rotation_euler = (bd.Vector(OEIL) - cam.location).to_track_quat('-Z', 'Y').to_euler()
     bd.animer(lum_oeil, b, c)
     # l'anneau des cornes est tout proche : l'Œil l'éclaire moins fort que dans ma tour
     fc = lum_oeil.animation_data.drivers.find("energy")
-    fc.driver.expression = fc.driver.expression.replace("2.6e6", "9e5")
+    fc.driver.expression = fc.driver.expression.replace("2.6e6", "5e5")
 
 
 if __name__ == "__main__":
