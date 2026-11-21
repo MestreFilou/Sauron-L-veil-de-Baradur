@@ -1,17 +1,26 @@
+import { LIBELLES_AFFECTATION, regionVisee } from './affectations';
+import { captifs } from './cachots';
+import type { Condition } from './decisions';
+import { coutDecision, DECISIONS, rechargeDecision } from './decisions';
 import { estHeros, statutRegion } from './etat';
 import type { Monde } from './monde';
 import { nazgulDef, personnage, region, regionsJouables } from './monde';
 import { paRestants, essenceRestante } from './partie';
+import { REGLES } from './regles';
 import type { EstimationPiste } from './piste';
 import { estimerPiste } from './piste';
+import { chantierCeTour, niveauOuvrage, OUVRAGES } from './ouvrages';
 import { estIsole, forceSignal } from './signal';
 import { dateDuTour } from './tour';
 import type {
+  Affectation,
   Classement,
+  IdDecision,
   EtatJeu,
   Evenement,
   Fait,
   IdNazgul,
+  IdOuvrage,
   IdPersonnage,
   IdRegion,
   Jauges,
@@ -53,6 +62,46 @@ export interface VueJoueur {
     signal: number;
     isole: boolean;
     roiSorcier: boolean;
+    /** Fiche du Nazgûl (menu des Neuf). */
+    vitesse: number;
+    bonusDetection: number;
+    sensibleAuJour: boolean;
+    lameMorgulUtilisee: boolean;
+    /** Tour où il revient à la chasse, s'il est indisponible. */
+    retourAuTour: number | null;
+    /** Embuscade qu'il tient, s'il est tapi. */
+    embuscade: { region: IdRegion; expire: number } | null;
+    affectation: Affectation | null;
+    /** Libellé de la mission et région qu'elle vise ce tour. */
+    mission: { libelle: string; region: IdRegion | null } | null;
+  }[];
+  /** Les prisonniers des cachots : Sauron sait tout d'eux. */
+  captifs: {
+    id: IdPersonnage;
+    nom: string;
+    titre?: string;
+    origine: IdRegion;
+    depuis: number;
+    par: IdNazgul;
+    doute: number;
+    plie: boolean;
+    interrogatoires: number;
+    /** Il reste quelque chose à arracher (peur, intention ou secret). */
+    aLivrer: boolean;
+  }[];
+  /** Les décisions de la Tour, avec leurs conditions évaluées. */
+  decisions: {
+    id: IdDecision;
+    nom: string;
+    description: string;
+    effet: string;
+    cout: { pa: number; essence: number };
+    conditions: Condition[];
+    /** Tour où elle redevient possible ; null : déjà prise une fois pour toutes. */
+    possibleAuTour: number | null;
+    derniereFois: number | null;
+    disponible: boolean;
+    ordonnee: boolean;
   }[];
   personnages: {
     id: IdPersonnage;
@@ -91,6 +140,9 @@ export interface VueJoueur {
   piste: EstimationPiste;
   evenements: Evenement[];
   issue: EtatJeu['issue'];
+  /** Les ouvrages du Mont Destin : niveau atteint, et un chantier est-il déjà lancé ce tour. */
+  ouvrages: Record<IdOuvrage, number>;
+  chantierCeTour: boolean;
 }
 
 function contradictoires(a: Fait, b: Fait): boolean {
@@ -148,8 +200,55 @@ export function vueJoueur(monde: Monde, etat: EtatJeu): VueJoueur {
         signal: forceSignal(monde, etat, n.id),
         isole: estIsole(monde, etat, n.id),
         roiSorcier: Boolean(def.roiSorcier),
+        vitesse: n.posture === 'ombre_ailee' ? REGLES.nazgul.vitesseOmbreAilee : def.vitesse,
+        bonusDetection: def.bonusDetection,
+        sensibleAuJour: Boolean(def.sensibleAuJour),
+        lameMorgulUtilisee: n.lameMorgulUtilisee,
+        retourAuTour: n.indisponibleJusquA >= etat.tour ? n.indisponibleJusquA + 1 : null,
+        embuscade: (() => {
+          for (const r of Object.values(etat.regions)) {
+            const e = r.embuscades.find((x) => x.nazgul === n.id && x.expire >= etat.tour);
+            if (e) return { region: r.id, expire: e.expire };
+          }
+          return null;
+        })(),
+        affectation: n.affectation ?? null,
+        mission: n.affectation ? { libelle: LIBELLES_AFFECTATION[n.affectation.type], region: regionVisee(monde, etat, n.affectation) } : null,
       };
       return def.titre ? { ...v, titre: def.titre } : v;
+    }),
+    captifs: captifs(etat).map((c) => {
+      const def = personnage(monde, c.personnage);
+      const k = etat.connaissance;
+      const v = {
+        id: c.personnage,
+        nom: def.nom,
+        origine: c.origine,
+        depuis: c.depuis,
+        par: c.par,
+        doute: etat.personnages[c.personnage]!.doute,
+        plie: c.plie,
+        interrogatoires: c.interrogatoires,
+        aLivrer: !k.peurs.includes(def.id) || !k.destinations.includes(def.id) || def.secrets.some((s) => !k.secrets.some((x) => x.id === s.id)),
+      };
+      return def.titre ? { ...v, titre: def.titre } : v;
+    }),
+    decisions: DECISIONS.map((d) => {
+      const conditions = d.conditions(monde, etat);
+      const possibleAuTour = rechargeDecision(etat, d.id);
+      const ordonnee = etat.ordres.some((o) => o.type === 'decision' && o.decision === d.id);
+      return {
+        id: d.id,
+        nom: d.nom,
+        description: d.description,
+        effet: d.effet,
+        cout: coutDecision(d.id),
+        conditions,
+        possibleAuTour,
+        derniereFois: etat.decisions?.[d.id] ?? null,
+        disponible: possibleAuTour !== null && possibleAuTour <= etat.tour && conditions.every((c) => c.remplie) && !ordonnee,
+        ordonnee,
+      };
     }),
     personnages: k.personnagesConnus
       .map((id) => personnage(monde, id))
@@ -190,6 +289,8 @@ export function vueJoueur(monde: Monde, etat: EtatJeu): VueJoueur {
     piste: estimerPiste(monde, etat),
     evenements: etat.evenements.filter((e) => e.public),
     issue: etat.issue,
+    ouvrages: Object.fromEntries(OUVRAGES.map((id) => [id, niveauOuvrage(etat, id)])) as Record<IdOuvrage, number>,
+    chantierCeTour: chantierCeTour(etat),
   };
 }
 

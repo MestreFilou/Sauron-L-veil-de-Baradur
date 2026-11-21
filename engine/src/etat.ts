@@ -1,4 +1,5 @@
 import type { Monde } from './monde';
+import { paDeLaChambre } from './ouvrages';
 import { personnage, region } from './monde';
 import { borner } from './outils';
 import { REGLES } from './regles';
@@ -101,6 +102,7 @@ export function etatInitial(monde: Monde, graine: number): EtatJeu {
     evenements: [],
     journal: [],
     issue: null,
+    ouvrages: {},
   };
 }
 
@@ -136,7 +138,7 @@ export const nazgulDans = (etat: EtatJeu, regionId: IdRegion) =>
   nazgulDisponibles(etat).filter((n) => n.region === regionId);
 
 export function paMax(etat: EtatJeu): number {
-  return Math.min(REGLES.pa.max, REGLES.pa.base + (REGLES.pa.parForme[etat.jauges.forme] ?? 0));
+  return Math.min(REGLES.pa.max, REGLES.pa.base + (REGLES.pa.parForme[etat.jauges.forme] ?? 0) + paDeLaChambre(etat));
 }
 
 export function plancherVisibilite(etat: EtatJeu): number {

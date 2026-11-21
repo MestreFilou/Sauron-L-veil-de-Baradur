@@ -223,6 +223,30 @@ export const REGLES = {
 
   agent: { pa: 1, douteMin: 60, visibilite: 1 },
 
+  /**
+   * Les cachots de Barad-dûr. Un Nazgûl ne capture que des gens du commun
+   * (rôle « pnj ») : les héros et les Sages ne se laissent pas prendre en Acte I.
+   */
+  cachots: {
+    capture: { pa: 2, terreur: 10, visibilite: 4 },
+    interroger: { pa: 1, essence: 0, doute: 10 },
+    tourmenter: { pa: 1, essence: 1, doute: 25, visibilite: 1 },
+    /** Relâché sans avoir plié : il raconte ce qu'il a vu. */
+    relacher: { pa: 0, essence: 0, terreur: 10, mefianceHeros: 10, visibiliteAgent: 1 },
+    executer: { pa: 0, essence: 0, terreur: 20, doutePresents: 5, visibilite: 3, gainEssence: 1 },
+    /** Doute à partir duquel le prisonnier plie (il servira la Tour une fois relâché). */
+    seuilPlier: 60,
+  },
+
+  /** Décisions de la Tour : coût, recharge en tours (null : une seule fois). */
+  decisions: {
+    presser_les_neuf: { pa: 0, essence: 3, recharge: 6, gainTours: 2, visibilite: 2 },
+    silence_de_la_tour: { pa: 0, essence: 0, recharge: 8, visibiliteMin: 25, visibilite: -8, malusPa: 2 },
+    langues_des_tavernes: { pa: 1, essence: 1, recharge: 4, terreur: 10, visibilite: 2 },
+    crebains_de_dun: { pa: 1, essence: 2, recharge: 5, visibiliteMax: 60, visibilite: 2 },
+    montures_ailees: { pa: 0, essence: 15, recharge: null, formeMin: 2 },
+  },
+
   corruption: {
     pa: 2,
     essence: 3,
@@ -236,6 +260,22 @@ export const REGLES = {
     /** Étapes 1 à 3 (la 4 demande l'Unique, Acte final). */
     cout: [0, 10, 20, 35, 50] as const,
     visibilite: [0, 8, 12, 18, 30] as const,
+  },
+
+  /**
+   * Les ouvrages du Mont Destin, bâtis avec l'Essence depuis l'écran de gestion
+   * (cliquer sur l'Œil). Un seul chantier par tour ; `couts[n]` est le prix du
+   * niveau n + 1, et la longueur du tableau donne le niveau maximal.
+   */
+  ouvrages: {
+    /** Forges de l'Orodruin : Essence en plus à chaque nuit, par niveau. */
+    forges: { couts: [4, 9, 15] as const, essenceParNiveau: 1 },
+    /** Voile de cendres : la Visibilité décroît plus vite quand l'Ombre se tait, par niveau. */
+    cendres: { couts: [6, 12] as const, decroissanceParNiveau: 1 },
+    /** Écuries noires : les Nazgûl démontés rentrent plus tôt, en tours par niveau. */
+    ecuries: { couts: [7, 14] as const, retourParNiveau: 3 },
+    /** Chambre du Regard : PA en plus à chaque aube (toujours plafonnés à pa.max). */
+    chambre: { couts: [18] as const, paParNiveau: 1 },
   },
 
   pnj: {
