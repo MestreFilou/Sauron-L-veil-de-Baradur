@@ -6,6 +6,8 @@ export interface ReglagesSon {
   general: number;
   musique: number;
   voix: number;
+  /** Effets d'interface et d'événement, et fonds d'ambiance (forge, vent). */
+  effets: number;
   /** Tout couper d'un coup (touche M). */
   coupe: boolean;
   sousTitres: boolean;
@@ -13,7 +15,7 @@ export interface ReglagesSon {
   glose: boolean;
 }
 
-export const REGLAGES_DEFAUT: ReglagesSon = { general: 0.8, musique: 0.6, voix: 1, coupe: false, sousTitres: true, glose: true };
+export const REGLAGES_DEFAUT: ReglagesSon = { general: 0.8, musique: 0.6, voix: 1, effets: 0.7, coupe: false, sousTitres: true, glose: true };
 
 const CLE = 'oeil-de-barad-dur/son';
 
@@ -34,14 +36,15 @@ export function lireReglages(brut: string | null): ReglagesSon {
     general: borne(o.general, d.general),
     musique: borne(o.musique, d.musique),
     voix: borne(o.voix, d.voix),
+    effets: borne(o.effets, d.effets),
     coupe: bool(o.coupe, d.coupe),
     sousTitres: bool(o.sousTitres, d.sousTitres),
     glose: bool(o.glose, d.glose),
   };
 }
 
-/** Gain effectif d'un bus (musique ou voix), coupure comprise. Courbe au carré : plus naturelle à l'oreille qu'un réglage linéaire. */
-export function gainBus(r: ReglagesSon, bus: 'musique' | 'voix'): number {
+/** Gain effectif d'un bus (musique, voix ou effets), coupure comprise. Courbe au carré : plus naturelle à l'oreille qu'un réglage linéaire. */
+export function gainBus(r: ReglagesSon, bus: 'musique' | 'voix' | 'effets'): number {
   if (r.coupe) return 0;
   return (r.general * r[bus]) ** 2;
 }
