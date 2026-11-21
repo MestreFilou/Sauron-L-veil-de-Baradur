@@ -8,6 +8,7 @@ import './ecrans/ecrans.css';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
+import { BoutonOeil, EcranMontDoom } from './montdoom/BoutonOeil';
 import { Murmures } from './panneaux/Murmures';
 import { Neuf } from './panneaux/Neuf';
 import { Voix } from './panneaux/Voix';
@@ -132,6 +133,7 @@ function Partie() {
       <Carte />
       <div className="vignette" />
       <Haut />
+      <BoutonOeil />
       <Oeil />
       <Neuf />
       <Modes />
@@ -145,6 +147,7 @@ function Partie() {
       <Duel />
       <Cour />
       <Fin />
+      <EcranMontDoom />
       <Intro />
       <Pause />
     </>

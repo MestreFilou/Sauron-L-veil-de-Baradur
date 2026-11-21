@@ -394,6 +394,7 @@ export type TypeEvenement =
   | 'forme'
   | 'seuil'
   | 'essence'
+  | 'ouvrage'
   | 'cachot'
   | 'decision'
   | 'fin';
@@ -447,6 +448,9 @@ export interface Jauges {
   malusPa: number;
 }
 
+/** Les ouvrages du Mont Destin (REGLES.ouvrages). */
+export type IdOuvrage = 'forges' | 'cendres' | 'ecuries' | 'chambre';
+
 export interface EtatJeu {
   version: 1;
   graine: number;
@@ -472,6 +476,10 @@ export interface EtatJeu {
   /** Historique des événements publics des tours passés (le Journal de Barad-dûr s'en nourrit). */
   journal: { tour: number; evenements: Evenement[]; resume?: string }[];
   issue: IssueActe | null;
+  /** Niveau de chaque ouvrage du Mont Destin. Absent des anciennes sauvegardes : aucun ouvrage. */
+  ouvrages?: Partial<Record<IdOuvrage, number>>;
+  /** Tour du dernier chantier (un seul par tour). */
+  dernierChantier?: number;
   /** Prisonniers des cachots de Barad-dûr. Absent des anciennes sauvegardes : aucun. */
   captifs?: Captif[];
   /** Décisions déjà prises : tour de la dernière prise. */
@@ -481,6 +489,7 @@ export interface EtatJeu {
 export type Action =
   | { type: 'poser_oeil'; cible: CibleOeil; approche?: Approche }
   | { type: 'rituel_forme' }
+  | { type: 'batir_ouvrage'; ouvrage: IdOuvrage }
   | { type: 'classer_murmure'; murmure: string; classement: Classement }
   | { type: 'ordonner'; ordre: Ordre }
   | { type: 'annuler_ordre'; index: number }

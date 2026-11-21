@@ -3,6 +3,7 @@
  * charger, options, retour au menu principal, quitter.
  */
 import { useEffect, useState } from 'react';
+import { useMontDoom } from '../montdoom/etat';
 import { Runes } from '../Runes';
 import { bureau } from '../plateforme';
 import { useJeu } from '../store';
@@ -23,6 +24,7 @@ export function Pause() {
       const j = useJeu.getState();
       if (j.ecran !== 'jeu') return;
       if (!j.pause && (j.regionChoisie || j.nazgulChoisi || j.duel || j.cour || !j.introVue)) return;
+      if (!j.pause && useMontDoom.getState().ouvert) return; // le Mont Destin se ferme d’abord
       const t = e.target as HTMLElement;
       if (!j.pause && (t.tagName === 'TEXTAREA' || t.tagName === 'INPUT') && (t as HTMLInputElement).value) return;
       e.stopImmediatePropagation();

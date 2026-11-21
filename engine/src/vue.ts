@@ -9,6 +9,7 @@ import { paRestants, essenceRestante } from './partie';
 import { REGLES } from './regles';
 import type { EstimationPiste } from './piste';
 import { estimerPiste } from './piste';
+import { chantierCeTour, niveauOuvrage, OUVRAGES } from './ouvrages';
 import { estIsole, forceSignal } from './signal';
 import { dateDuTour } from './tour';
 import type {
@@ -19,6 +20,7 @@ import type {
   Evenement,
   Fait,
   IdNazgul,
+  IdOuvrage,
   IdPersonnage,
   IdRegion,
   Jauges,
@@ -138,6 +140,9 @@ export interface VueJoueur {
   piste: EstimationPiste;
   evenements: Evenement[];
   issue: EtatJeu['issue'];
+  /** Les ouvrages du Mont Destin : niveau atteint, et un chantier est-il déjà lancé ce tour. */
+  ouvrages: Record<IdOuvrage, number>;
+  chantierCeTour: boolean;
 }
 
 function contradictoires(a: Fait, b: Fait): boolean {
@@ -284,6 +289,8 @@ export function vueJoueur(monde: Monde, etat: EtatJeu): VueJoueur {
     piste: estimerPiste(monde, etat),
     evenements: etat.evenements.filter((e) => e.public),
     issue: etat.issue,
+    ouvrages: Object.fromEntries(OUVRAGES.map((id) => [id, niveauOuvrage(etat, id)])) as Record<IdOuvrage, number>,
+    chantierCeTour: chantierCeTour(etat),
   };
 }
 
