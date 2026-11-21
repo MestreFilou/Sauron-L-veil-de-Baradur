@@ -35,6 +35,19 @@
 /* ---------- Écran titre ---------- */
 .scene-titre{position:absolute;inset:0;width:100%;height:100%;display:block}
 #titre{position:fixed;inset:0;z-index:40;overflow:hidden}
+/* le rendu 3D de la Tour : couvre l'écran en gardant son 16:9, dérive lentement */
+.fond-titre{position:absolute;inset:0;overflow:hidden;background:#050303}
+.fond-titre-image{position:absolute;left:50%;top:50%;width:max(104vw,185vh);height:max(104vh,58.5vw);transform:translate(-50%,-50%);animation:titre-derive 70s ease-in-out infinite alternate}
+.fond-titre-image img{display:block;width:100%;height:100%;opacity:0;transition:opacity 1.8s ease}
+.fond-titre-image img.vu{opacity:1}
+@keyframes titre-derive{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-51.5%,-49.5%) scale(1.05)}}
+.lueur-oeil{position:absolute;left:var(--oeil-x,56.25%);top:var(--oeil-y,15%);width:8%;aspect-ratio:1;border-radius:50%;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(circle,rgba(255,190,90,.5) 0%,rgba(255,90,20,.24) 32%,rgba(160,30,5,.08) 55%,transparent 70%);
+  transform:translate(-50%,-50%);animation:oeil-palpite 4.8s ease-in-out infinite}
+@keyframes oeil-palpite{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.9)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}60%{opacity:.8}}
+.fond-titre-voile{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(5,3,2,.82) 0%,rgba(5,3,2,.5) 30%,rgba(5,3,2,0) 52%),radial-gradient(ellipse at 60% 45%,transparent 45%,rgba(4,2,2,.6) 100%)}
+@media (prefers-reduced-motion:reduce){.fond-titre-image,.lueur-oeil{animation:none}}
 .titre-colonne{position:absolute;left:clamp(28px,7vw,120px);top:0;bottom:0;width:min(440px,40vw);display:flex;flex-direction:column;justify-content:center;gap:34px;z-index:2}
 .titre-nom .sur-titre{font-family:Cinzel,serif;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--texte-2);margin-bottom:14px}
 .titre-nom h1{font-family:Cinzel,serif;font-weight:700;font-size:clamp(44px,5.4vw,78px);line-height:.95;letter-spacing:.08em;color:#e6c88f;

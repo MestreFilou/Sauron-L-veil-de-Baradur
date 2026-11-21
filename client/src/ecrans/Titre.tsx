@@ -1,7 +1,8 @@
 /**
  * L'écran titre : Barad-dûr sur le rougeoiement du Mordor, l'Œil entre les
- * cornes de la Tour, l'inscription de l'Anneau qui tourne autour de lui, et
- * le menu. La musique de Barad-dûr joue si une piste est installée
+ * cornes de la Tour, et le menu. Le fond est le rendu 3D de la Tour
+ * (artworks/3d/) ; s'il manque, la scène WebGL, puis le décor SVG.
+ * La musique de Barad-dûr joue si une piste est installée
  * (audio/musique/pistes.json).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -11,6 +12,7 @@ import { romain } from '../panneaux/Haut';
 import { bureau, estBureau } from '../plateforme';
 import { moteurSon } from '../son/moteur';
 import { useJeu } from '../store';
+import { FOND_TITRE } from './artworks';
 import { Credits, Options, Sauvegardes } from './Menus';
 import { SceneTitre, useWebGL2 } from './SceneTitre';
 import { AnneauDeFeu, INSCRIPTION_FR, Tour } from './Tour';
@@ -51,6 +53,21 @@ function useEchelleOeil(): number {
   return e;
 }
 
+/** Le rendu 3D en plein écran, qui dérive lentement ; l'Œil y palpite et des braises montent. */
+function FondTitre({ url, onErreur }: { url: string; onErreur: () => void }) {
+  const [vu, setVu] = useState(false);
+  return (
+    <div className="fond-titre" aria-hidden="true">
+      <div className="fond-titre-image">
+        <img src={url} alt="" className={vu ? 'vu' : ''} onLoad={() => setVu(true)} onError={onErreur} />
+        <div className="lueur-oeil" />
+      </div>
+      <Braises n={26} />
+      <div className="fond-titre-voile" />
+    </div>
+  );
+}
+
 export function DecorMordor({ avecOeil = true }: { avecOeil?: boolean }) {
   const echelle = useEchelleOeil();
   return (
@@ -82,6 +99,7 @@ export function Titre() {
   // la 3D d'abord ; si la machine ne suit pas, la scène 2D ; sans WebGL, le décor SVG
   const [version, setVersion] = useState<'3d' | '2d'>('3d');
   const repli = useCallback(() => (version === '3d' ? setVersion('2d') : sansWebgl()), [version, sansWebgl]);
+  const [rendu, setRendu] = useState(FOND_TITRE !== null);
 
   useEffect(() => {
     let vivant = true;
@@ -105,7 +123,13 @@ export function Titre() {
 
   return (
     <div id="titre">
-      {webgl ? <SceneTitre key={version} version={version} onEchec={repli} /> : <DecorMordor />}
+      {rendu && FOND_TITRE ? (
+        <FondTitre url={FOND_TITRE} onErreur={() => setRendu(false)} />
+      ) : webgl ? (
+        <SceneTitre key={version} version={version} onEchec={repli} />
+      ) : (
+        <DecorMordor />
+      )}
       <div className="titre-colonne">
         <div className="titre-nom">
           <div className="sur-titre">Acte I · L’Eriador · automne 3018</div>

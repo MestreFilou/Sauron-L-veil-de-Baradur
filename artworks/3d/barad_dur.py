@@ -276,13 +276,16 @@ def matiere_oeil():
     bruit = n.new("ShaderNodeTexNoise")
     bruit.name = "bruit_oeil"
     bruit.noise_dimensions = '4D'
-    bruit.inputs["Scale"].default_value = 3.5
-    bruit.inputs["Detail"].default_value = 8
-    bruit.inputs["Roughness"].default_value = 0.65
+    bruit.inputs["Scale"].default_value = 4.5
+    bruit.inputs["Detail"].default_value = 10
+    bruit.inputs["Roughness"].default_value = 0.7
+    bruit.inputs["Distortion"].default_value = 0.6
     l.new(coord.outputs["Object"], bruit.inputs["Vector"])
+    centre_b = n.new("ShaderNodeMath"); centre_b.operation = 'SUBTRACT'; centre_b.inputs[1].default_value = 0.5
+    l.new(bruit.outputs["Fac"], centre_b.inputs[0])
     # coordonnées déformées par le feu
     deforme = n.new("ShaderNodeVectorMath"); deforme.operation = 'MULTIPLY_ADD'
-    deforme.inputs[1].default_value = (0.42, 0.3, 0.42)
+    deforme.inputs[1].default_value = (0.5, 0.3, 0.7)
     l.new(bruit.outputs["Color"], deforme.inputs[0])
     l.new(coord.outputs["Object"], deforme.inputs[2])
     sep = n.new("ShaderNodeSeparateXYZ")
@@ -295,12 +298,33 @@ def matiere_oeil():
     l.new(zf.outputs["Value"], comb.inputs["Z"])
     dist = n.new("ShaderNodeVectorMath"); dist.operation = 'LENGTH'
     l.new(comb.outputs["Vector"], dist.inputs[0])
+    # des stries de feu qui rayonnent depuis la fente, comme un iris en fusion
+    dirc = n.new("ShaderNodeVectorMath"); dirc.operation = 'NORMALIZE'
+    l.new(comb.outputs["Vector"], dirc.inputs[0])
+    dirs = n.new("ShaderNodeVectorMath"); dirs.operation = 'SCALE'; dirs.inputs["Scale"].default_value = 5.0
+    l.new(dirc.outputs["Vector"], dirs.inputs[0])
+    stries = n.new("ShaderNodeTexNoise")
+    stries.noise_dimensions = '4D'
+    stries.inputs["Scale"].default_value = 2.2
+    stries.inputs["Detail"].default_value = 8
+    stries.inputs["Roughness"].default_value = 0.6
+    l.new(dirs.outputs["Vector"], stries.inputs["Vector"])
+    ws = n.new("ShaderNodeMath"); ws.operation = 'MULTIPLY'; ws.inputs[1].default_value = 2.5
+    l.new(dist.outputs["Value"], ws.inputs[0])
+    l.new(ws.outputs["Value"], stries.inputs["W"])
+    sc = n.new("ShaderNodeMath"); sc.operation = 'SUBTRACT'; sc.inputs[1].default_value = 0.5
+    l.new(stries.outputs["Fac"], sc.inputs[0])
+    melange = n.new("ShaderNodeMath"); melange.operation = 'MULTIPLY_ADD'; melange.inputs[1].default_value = 0.55
+    l.new(sc.outputs["Value"], melange.inputs[0])
+    l.new(dist.outputs["Value"], melange.inputs[2])
+    dist = melange
     rampe = n.new("ShaderNodeValToRGB")
     els = rampe.color_ramp.elements
-    els[0].position = 0.0; els[0].color = (1.0, 0.92, 0.55, 1)      # cœur blanc-jaune
-    p2 = els.new(0.22); p2.color = (1.0, 0.6, 0.06, 1)               # iris jaune de chat
-    p3 = els.new(0.5); p3.color = (0.9, 0.16, 0.01, 1)                # orange de forge
-    els[-1].position = 0.85; els[-1].color = (0.22, 0.012, 0.0, 1)   # rouge sombre
+    els[0].position = 0.0; els[0].color = (1.0, 0.85, 0.4, 1)       # cœur jaune, brûlant
+    p2 = els.new(0.16); p2.color = (1.0, 0.55, 0.04, 1)              # iris jaune de chat
+    p3 = els.new(0.4); p3.color = (1.0, 0.28, 0.0, 1)              # orange de forge
+    p4 = els.new(0.66); p4.color = (0.75, 0.07, 0.0, 1)               # rouge
+    els[-1].position = 0.9; els[-1].color = (0.12, 0.005, 0.0, 1)   # braise éteinte
     l.new(dist.outputs["Value"], rampe.inputs["Fac"])
     # la pupille : une fente noire, fine, qui tremble à peine
     ax = n.new("ShaderNodeMath"); ax.operation = 'ABSOLUTE'
@@ -310,19 +334,55 @@ def matiere_oeil():
     larg.inputs[1].default_value = 0.05
     l.new(bruit.outputs["Fac"], larg.inputs[0])
     l.new(sep0.outputs["X"], larg.inputs[2])
+    # la fente est plus large au milieu et se referme en pointe aux deux bouts
+    zz = n.new("ShaderNodeMath"); zz.operation = 'MULTIPLY'
+    l.new(sep0.outputs["Z"], zz.inputs[0]); l.new(sep0.outputs["Z"], zz.inputs[1])
+    pince = n.new("ShaderNodeMath"); pince.operation = 'SUBTRACT'; pince.inputs[0].default_value = 1.0
+    l.new(zz.outputs["Value"], pince.inputs[1])
+    pince2 = n.new("ShaderNodeMath"); pince2.operation = 'MAXIMUM'; pince2.inputs[1].default_value = 0.04
+    l.new(pince.outputs["Value"], pince2.inputs[0])
     l.new(larg.outputs["Value"], ax.inputs[0])
+    relatif = n.new("ShaderNodeMath"); relatif.operation = 'DIVIDE'
+    l.new(ax.outputs["Value"], relatif.inputs[0]); l.new(pince2.outputs["Value"], relatif.inputs[1])
+    ax = relatif
     fente = n.new("ShaderNodeMapRange")
-    fente.inputs["From Min"].default_value = 0.045
-    fente.inputs["From Max"].default_value = 0.085
+    fente.inputs["From Min"].default_value = 0.1
+    fente.inputs["From Max"].default_value = 0.17
     l.new(ax.outputs["Value"], fente.inputs["Value"])
     force = n.new("ShaderNodeMath"); force.operation = 'MULTIPLY'
-    force.inputs[1].default_value = 2.2
+    force.inputs[1].default_value = 1.0
     l.new(fente.outputs["Result"], force.inputs[0])
     e = n.new("ShaderNodeEmission")
     l.new(rampe.outputs["Color"], e.inputs["Color"])
     l.new(force.outputs["Value"], e.inputs["Strength"])
+    # le bord de l'amande ne s'arrête pas net : il se dissout dans les flammes
+    # |x| rapporté à la demi-largeur de l'amande à cette hauteur : 1 au bord
+    zz2 = n.new("ShaderNodeMath"); zz2.operation = 'MULTIPLY'
+    l.new(sep0.outputs["Z"], zz2.inputs[0]); l.new(sep0.outputs["Z"], zz2.inputs[1])
+    dl = n.new("ShaderNodeMath"); dl.operation = 'SUBTRACT'; dl.inputs[0].default_value = 1.0
+    l.new(zz2.outputs["Value"], dl.inputs[1])
+    dl2 = n.new("ShaderNodeMath"); dl2.operation = 'POWER'; dl2.inputs[1].default_value = 0.4
+    l.new(dl.outputs["Value"], dl2.inputs[0])
+    dl3 = n.new("ShaderNodeMath"); dl3.operation = 'MAXIMUM'; dl3.inputs[1].default_value = 0.03
+    l.new(dl2.outputs["Value"], dl3.inputs[0])
+    axb = n.new("ShaderNodeMath"); axb.operation = 'ABSOLUTE'
+    l.new(sep0.outputs["X"], axb.inputs[0])
+    rel = n.new("ShaderNodeMath"); rel.operation = 'DIVIDE'
+    l.new(axb.outputs["Value"], rel.inputs[0]); l.new(dl3.outputs["Value"], rel.inputs[1])
+    # un bord rongé par le feu, pas une ligne
+    rel2 = n.new("ShaderNodeMath"); rel2.operation = 'MULTIPLY_ADD'; rel2.inputs[1].default_value = 0.5
+    l.new(centre_b.outputs["Value"], rel2.inputs[0]); l.new(rel.outputs["Value"], rel2.inputs[2])
+    bord = n.new("ShaderNodeMapRange")
+    bord.inputs["From Min"].default_value = 0.62
+    bord.inputs["From Max"].default_value = 1.0
+    l.new(rel2.outputs["Value"], bord.inputs["Value"])
+    tr = n.new("ShaderNodeBsdfTransparent")
+    mix = n.new("ShaderNodeMixShader")
+    l.new(bord.outputs["Result"], mix.inputs["Fac"])
+    l.new(e.outputs["Emission"], mix.inputs[1])
+    l.new(tr.outputs["BSDF"], mix.inputs[2])
     o = n.new("ShaderNodeOutputMaterial")
-    l.new(e.outputs["Emission"], o.inputs["Surface"])
+    l.new(mix.outputs["Shader"], o.inputs["Surface"])
     return m
 
 
@@ -579,51 +639,112 @@ def poser_oeil(mat):
     ob = bpy.data.objects.new("Lueur de l'Œil", lum)
     ob.location = (0, 0, 243)
     lier(ob)
-    # un halo de feu autour : une sphère de volume qui émet
+    # la couronne de flammes : un volume qui émet, en langues de feu qui
+    # rayonnent depuis l'amande et s'effilochent vers l'extérieur
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=1.0, location=(0, 0, 243))
     halo = bpy.context.active_object
     halo.name = "Halo"
-    halo.scale = (15, 15, 21)
+    halo.scale = (20, 9, 30)
     m = bpy.data.materials.new("Halo")
     n, l = noeuds(m)
     for k in list(n):
         n.remove(k)
     coord = n.new("ShaderNodeTexCoord")
+    # distance « amande » : 0 au bord de l'Œil, 1 au bord du volume
+    sep = n.new("ShaderNodeSeparateXYZ")
+    l.new(coord.outputs["Object"], sep.inputs["Vector"])
+    comb = n.new("ShaderNodeCombineXYZ")
+    zx = n.new("ShaderNodeMath"); zx.operation = 'MULTIPLY'; zx.inputs[1].default_value = 1.0
+    l.new(sep.outputs["X"], zx.inputs[0])
+    l.new(zx.outputs["Value"], comb.inputs["X"])
+    l.new(sep.outputs["Y"], comb.inputs["Y"])
+    l.new(sep.outputs["Z"], comb.inputs["Z"])
     long = n.new("ShaderNodeVectorMath"); long.operation = 'LENGTH'
-    l.new(coord.outputs["Object"], long.inputs[0])
-    plage = n.new("ShaderNodeMapRange")
-    plage.inputs["From Min"].default_value = 0.25
-    plage.inputs["From Max"].default_value = 1.0
-    plage.inputs["To Min"].default_value = 1.0
-    plage.inputs["To Max"].default_value = 0.0
-    l.new(long.outputs["Value"], plage.inputs["Value"])
-    carre = n.new("ShaderNodeMath"); carre.operation = 'POWER'; carre.inputs[1].default_value = 2.5
-    l.new(plage.outputs["Result"], carre.inputs[0])
+    l.new(comb.outputs["Vector"], long.inputs[0])
+    # coordonnées radiales : la direction varie vite, la distance lentement,
+    # d'où des stries de flamme qui partent du centre
+    direc = n.new("ShaderNodeVectorMath"); direc.operation = 'NORMALIZE'
+    l.new(coord.outputs["Object"], direc.inputs[0])
+    echelle = n.new("ShaderNodeVectorMath"); echelle.operation = 'SCALE'
+    echelle.inputs["Scale"].default_value = 3.2
+    l.new(direc.outputs["Vector"], echelle.inputs[0])
+    temps = n.new("ShaderNodeValue"); temps.name = "temps_flammes"
+    w = n.new("ShaderNodeMath"); w.operation = 'MULTIPLY_ADD'
+    w.inputs[1].default_value = -2.4  # le feu fuit vers l'extérieur quand le temps avance
+    l.new(long.outputs["Value"], w.inputs[0])
+    l.new(temps.outputs["Value"], w.inputs[2])
     flamme = n.new("ShaderNodeTexNoise")
     flamme.name = "bruit_halo"
     flamme.noise_dimensions = '4D'
-    flamme.inputs["Scale"].default_value = 2.0
-    flamme.inputs["Detail"].default_value = 6
-    l.new(coord.outputs["Object"], flamme.inputs["Vector"])
-    fl = n.new("ShaderNodeMapRange")
-    fl.inputs["From Min"].default_value = 0.4
-    fl.inputs["From Max"].default_value = 0.7
-    fl.inputs["To Min"].default_value = 0.15
-    fl.inputs["To Max"].default_value = 1.6
-    l.new(flamme.outputs["Fac"], fl.inputs["Value"])
-    carre2 = n.new("ShaderNodeMath"); carre2.operation = 'MULTIPLY'
-    l.new(carre.outputs["Value"], carre2.inputs[0])
-    l.new(fl.outputs["Result"], carre2.inputs[1])
-    carre = carre2
-    fort = n.new("ShaderNodeMath"); fort.operation = 'MULTIPLY'; fort.inputs[1].default_value = 0.18
-    l.new(carre.outputs["Value"], fort.inputs[0])
+    flamme.inputs["Scale"].default_value = 1.6
+    flamme.inputs["Detail"].default_value = 10
+    flamme.inputs["Roughness"].default_value = 0.62
+    flamme.inputs["Distortion"].default_value = 0.35
+    l.new(echelle.outputs["Vector"], flamme.inputs["Vector"])
+    l.new(w.outputs["Value"], flamme.inputs["W"])
+    # seuil qui monte avec la distance : dense près de l'Œil, des langues au loin
+    seuil = n.new("ShaderNodeMapRange")
+    seuil.inputs["From Min"].default_value = 0.3
+    seuil.inputs["From Max"].default_value = 1.0
+    seuil.inputs["To Min"].default_value = 0.3
+    seuil.inputs["To Max"].default_value = 0.62
+    l.new(long.outputs["Value"], seuil.inputs["Value"])
+    ecart = n.new("ShaderNodeMath"); ecart.operation = 'SUBTRACT'
+    l.new(flamme.outputs["Fac"], ecart.inputs[0])
+    l.new(seuil.outputs["Result"], ecart.inputs[1])
+    feu = n.new("ShaderNodeMapRange")
+    feu.inputs["From Min"].default_value = 0.0
+    feu.inputs["From Max"].default_value = 0.16
+    l.new(ecart.outputs["Value"], feu.inputs["Value"])
+    # la couleur suit la chaleur : blanc-jaune au cœur, orange, puis rouge sombre
+    chaleur = n.new("ShaderNodeMapRange")
+    chaleur.inputs["From Min"].default_value = 0.3
+    chaleur.inputs["From Max"].default_value = 1.0
+    chaleur.inputs["To Min"].default_value = 1.0
+    chaleur.inputs["To Max"].default_value = 0.0
+    l.new(long.outputs["Value"], chaleur.inputs["Value"])
+    chaud = n.new("ShaderNodeMath"); chaud.operation = 'MULTIPLY'
+    l.new(chaleur.outputs["Result"], chaud.inputs[0])
+    l.new(feu.outputs["Result"], chaud.inputs[1])
+    rampe = n.new("ShaderNodeValToRGB")
+    els = rampe.color_ramp.elements
+    els[0].position = 0.0; els[0].color = (0.25, 0.015, 0.0, 1)
+    e1 = els.new(0.3); e1.color = (0.9, 0.12, 0.01, 1)
+    e2 = els.new(0.65); e2.color = (1.0, 0.36, 0.02, 1)
+    els[-1].position = 0.95; els[-1].color = (1.0, 0.7, 0.2, 1)
+    l.new(chaud.outputs["Value"], rampe.inputs["Fac"])
+    force = n.new("ShaderNodeMath"); force.operation = 'MULTIPLY'
+    force.inputs[1].default_value = 0.4
+    puiss = n.new("ShaderNodeMath"); puiss.operation = 'POWER'; puiss.inputs[1].default_value = 1.6
+    l.new(chaud.outputs["Value"], puiss.inputs[0])
+    l.new(puiss.outputs["Value"], force.inputs[0])
+    # devant la pupille, pas de flammes : la fente reste noire
+    ax = n.new("ShaderNodeMath"); ax.operation = 'ABSOLUTE'
+    l.new(sep.outputs["X"], ax.inputs[0])
+    fente = n.new("ShaderNodeMapRange")
+    fente.inputs["From Min"].default_value = 0.012
+    fente.inputs["From Max"].default_value = 0.05
+    fente.inputs["To Min"].default_value = 0.05
+    l.new(ax.outputs["Value"], fente.inputs["Value"])
+    dehors = n.new("ShaderNodeMath"); dehors.operation = 'GREATER_THAN'; dehors.inputs[1].default_value = 0.4
+    l.new(long.outputs["Value"], dehors.inputs[0])
+    # devant l'iris, un voile de feu à peine : on veut voir ses stries
+    voile = n.new("ShaderNodeMath"); voile.operation = 'MULTIPLY'; voile.inputs[1].default_value = 0.25
+    l.new(fente.outputs["Result"], voile.inputs[0])
+    masque = n.new("ShaderNodeMath"); masque.operation = 'MAXIMUM'
+    l.new(voile.outputs["Value"], masque.inputs[0]); l.new(dehors.outputs["Value"], masque.inputs[1])
+    masque_f = n.new("ShaderNodeMath"); masque_f.operation = 'MULTIPLY'
+    l.new(force.outputs["Value"], masque_f.inputs[0]); l.new(masque.outputs["Value"], masque_f.inputs[1])
     v = n.new("ShaderNodeVolumePrincipled")
     v.inputs["Density"].default_value = 0.0
-    v.inputs["Emission Color"].default_value = (1.0, 0.3, 0.05, 1)
-    l.new(fort.outputs["Value"], v.inputs["Emission Strength"])
+    l.new(rampe.outputs["Color"], v.inputs["Emission Color"])
+    l.new(masque_f.outputs["Value"], v.inputs["Emission Strength"])
     o = n.new("ShaderNodeOutputMaterial")
     l.new(v.outputs["Volume"], o.inputs["Volume"])
     halo.data.materials.append(m)
+    # le temps des flammes avance avec l'image (une boucle de 4 s n'est plus parfaite, mais le feu vit)
+    fc = temps.outputs[0].driver_add("default_value")
+    fc.driver.expression = f"frame / {BOUCLE} * 1.5"
     return oeil, lum
 
 
@@ -876,8 +997,8 @@ def camera(cadre):
         cible = Vector((0, 0, 142))
         cam.lens = 23
     elif cadre == 'couronne':
-        ob.location = (26, -150, 196)
-        cible = Vector((0, 0, 226))
+        ob.location = (14, -150, 220)
+        cible = Vector((0, 0, 238))
         cam.lens = 55
     else:
         ob.location = (90, -380, 14)
@@ -897,7 +1018,7 @@ def animer(oeil_lum, braises, cendres_ob):
     sc = bpy.context.scene
     sc.frame_start, sc.frame_end = 1, BOUCLE
     # le 4e axe des bruits avance en cercle pour boucler parfaitement
-    for mat_nom, noeud, ampl in [("Œil", "bruit_oeil", 0.6), ("Halo", "bruit_halo", 0.8)]:
+    for mat_nom, noeud, ampl in [("Œil", "bruit_oeil", 0.6)]:
         mat = bpy.data.materials.get(mat_nom)
         if not mat:
             continue
@@ -965,15 +1086,16 @@ def regler_rendu(cadre, echelle, echantillons):
     sc.render.image_settings.file_format = 'PNG'
     sc.render.image_settings.color_depth = '16'
     try:
-        sc.view_settings.view_transform = 'AgX'
-        sc.view_settings.look = 'AgX - Punchy'
+        # « Standard » garde au feu sa couleur (AgX le délave vers le blanc)
+        sc.view_settings.view_transform = 'Standard'
+        sc.view_settings.look = 'None'
     except Exception:
         try:
             sc.view_settings.view_transform = 'Filmic'
             sc.view_settings.look = 'High Contrast'
         except Exception:
             pass
-    sc.view_settings.exposure = 0.0
+    sc.view_settings.exposure = -0.5
     sc.render.film_transparent = False
 
 

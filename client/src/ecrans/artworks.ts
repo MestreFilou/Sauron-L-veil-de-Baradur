@@ -61,7 +61,15 @@ export function associer(entrees: EntreeManifeste[], urls: Map<string, string>):
   return r;
 }
 
-export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManifeste[] }).ecrans, indexer(fichiers, '/artworks/'));
+const URLS = indexer(fichiers, '/artworks/');
+
+export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManifeste[] }).ecrans, URLS);
+
+/**
+ * Le fond de l'écran titre : le rendu 3D large de la Tour (artworks/3d/), ou
+ * null s'il manque, et l'écran titre reprend alors sa scène WebGL.
+ */
+export const FOND_TITRE: string | null = URLS.get('3d/fonds/barad_dur_paysage.webp') ?? null;
 
 const CLE = 'oeil-de-barad-dur/dernier-artwork';
 
