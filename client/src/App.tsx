@@ -57,7 +57,7 @@ function Intro() {
             </li>
           </ul>
         </div>
-        <div className="go" style={{ fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
+        <div className="go" style={{ fontFamily: 'var(--police-titre)', fontSize: 10, letterSpacing: '.3em', color: 'var(--bronze-clair)' }}>
           Cliquer pour entrer
         </div>
       </div>

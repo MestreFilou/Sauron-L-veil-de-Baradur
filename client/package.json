@@ -10,10 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource/cinzel": "^5.3.0",
-    "@fontsource/cormorant-garamond": "^5.3.0",
-    "@fontsource/im-fell-english": "^5.3.0",
-    "@fontsource/im-fell-english-sc": "^5.3.0",
+    "@fontsource/almendra": "^5.3.0",
+    "@fontsource/fondamento": "^5.3.0",
+    "@fontsource/uncial-antiqua": "^5.3.0",
     "@sauron/audio": "0.1.0",
     "@sauron/engine": "0.1.0",
     "@sauron/narrative": "0.1.0",

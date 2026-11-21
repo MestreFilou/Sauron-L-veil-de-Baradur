@@ -52,25 +52,25 @@
   background:linear-gradient(90deg,rgba(5,3,2,.82) 0%,rgba(5,3,2,.5) 30%,rgba(5,3,2,0) 52%),radial-gradient(ellipse at 60% 45%,transparent 45%,rgba(4,2,2,.6) 100%)}
 @media (prefers-reduced-motion:reduce){.fond-titre-image,.lueur-oeil{animation:none}}
 .titre-colonne{position:absolute;left:clamp(28px,7vw,120px);top:0;bottom:0;width:min(440px,40vw);display:flex;flex-direction:column;justify-content:center;gap:34px;z-index:2}
-.titre-nom .sur-titre{font-family:Cinzel,serif;font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--texte-2);margin-bottom:14px}
-.titre-nom h1{font-family:Cinzel,serif;font-weight:700;font-size:clamp(44px,5.4vw,78px);line-height:.95;letter-spacing:.08em;color:#e6c88f;
+.titre-nom .sur-titre{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.32em;color:var(--texte-2);margin-bottom:14px}
+.titre-nom h1{font-family:var(--police-display);font-weight:700;font-size:clamp(44px,5.4vw,78px);line-height:.95;letter-spacing:.08em;color:#e6c88f;
   text-shadow:0 0 28px rgba(255,90,31,.35),0 2px 0 #1a0f08}
 .titre-nom h1 span{display:block;font-weight:600;font-size:.42em;letter-spacing:.42em;margin-top:12px;color:var(--bronze-clair)}
 .titre-nom .filet{height:1px;margin-top:22px;width:80%;background:linear-gradient(90deg,rgba(201,164,106,.7),rgba(140,106,63,.2) 70%,transparent)}
 .menu-titre{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.menu-titre button{background:none;border:none;cursor:pointer;text-align:left;padding:7px 0 7px 22px;position:relative;
-  font-family:Cinzel,serif;font-size:clamp(16px,1.1vw,24px);font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--texte);transition:color .25s,text-shadow .25s,padding .25s}
+.menu-titre button{background:none;border:none;cursor:var(--curseur-anneau-feu);text-align:left;padding:7px 0 7px 22px;position:relative;
+  font-family:var(--police-titre);text-transform:uppercase;font-size:clamp(16px,1.1vw,24px);font-weight:600;letter-spacing:.2em;color:var(--texte);transition:color .25s,text-shadow .25s,padding .25s}
 .menu-titre button::before{content:"";position:absolute;left:0;top:50%;width:9px;height:9px;margin-top:-5px;transform:rotate(45deg) scale(.4);border:1px solid var(--bronze);opacity:0;transition:all .25s}
 .menu-titre button:hover,.menu-titre button:focus-visible{color:#ffd7bd;text-shadow:0 0 14px rgba(255,90,31,.7);outline:none;padding-left:28px}
 .menu-titre button:hover::before,.menu-titre button:focus-visible::before{opacity:1;transform:rotate(45deg) scale(1);background:var(--oeil);border-color:#ffb070;box-shadow:0 0 10px var(--oeil)}
-.menu-titre button small{display:block;font-family:'IM Fell English',serif;font-weight:400;font-style:italic;font-size:14px;letter-spacing:0;text-transform:none;color:var(--texte-2);margin-top:2px}
-.inscription-fr{font-family:'IM Fell English',serif;font-style:italic;font-size:14.5px;line-height:1.45;color:#8f6a4c;max-width:380px}
-.titre-pied{position:absolute;left:clamp(28px,7vw,120px);bottom:18px;font-family:Cinzel,serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#5d4a36;z-index:2}
+.menu-titre button small{display:block;font-family:var(--police-texte);font-weight:400;font-style:italic;font-size:14px;letter-spacing:0;text-transform:none;color:var(--texte-2);margin-top:2px}
+.inscription-fr{font-family:var(--police-texte);font-style:italic;font-size:14.5px;line-height:1.45;color:#8f6a4c;max-width:380px}
+.titre-pied{position:absolute;left:clamp(28px,7vw,120px);bottom:18px;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.22em;color:#5d4a36;z-index:2}
 @media (max-width:900px){.scene-tour{right:-12vw;opacity:.55}.titre-colonne{width:auto;right:28px}}
 
 /* ---------- Écran de chargement ---------- */
 #chargement{position:fixed;inset:0;z-index:45;overflow:hidden;background:#050303;cursor:progress;animation:apparait .6s ease-out}
-#chargement.pret{cursor:pointer}
+#chargement.pret{cursor:var(--curseur-anneau-feu)}
 @keyframes apparait{from{opacity:0}}
 #chargement .fond-art{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(38px) saturate(.9) brightness(.42);transform:scale(1.1)}
 /* un fond peint pour l'écran (les rendus 3D) : net, sombre, qui dérive lentement */
@@ -88,18 +88,18 @@
 .cadre-art::after{bottom:-9px;right:-9px;border-left:none;border-top:none}
 .cadre-art img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease, transform 14s ease-out;transform:scale(1.04)}
 .cadre-art img.vu{opacity:1;transform:scale(1)}
-.cadre-art figcaption{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-family:Cinzel,serif;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:#7d6449}
+.cadre-art figcaption{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-family:var(--police-titre);text-transform:uppercase;font-size:10.5px;letter-spacing:.21em;color:#7d6449}
 .chargement-texte{max-width:540px;flex:1 1 360px;min-width:260px}
-.ptitle-libre{font-family:Cinzel,serif;font-size:11.5px;font-weight:600;letter-spacing:.32em;color:var(--bronze-clair);text-transform:uppercase;display:flex;gap:14px;align-items:center;
+.ptitle-libre{font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;font-weight:600;letter-spacing:.24em;color:var(--bronze-clair);display:flex;gap:14px;align-items:center;
   padding-bottom:12px;border-bottom:1px solid rgba(140,106,63,.3)}
 .chargement-texte blockquote{margin:30px 0 0}
-.chargement-texte blockquote p{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(24px,2.3vw,34px);line-height:1.32;color:#f0dfc2;text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 30px rgba(255,59,10,.15)}
-.chargement-texte cite{display:block;margin-top:16px;font-family:Cinzel,serif;font-style:normal;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#b9542c}
+.chargement-texte blockquote p{font-family:var(--police-texte);font-style:italic;font-size:clamp(24px,2.3vw,34px);line-height:1.32;color:#f0dfc2;text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 30px rgba(255,59,10,.15)}
+.chargement-texte cite{display:block;margin-top:16px;font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:12px;letter-spacing:.22em;color:#b9542c}
 .chargement-texte cite::before{content:"— "}
 .conseil{margin-top:44px;font-size:16px;line-height:1.45;color:var(--texte-2);font-style:italic;max-width:440px}
-.conseil span{display:block;font-family:Cinzel,serif;font-style:normal;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#6d5537;margin-bottom:4px}
+.conseil span{display:block;font-family:var(--police-titre);text-transform:uppercase;font-style:normal;font-size:10.5px;letter-spacing:.22em;color:#6d5537;margin-bottom:4px}
 .chargement-pied{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);width:min(560px,80vw);text-align:center}
-.chargement-pied .etat{font-family:Cinzel,serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--texte-2);margin-bottom:12px;transition:color .5s}
+.chargement-pied .etat{font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.24em;color:var(--texte-2);margin-bottom:12px;transition:color .5s}
 #chargement.pret .etat{color:#ffd7bd;animation:respire 2.4s ease-in-out infinite}
 @keyframes respire{0%,100%{opacity:1}50%{opacity:.55}}
 .ligne-braise{height:2px;background:rgba(74,58,40,.55);position:relative;overflow:visible}
@@ -114,22 +114,22 @@
 .modal.pause{z-index:60}
 .fenetre-menu .panel{width:min(560px,92vw)}
 .fenetre-menu .body{max-height:70vh;overflow:auto}
-.fenetre-menu .section{font-family:Cinzel,serif;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--bronze-clair);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(140,106,63,.18)}
+.fenetre-menu .section{font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.22em;color:var(--bronze-clair);margin:16px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(140,106,63,.18)}
 .fenetre-menu .section:first-child{margin-top:2px}
 .options-corps{position:static;width:auto;display:flex;flex-direction:column;gap:8px;font-size:15px}
-.options-corps .curseur{display:grid;grid-template-columns:90px 1fr 30px;align-items:center;gap:10px;font-family:Cinzel,serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--texte-2)}
+.options-corps .curseur{display:grid;grid-template-columns:90px 1fr 30px;align-items:center;gap:10px;font-family:var(--police-titre);text-transform:uppercase;font-size:11.5px;letter-spacing:.18em;color:var(--texte-2)}
 .options-corps .curseur b{font-weight:400;text-align:right;color:var(--texte)}
 .options-corps input[type=range]{accent-color:var(--braise);width:100%}
-.options-corps .case{display:flex;gap:10px;align-items:center;color:var(--texte);cursor:pointer}
+.options-corps .case{display:flex;gap:10px;align-items:center;color:var(--texte);cursor:var(--curseur-anneau-feu)}
 .options-corps input[type=checkbox]{accent-color:var(--braise);width:15px;height:15px}
 .btn.lien{align-self:flex-start;padding:6px 10px}
 .emplacements{list-style:none;margin:0!important;padding:0}
 .emplacement{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid rgba(140,106,63,.14)}
 .emplacement:last-child{border-bottom:none}
-.emplacement .nom{display:block;font-family:Cinzel,serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--bronze-clair)}
-.emplacement .detail{font-family:'IM Fell English',serif;font-size:15px;color:var(--texte)}
-.emplacement .detail b{font-family:Cinzel,serif;font-weight:600;letter-spacing:.1em}
-.emplacement .detail em{display:block;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--texte-2)}
+.emplacement .nom{display:block;font-family:var(--police-titre);text-transform:uppercase;font-size:11px;letter-spacing:.2em;color:var(--bronze-clair)}
+.emplacement .detail{font-family:var(--police-texte);font-size:15px;color:var(--texte)}
+.emplacement .detail b{font-family:var(--police-titre);text-transform:uppercase;font-weight:600;letter-spacing:.1em}
+.emplacement .detail em{display:block;font-family:var(--police-texte);font-size:13px;color:var(--texte-2)}
 .emplacement.vide .nom{color:#6d5537}
 .emplacement .gestes{display:flex;gap:6px;align-items:center;flex:none}
 .emplacement .question{font-style:italic;color:#ffb89a;font-size:14px}

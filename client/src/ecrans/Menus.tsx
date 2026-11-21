@@ -258,7 +258,7 @@ export function Credits({ onFermer }: { onFermer: () => void }) {
         <p className="vide">Aucune image dans le dossier artworks/ : la Tour est dessinée par le jeu.</p>
       )}
       <div className="section">Polices</div>
-      <p>Cinzel (Natanael Gama), IM Fell English (Igino Marini), Cormorant Garamond (Christian Thalmann), sous licence SIL Open Font License.</p>
+      <p>Uncial Antiqua (Astigmatic), Almendra (Ana Sanfelippo), Fondamento (Astigmatic), sous licence SIL Open Font License. Noir Parler, écriture dessinée pour le jeu, dans le domaine public (CC0).</p>
       <div className="section">Voix et musique</div>
       <p>Voix de Sauron : Lucas, traitées par la chaîne « légion ». Musique : pistes choisies par le joueur dans audio/musique/, pour un usage privé.</p>
     </Fenetre>

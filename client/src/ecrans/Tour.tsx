@@ -78,7 +78,7 @@ export function AnneauDeFeu({ className }: { className?: string }) {
         </filter>
       </defs>
       <g className="anneau-tourne">
-        <text filter="url(#anneau-feu)" fontFamily="'IM Fell English', serif" fontStyle="italic" fontSize="31" fill="#ff8a3c" letterSpacing="1.5" textLength={1560} lengthAdjust="spacing">
+        <text filter="url(#anneau-feu)" fontFamily="'Noir Parler', serif" fontSize="31" fill="#ff8a3c" letterSpacing="1.5" textLength={1560} lengthAdjust="spacing">
           <textPath href="#anneau-cercle">{INSCRIPTION}</textPath>
         </text>
       </g>
