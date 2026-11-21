@@ -20,3 +20,7 @@ export { OUVRAGES, NOMS_OUVRAGES, niveauOuvrage, niveauMaxOuvrage, coutOuvrage, 
 export { vueJoueur } from './vue';
 export type { VueJoueur } from './vue';
 export { sauvegarder, charger } from './sauvegarde';
+export { LIBELLES_AFFECTATION, ordresAffectation, regionVisee } from './affectations';
+export { empechementCapture, coutGeste } from './cachots';
+export { DECISIONS, coutDecision, rechargeDecision } from './decisions';
+export type { Condition, DecisionDef } from './decisions';

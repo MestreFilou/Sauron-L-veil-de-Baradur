@@ -1,0 +1,69 @@
+{
+  "name": "@sauron/desktop",
+  "productName": "L'Œil de Barad-dûr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "L'application de bureau : une fenêtre Electron autour du client.",
+  "author": "Lucas",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "paquet": "electron-builder",
+    "paquet:dossier": "electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "45.2.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "fr.lucas.oeil-de-barad-dur",
+    "productName": "L'Œil de Barad-dûr",
+    "executableName": "oeil-de-barad-dur",
+    "artifactName": "Oeil-de-Barad-dur-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "icone.png",
+      "package.json",
+      {
+        "from": "../client/dist",
+        "to": "jeu",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "icon": "icone.png",
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "L'Œil de Barad-dûr"
+    },
+    "portable": {
+      "artifactName": "Oeil-de-Barad-dur-${version}-portable.${ext}"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.strategy-games"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Game"
+    },
+    "publish": null
+  }
+}

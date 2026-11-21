@@ -34,6 +34,8 @@ import { REGLES } from './regles';
 import type { Rng } from './rng';
 import { creerRng } from './rng';
 import type { EtatJeu, IdPersonnage, IdRegion, Ordre } from './types';
+import { capturer, gesteCachot } from './cachots';
+import { resoudreDecision } from './decisions';
 import { resoudreVoix } from './voix';
 
 export const rngPhase = (etat: EtatJeu, phase: string) => creerRng(etat.graine, etat.tour, phase);
@@ -195,7 +197,7 @@ export function phaseMurmures(monde: Monde, etat: EtatJeu): void {
 /* Phase 5 : Crépuscule                                                */
 /* ------------------------------------------------------------------ */
 
-const PAYANTES = new Set<Ordre['type']>(['nazgul_traque', 'nazgul_interroger', 'nazgul_embuscade', 'nazgul_cri', 'nazgul_fleau']);
+const PAYANTES = new Set<Ordre['type']>(['nazgul_traque', 'nazgul_interroger', 'nazgul_embuscade', 'nazgul_cri', 'nazgul_fleau', 'nazgul_capturer']);
 export const estActionNazgul = (o: Ordre) => PAYANTES.has(o.type);
 
 export function crepuscule(monde: Monde, etat: EtatJeu): void {
@@ -210,6 +212,7 @@ export function crepuscule(monde: Monde, etat: EtatJeu): void {
     else if (o.type === 'nazgul_interroger') interroger(monde, etat, o.nazgul, o.pnj, rng, i);
     else if (o.type === 'nazgul_cri') crier(monde, etat, o.nazgul);
     else if (o.type === 'nazgul_embuscade') poserEmbuscade(monde, etat, o.nazgul, o.cible);
+    else if (o.type === 'nazgul_capturer') capturer(monde, etat, o.nazgul, o.pnj);
   });
   // 3. Voix, dans l'ordre choisi.
   for (const o of ordres) if (o.type === 'voix') resoudreVoix(monde, etat, o, rng);
@@ -226,6 +229,8 @@ export function crepuscule(monde: Monde, etat: EtatJeu): void {
       evenement(etat, 'voix', `${def.nom} n’est pas encore assez rongé pour servir (Doute ${p.doute} < ${REGLES.agent.douteMin}).`);
     }
   }
+  // Cachots : les gestes sur les prisonniers.
+  for (const o of ordres) if (o.type === 'cachot') gesteCachot(monde, etat, o.geste, o.pnj);
   // 4. Embuscades nocturnes et combats.
   resoudreNuit(monde, etat, rng);
   // 5. Corruption et rituels.
@@ -250,6 +255,8 @@ export function crepuscule(monde: Monde, etat: EtatJeu): void {
     const NOMS = ['L’Œil sans paupière', 'L’Ombre', 'La Main Noire', 'Le Seigneur revêtu', 'La Plénitude'];
     evenement(etat, 'forme', `Sauron reprend forme : ${NOMS[f]}.`);
   }
+  // 6. Décisions de la Tour.
+  for (const o of ordres) if (o.type === 'decision') resoudreDecision(monde, etat, o.decision);
 }
 
 /* ------------------------------------------------------------------ */

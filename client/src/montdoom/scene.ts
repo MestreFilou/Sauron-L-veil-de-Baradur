@@ -770,7 +770,7 @@ export function creerScene(cv: HTMLCanvasElement, etiquettes: Partial<Record<IdO
     if (avant) appliquerNiveau(avant, false);
     const o = ouvrages.find((x) => x.id === id);
     if (o) appliquerNiveau(o, true);
-    cv.style.cursor = id ? 'pointer' : 'grab';
+    cv.style.cursor = id ? 'var(--curseur-anneau-feu)' : 'grab';
     rappels.survol(id);
   };
   const bouge = (e: PointerEvent) => surSurvol(sous(e));
