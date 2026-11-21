@@ -92,7 +92,7 @@ function PupilleTitre() {
       pos.x += (vx - pos.x) * a;
       pos.y += (vy - pos.y) * a;
       pos.l += (largeur - pos.l) * a;
-      el.style.transform = `translate(calc(-50% + ${pos.x * 1.4}vh), calc(-50% + ${pos.y * 0.9}vh)) scaleX(${pos.l})`;
+      el.style.transform = `translate(calc(-50% + ${pos.x * 0.75}vh), calc(-50% + ${pos.y * 0.45}vh)) scaleX(${pos.l})`;
       raf = requestAnimationFrame(image);
     };
     window.addEventListener('pointermove', bouge);
