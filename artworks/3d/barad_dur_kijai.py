@@ -85,10 +85,23 @@ def matiere_kijai():
     bruit.inputs["Detail"].default_value = 10
     l.new(coord.outputs["Object"], bruit.inputs["Vector"])
     usure = n.new("ShaderNodeMix"); usure.data_type = 'RGBA'
-    usure.inputs["B"].default_value = (0.16, 0.12, 0.09, 1)  # fer poli par le vent de cendre
+    usure.inputs["B"].default_value = (0.07, 0.052, 0.04, 1)  # fer à peine poli : une silhouette, pas une maquette
     l.new(arete.outputs["Result"], usure.inputs["Factor"])
     l.new(briques.outputs["Color"], usure.inputs["A"])
-    l.new(usure.outputs["Result"], p.inputs["Base Color"])
+    # plus on monte, plus le fer est noir : la tour et les cornes se découpent sur le ciel
+    sep = n.new("ShaderNodeSeparateXYZ")
+    l.new(coord.outputs["Object"], sep.inputs["Vector"])
+    nuit = n.new("ShaderNodeMapRange")
+    nuit.inputs["From Min"].default_value = 110
+    nuit.inputs["From Max"].default_value = 240
+    nuit.inputs["To Min"].default_value = 1.0
+    nuit.inputs["To Max"].default_value = 0.35
+    l.new(sep.outputs["Z"], nuit.inputs["Value"])
+    sombre = n.new("ShaderNodeMix"); sombre.data_type = 'RGBA'; sombre.blend_type = 'MULTIPLY'
+    sombre.inputs["Factor"].default_value = 1.0
+    l.new(usure.outputs["Result"], sombre.inputs["A"])
+    l.new(nuit.outputs["Result"], sombre.inputs["B"])
+    l.new(sombre.outputs["Result"], p.inputs["Base Color"])
     rug = n.new("ShaderNodeMapRange")
     rug.inputs["To Min"].default_value = 0.65
     rug.inputs["To Max"].default_value = 0.3
@@ -171,6 +184,269 @@ def loger_oeil():
     halo.scale = (12.0 * ECHELLE, 6.0 * ECHELLE, 18.0 * ECHELLE * ETIRE_TOUR * 0.85)
 
 
+# --------------------------------------------------------------------------
+# Autour de la Tour : fumées, brume, montagnes, pics, avant-postes
+# --------------------------------------------------------------------------
+
+def matiere_panache(nom, densite, lueur):
+    """Une colonne de fumée en volume : dense au pied, effilochée en haut, rougie par les forges."""
+    m = bpy.data.materials.new(nom)
+    n, l = bd.noeuds(m)
+    for k in list(n):
+        n.remove(k)
+    coord = n.new("ShaderNodeTexCoord")
+    sep = n.new("ShaderNodeSeparateXYZ")
+    l.new(coord.outputs["Generated"], sep.inputs["Vector"])
+    # distance à l'axe, rapportée à un panache qui s'évase en montant
+    cx = n.new("ShaderNodeMath"); cx.operation = 'SUBTRACT'; cx.inputs[1].default_value = 0.5
+    cy = n.new("ShaderNodeMath"); cy.operation = 'SUBTRACT'; cy.inputs[1].default_value = 0.5
+    l.new(sep.outputs["X"], cx.inputs[0]); l.new(sep.outputs["Y"], cy.inputs[0])
+    rayon = n.new("ShaderNodeVectorMath"); rayon.operation = 'LENGTH'
+    axe = n.new("ShaderNodeCombineXYZ")
+    l.new(cx.outputs["Value"], axe.inputs["X"]); l.new(cy.outputs["Value"], axe.inputs["Y"])
+    l.new(axe.outputs["Vector"], rayon.inputs[0])
+    evase = n.new("ShaderNodeMath"); evase.operation = 'MULTIPLY_ADD'
+    evase.inputs[1].default_value = 0.38; evase.inputs[2].default_value = 0.12
+    l.new(sep.outputs["Z"], evase.inputs[0])
+    rel = n.new("ShaderNodeMath"); rel.operation = 'DIVIDE'
+    l.new(rayon.outputs["Value"], rel.inputs[0]); l.new(evase.outputs["Value"], rel.inputs[1])
+    bord = n.new("ShaderNodeMapRange")
+    bord.inputs["From Min"].default_value = 1.0; bord.inputs["From Max"].default_value = 0.2
+    l.new(rel.outputs["Value"], bord.inputs["Value"])
+    # s'éteint vers le haut
+    haut = n.new("ShaderNodeMapRange")
+    haut.inputs["From Min"].default_value = 1.0; haut.inputs["From Max"].default_value = 0.55
+    l.new(sep.outputs["Z"], haut.inputs["Value"])
+    # et naît en douceur au pied (caché dans la forteresse)
+    bas = n.new("ShaderNodeMapRange")
+    bas.inputs["From Min"].default_value = 0.0; bas.inputs["From Max"].default_value = 0.12
+    l.new(sep.outputs["Z"], bas.inputs["Value"])
+    hb = n.new("ShaderNodeMath"); hb.operation = 'MULTIPLY'
+    l.new(haut.outputs["Result"], hb.inputs[0]); l.new(bas.outputs["Result"], hb.inputs[1])
+    bruit = n.new("ShaderNodeTexNoise")
+    bruit.inputs["Scale"].default_value = 4.0
+    bruit.inputs["Detail"].default_value = 8
+    bruit.inputs["Distortion"].default_value = 0.8
+    l.new(coord.outputs["Generated"], bruit.inputs["Vector"])
+    volutes = n.new("ShaderNodeMapRange")
+    volutes.inputs["From Min"].default_value = 0.35; volutes.inputs["From Max"].default_value = 0.75
+    l.new(bruit.outputs["Fac"], volutes.inputs["Value"])
+    m1 = n.new("ShaderNodeMath"); m1.operation = 'MULTIPLY'
+    l.new(bord.outputs["Result"], m1.inputs[0]); l.new(hb.outputs["Value"], m1.inputs[1])
+    m2 = n.new("ShaderNodeMath"); m2.operation = 'MULTIPLY'
+    l.new(m1.outputs["Value"], m2.inputs[0]); l.new(volutes.outputs["Result"], m2.inputs[1])
+    dens = n.new("ShaderNodeMath"); dens.operation = 'MULTIPLY'; dens.inputs[1].default_value = densite
+    l.new(m2.outputs["Value"], dens.inputs[0])
+    v = n.new("ShaderNodeVolumePrincipled")
+    v.inputs["Color"].default_value = (0.03, 0.018, 0.014, 1)  # une fumée sombre, rougie par en dessous
+    v.inputs["Absorption Color"].default_value = (0.0, 0.0, 0.0, 1)
+    v.inputs["Anisotropy"].default_value = 0.3
+    l.new(dens.outputs["Value"], v.inputs["Density"])
+    # le pied du panache rougeoie : la forge qui le crache
+    if lueur:
+        pied = n.new("ShaderNodeMapRange")
+        pied.inputs["From Min"].default_value = 0.05; pied.inputs["From Max"].default_value = 0.3
+        pied.inputs["To Min"].default_value = lueur; pied.inputs["To Max"].default_value = 0.0
+        l.new(sep.outputs["Z"], pied.inputs["Value"])
+        e = n.new("ShaderNodeMath"); e.operation = 'MULTIPLY'
+        l.new(pied.outputs["Result"], e.inputs[0]); l.new(m2.outputs["Value"], e.inputs[1])
+        v.inputs["Emission Color"].default_value = (1.0, 0.28, 0.05, 1)
+        l.new(e.outputs["Value"], v.inputs["Emission Strength"])
+    o = n.new("ShaderNodeOutputMaterial")
+    l.new(v.outputs["Volume"], o.inputs["Volume"])
+    return m
+
+
+def panaches():
+    """Les forges de la forteresse crachent leur fumée ; le vent la couche vers l'est."""
+    rng = __import__("random").Random(bd.GRAINE + 11)
+    fumee = matiere_panache("Panache", 0.04, 0.004)
+    lourde = matiere_panache("Panache de l'Orodruin", 0.012, 0.0005)
+    sources = [  # (x, y, z du pied, rayon, hauteur, penche)
+        (-95, -30, 40, 34, 420, 0.30), (80, -70, 30, 28, 360, 0.36),
+        (-45, 75, 120, 40, 480, 0.26), (70, 55, 90, 32, 400, 0.32),
+        (-115, 45, 20, 26, 300, 0.40), (20, -110, 15, 22, 260, 0.42),
+    ]
+    for i, (x, y, z, r, h, penche) in enumerate(sources):
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=1, depth=1, location=(0, 0, 0))
+        ob = bpy.context.active_object
+        ob.name = f"Panache {i + 1}"
+        ob.scale = (r * 2.2, r * 2.2, h)
+        ob.location = (x + math.sin(penche) * h / 2, y + rng.uniform(-10, 10), z + math.cos(penche) * h / 2)
+        ob.rotation_euler = (rng.uniform(-0.05, 0.05), penche, 0)
+        ob.data.materials.append(fumee)
+    # l'Orodruin fume aussi, un grand panache qui s'étale sous les nuées
+    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=1, depth=1, location=(-560, 820, 560))
+    ob = bpy.context.active_object
+    ob.name = "Panache de l'Orodruin"
+    ob.scale = (260, 260, 680)
+    ob.rotation_euler = (0, 0.35, 0)
+    ob.data.materials.append(lourde)
+
+
+def brume_basse():
+    """Une nappe de brume rouge au ras de la plaine, qui noie le pied de la forteresse."""
+    m = bpy.data.materials.new("Brume basse")
+    n, l = bd.noeuds(m)
+    for k in list(n):
+        n.remove(k)
+    coord = n.new("ShaderNodeTexCoord")
+    sep = n.new("ShaderNodeSeparateXYZ")
+    l.new(coord.outputs["Generated"], sep.inputs["Vector"])
+    haut = n.new("ShaderNodeMapRange")
+    haut.inputs["From Min"].default_value = 0.0; haut.inputs["From Max"].default_value = 1.0
+    haut.inputs["To Min"].default_value = 1.0; haut.inputs["To Max"].default_value = 0.0
+    l.new(sep.outputs["Z"], haut.inputs["Value"])
+    carre = n.new("ShaderNodeMath"); carre.operation = 'POWER'; carre.inputs[1].default_value = 2.0
+    l.new(haut.outputs["Result"], carre.inputs[0])
+    bruit = n.new("ShaderNodeTexNoise")
+    bruit.inputs["Scale"].default_value = 0.012
+    bruit.inputs["Detail"].default_value = 4
+    l.new(coord.outputs["Object"], bruit.inputs["Vector"])
+    nappes = n.new("ShaderNodeMapRange")
+    nappes.inputs["From Min"].default_value = 0.3; nappes.inputs["From Max"].default_value = 0.7
+    nappes.inputs["To Min"].default_value = 0.25
+    l.new(bruit.outputs["Fac"], nappes.inputs["Value"])
+    m1 = n.new("ShaderNodeMath"); m1.operation = 'MULTIPLY'
+    l.new(carre.outputs["Value"], m1.inputs[0]); l.new(nappes.outputs["Result"], m1.inputs[1])
+    dens = n.new("ShaderNodeMath"); dens.operation = 'MULTIPLY'; dens.inputs[1].default_value = 0.0035
+    l.new(m1.outputs["Value"], dens.inputs[0])
+    v = n.new("ShaderNodeVolumePrincipled")
+    v.inputs["Color"].default_value = (0.4, 0.2, 0.13, 1)
+    v.inputs["Absorption Color"].default_value = (0.3, 0.1, 0.06, 1)
+    v.inputs["Anisotropy"].default_value = 0.4
+    l.new(dens.outputs["Value"], v.inputs["Density"])
+    o = n.new("ShaderNodeOutputMaterial")
+    l.new(v.outputs["Volume"], o.inputs["Volume"])
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 300, 9))
+    ob = bpy.context.active_object
+    ob.name = "Brume basse"
+    ob.scale = (2400, 1800, 30)
+    ob.data.materials.append(m)
+
+
+def chaine():
+    """L'Ered Lithui, au nord : une muraille de crêtes noires sur le ciel rouge."""
+    pierre = bpy.data.materials.new("Roc de l'Ered Lithui")
+    n, _ = bd.noeuds(pierre)
+    n["Principled BSDF"].inputs["Base Color"].default_value = (0.005, 0.0045, 0.0045, 1)
+    n["Principled BSDF"].inputs["Roughness"].default_value = 1.0
+    rng = __import__("random").Random(bd.GRAINE + 12)
+    bm = bd.bmesh.new()
+    nx, ny = 360, 24
+    pics = [(rng.uniform(-2400, 2400), rng.uniform(40, 200), rng.uniform(80, 260)) for _ in range(30)]
+    octaves = [(110 / 1.9 ** k, 420 / 2.1 ** k, rng.uniform(0, 6.28)) for k in range(8)]
+    lignes = []
+    for j in range(ny):
+        t = j / (ny - 1)  # 0 : versant face à nous, 1 : la crête
+        ligne = []
+        for i in range(nx):
+            x = -2600 + 5200 * i / (nx - 1)
+            # une crête fractale (des sinus aux phases tirées au sort), puis des sommets plus hauts
+            crete = 170 + sum(amp * abs(math.sin(x / per + ph)) for amp, per, ph in octaves)
+            for px, ph, pl in pics:
+                crete += ph * math.exp(-((x - px) / pl) ** 2)
+            y = 1350 + 260 * t + 30 * math.sin(x / 180)
+            z = -20 + (crete + 20) * math.sin(t * math.pi / 2) ** 0.8
+            ligne.append(bm.verts.new((x, y, z)))
+        lignes.append(ligne)
+    for j in range(ny - 1):
+        for i in range(nx - 1):
+            bm.faces.new((lignes[j][i], lignes[j][i + 1], lignes[j + 1][i + 1], lignes[j + 1][i]))
+    ob = bd.objet_bmesh("Ered Lithui", bm, pierre, lisse=True)
+    t = bpy.data.textures.new("crêtes", 'CLOUDS'); t.noise_scale = 40; t.noise_depth = 5
+    dep = ob.modifiers.new("éboulis", 'DISPLACE'); dep.texture = t; dep.strength = 35
+    dep.texture_coords = 'GLOBAL'
+    return ob
+
+
+def couloir(x, y):
+    """Vrai si (x, y) masquerait la forteresse depuis les caméras."""
+    if math.hypot(x, y) < 175:
+        return True
+    if y < -100:
+        t = (y + 440) / 340  # 0 à la caméra, 1 devant la forteresse
+        centre = 100 - 100 * t
+        return abs(x - centre) < 40 + 120 * t
+    return False
+
+
+def pics(pierre):
+    """Des aiguilles de roche volcanique qui crèvent la cendre, plus serrées au loin."""
+    rng = __import__("random").Random(bd.GRAINE + 13)
+    bm = bd.bmesh.new()
+    poses = 0
+    while poses < 120:
+        x, y = rng.uniform(-750, 750), rng.uniform(-420, 700)
+        if couloir(x, y):
+            continue
+        poses += 1
+        loin = math.hypot(x - 100, y + 440)
+        # en groupes : deux ou trois aiguilles penchées l'une vers l'autre
+        for _ in range(rng.choice((1, 1, 2, 3))):
+            h = min(rng.uniform(6, 30) * (0.6 + loin / 1100), 40)
+            r = h * rng.uniform(0.08, 0.16)
+            gx, gy = x + rng.uniform(-r, r) * 2, y + rng.uniform(-r, r) * 2
+            # une aiguille en deux tronçons cassés, plus une épaule à son pied
+            mi = h * rng.uniform(0.35, 0.6)
+            haut = bd.prisme(bm, gx, gy, -4, mi, r, r * 0.6, rng.choice((5, 6, 7)), rng.uniform(0, 6), 0.35, rng)
+            bd.prisme(bm, gx + r * 0.6, gy, -4, mi * 0.5, r * 1.3, r * 0.3, 5, rng.uniform(0, 6), 0.4, rng)
+            dx0, dy0 = rng.uniform(-0.12, 0.12) * h, rng.uniform(-0.12, 0.12) * h
+            for v in haut:
+                v.co.x += dx0; v.co.y += dy0
+            haut = bd.prisme(bm, gx + dx0, gy + dy0, mi - 1, h, r * 0.6, r * 0.04, rng.choice((4, 5)), rng.uniform(0, 6), 0.3, rng)
+            dx, dy = rng.uniform(-0.25, 0.25) * h, rng.uniform(-0.25, 0.25) * h
+            for v in haut:
+                v.co.x += dx; v.co.y += dy
+    return bd.objet_bmesh("Aiguilles", bm, pierre)
+
+
+def avant_postes(fer, feu):
+    """Quelques tours de guet dans la plaine, un feu à leur sommet : l'échelle de la Tour."""
+    rng = __import__("random").Random(bd.GRAINE + 14)
+    bm, bf = bd.bmesh.new(), bd.bmesh.new()
+    for x, y in [(-330, 120), (290, 260), (-520, 380), (430, -60), (-260, -180), (180, 520), (-80, 560)]:
+        h = rng.uniform(35, 70)
+        r = h * 0.14
+        bd.prisme(bm, x, y, -3, h * 0.35, r * 1.8, r * 1.3, 8, 0, 0.1, rng)
+        bd.prisme(bm, x, y, h * 0.35, h, r, r * 0.8, 6, 0.3)
+        for k in range(4):  # créneaux en crocs
+            a = k * math.pi / 2 + 0.3
+            bd.prisme(bm, x + r * 0.9 * math.cos(a), y + r * 0.9 * math.sin(a), h, h + r * 1.4, r * 0.3, 0.05, 4)
+        bd.boite(bf, (x, y, h + 0.6), (r * 1.1, r * 1.1, 1.2))
+        lum = bpy.data.lights.new("Feu de guet", 'POINT')
+        lum.color = (1.0, 0.32, 0.07)
+        lum.energy = 4e4
+        lum.shadow_soft_size = 3
+        ob = bpy.data.objects.new("Feu de guet", lum)
+        ob.location = (x, y, h + 3)
+        bd.lier(ob)
+        for z in (h * 0.5, h * 0.75):  # deux fentes de lumière
+            a = rng.uniform(0, 6.28)
+            bd.boite(bf, (x + r * math.cos(a), y + r * math.sin(a), z), (0.5, 0.5, 1.6), a)
+    bd.objet_bmesh("Tours de guet", bm, fer)
+    bd.objet_bmesh("Feux de guet", bf, feu)
+
+def silhouette():
+    """Moins de lumière de face, un liseré rouge par derrière : la Tour se découpe sur le ciel."""
+    for nom in ("Lueur sous la Tour", "Reflet de lave"):
+        bpy.data.objects[nom].data.energy *= 0.3
+    for nom, pos, cible, e in [
+        ("Liseré gauche", (-200, 260, 320), (0, 0, 300), 5e6),
+        ("Liseré droit", (220, 240, 260), (0, 0, 240), 4e6),
+        ("Liseré forteresse", (60, 300, 120), (0, 0, 110), 4e6),
+    ]:
+        lum = bpy.data.lights.new(nom, 'AREA')
+        lum.energy = e
+        lum.size = 60
+        lum.spread = math.radians(25)
+        lum.color = (1.0, 0.3, 0.07)
+        ob = bpy.data.objects.new(nom, lum)
+        ob.location = pos
+        ob.rotation_euler = (bd.Vector(cible) - bd.Vector(pos)).to_track_quat('-Z', 'Y').to_euler()
+        bd.lier(ob)
+
+
 def construire(cadre):
     if cadre == "regard":
         bd.construire_regard()
@@ -198,8 +474,15 @@ def construire(cadre):
     loger_oeil()
     bd.orodruin(pierre, lave)
     bd.nuees(None, bd.matiere_fumee())
+    panaches()
+    brume_basse()
+    chaine()
+    pics(pierre)
+    feu_guet, _ = bd.matiere_braise(25.0, (1.0, 0.36, 0.08, 1))
+    avant_postes(matiere_kijai(), feu_guet)
     c, b = bd.cendres(braise_m, cendre_m)
     bd.lumieres()
+    silhouette()
     cam = bd.camera(cadre)
     if cadre == "portrait":
         # un peu plus de recul : la forteresse de Kijai est plus large que la mienne
