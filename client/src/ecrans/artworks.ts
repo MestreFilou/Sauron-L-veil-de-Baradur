@@ -82,7 +82,7 @@ export interface FondTitre {
 
 /** Les fonds possibles, du préféré au repli. Ceux de Kijai ne sont jamais versionnés (artworks/kijai/). */
 const FONDS: (Omit<FondTitre, 'url'> & { fichier: string })[] = [
-  { fichier: 'kijai/rendus/barad_dur_titre.webp', pupille: true, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
+  { fichier: 'kijai/rendus/barad_dur_titre.webp', pupille: true, oeil: { x: 0.552, y: 0.215, h: 0.05 } },
   { fichier: '3d/titre/barad_dur_titre.webp', pupille: true, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
   { fichier: '3d/fonds/barad_dur_paysage.webp', pupille: false, oeil: { x: 0.5617, y: 0.131, h: 0.068 } },
 ];
