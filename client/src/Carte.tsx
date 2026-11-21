@@ -66,6 +66,9 @@ export function Carte() {
           const j = useJeu.getState();
           return j.vue.phase === 'ordres' && j.mode !== 'ombre' && Boolean(j.vue.nazgul.find((n) => n.id === id)?.disponible);
         },
+        survolMurmure(id) {
+          useJeu.getState().survolerMurmure(id);
+        },
         deposer(id, region) {
           const j = useJeu.getState();
           // Glisser un pion du groupe emmène tout le groupe.
