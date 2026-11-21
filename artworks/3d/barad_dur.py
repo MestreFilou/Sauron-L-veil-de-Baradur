@@ -22,6 +22,9 @@ Options :
     --blend FICHIER                 enregistre aussi la scène .blend
     --images A:B                    rend les images A à B de la boucle animée
                                     (sinon, une image fixe)
+    --sans-pupille                  l'Œil sans sa fente (le jeu la dessine)
+    --cadre regard                  l'Œil seul, en amande couchée, pour la
+                                    barre du jeu (32 images, --images 1:32)
 """
 import math
 import random
@@ -35,6 +38,8 @@ from mathutils import Vector, Matrix
 
 GRAINE = 1937  # l'année où Tolkien commence Le Seigneur des Anneaux
 BOUCLE = 96    # images de la boucle animée (4 s à 24 i/s)
+REGARD = 32    # images de l'Œil de l'interface (une boucle, sans pupille : le jeu la dessine)
+SANS_PUPILLE = False
 
 
 # --------------------------------------------------------------------------
@@ -348,6 +353,8 @@ def matiere_oeil():
     fente = n.new("ShaderNodeMapRange")
     fente.inputs["From Min"].default_value = 0.1
     fente.inputs["From Max"].default_value = 0.17
+    if SANS_PUPILLE:
+        fente.inputs["To Min"].default_value = 1.0
     l.new(ax.outputs["Value"], fente.inputs["Value"])
     force = n.new("ShaderNodeMath"); force.operation = 'MULTIPLY'
     force.inputs[1].default_value = 1.0
@@ -715,6 +722,7 @@ def poser_oeil(mat):
     l.new(chaud.outputs["Value"], rampe.inputs["Fac"])
     force = n.new("ShaderNodeMath"); force.operation = 'MULTIPLY'
     force.inputs[1].default_value = 0.4
+    force.name = "force_halo"
     puiss = n.new("ShaderNodeMath"); puiss.operation = 'POWER'; puiss.inputs[1].default_value = 1.6
     l.new(chaud.outputs["Value"], puiss.inputs[0])
     l.new(puiss.outputs["Value"], force.inputs[0])
@@ -724,7 +732,7 @@ def poser_oeil(mat):
     fente = n.new("ShaderNodeMapRange")
     fente.inputs["From Min"].default_value = 0.012
     fente.inputs["From Max"].default_value = 0.05
-    fente.inputs["To Min"].default_value = 0.05
+    fente.inputs["To Min"].default_value = 1.0 if SANS_PUPILLE else 0.05
     l.new(ax.outputs["Value"], fente.inputs["Value"])
     dehors = n.new("ShaderNodeMath"); dehors.operation = 'GREATER_THAN'; dehors.inputs[1].default_value = 0.4
     l.new(long.outputs["Value"], dehors.inputs[0])
@@ -1079,6 +1087,8 @@ def regler_rendu(cadre, echelle, echantillons):
     sc.cycles.sample_clamp_indirect = 8.0
     if cadre in ('portrait', 'couronne'):
         sc.render.resolution_x, sc.render.resolution_y = 1500, 2500
+    elif cadre == 'regard':
+        sc.render.resolution_x, sc.render.resolution_y = 432, 272  # 2 × la barre du haut (216 × 136)
     else:
         sc.render.resolution_x, sc.render.resolution_y = 2560, 1440
     sc.render.resolution_percentage = int(round(echelle * 100))
@@ -1099,7 +1109,49 @@ def regler_rendu(cadre, echelle, echantillons):
     sc.render.film_transparent = False
 
 
+def construire_regard():
+    """L'Œil seul, couché en amande horizontale comme dans la barre du jeu, sans pupille,
+    sur fond noir, vu de face en orthographique : les images de l'Œil de l'interface."""
+    global SANS_PUPILLE
+    SANS_PUPILLE = True
+    vider_scene()
+    w = bpy.data.worlds.new("Noir")
+    bpy.context.scene.world = w
+    n, _ = noeuds(w)
+    n["Background"].inputs["Color"].default_value = (0, 0, 0, 1)
+    oeil, lum = poser_oeil(matiere_oeil())
+    oeil.scale = (6.2, 2.5, 15.0)  # moins haute : l'amande de la barre du haut
+    for nom in ("Œil", "Halo"):
+        ob = bpy.data.objects[nom]
+        ob.rotation_euler = (0, math.pi / 2, 0)
+    halo = bpy.data.objects["Halo"]
+    halo.scale = (13.5, 9, 23)  # les flammes s'éteignent avant le bord de l'image
+    bpy.data.materials["Halo"].node_tree.nodes["force_halo"].inputs[1].default_value = 0.6
+    cam = bpy.data.cameras.new("Face")
+    cam.type = 'ORTHO'
+    cam.ortho_scale = 50
+    ob = bpy.data.objects.new("Face", cam)
+    ob.location = (0, -80, 243)
+    ob.rotation_euler = (math.pi / 2, 0, 0)
+    lier(ob)
+    bpy.context.scene.camera = ob
+    sc = bpy.context.scene
+    sc.frame_start, sc.frame_end = 1, REGARD
+    # tout boucle sur REGARD images : le bruit de l'iris et les flammes vont et viennent
+    for mat_nom, noeud, ampl in [("Œil", "bruit_oeil", 0.5)]:
+        b = bpy.data.materials[mat_nom].node_tree.nodes[noeud]
+        fc = b.inputs["W"].driver_add("default_value")
+        fc.driver.expression = f"{ampl} * sin(frame / {REGARD} * 2 * pi)"
+    t = bpy.data.materials["Halo"].node_tree.nodes["temps_flammes"]
+    t.outputs[0].driver_remove("default_value")
+    fc = t.outputs[0].driver_add("default_value")
+    fc.driver.expression = f"0.45 * sin(frame / {REGARD} * 2 * pi) + 0.25 * cos(frame / {REGARD} * 4 * pi)"
+
+
 def construire(cadre):
+    if cadre == 'regard':
+        construire_regard()
+        return
     vider_scene()
     fer = matiere_fer()
     pierre = matiere_pierre()
@@ -1129,14 +1181,18 @@ def construire(cadre):
 def principal():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cadre", default="portrait", choices=["portrait", "paysage", "couronne", "tous"])
+    ap.add_argument("--cadre", default="portrait", choices=["portrait", "paysage", "couronne", "regard", "tous"])
     ap.add_argument("--echelle", type=float, default=1.0)
     ap.add_argument("--echantillons", type=int, default=192)
     ap.add_argument("--sortie", default=str(Path(__file__).resolve().parent / "rendus"))
     ap.add_argument("--blend", default=None)
     ap.add_argument("--images", default=None)
     ap.add_argument("--nom", default=None)
+    ap.add_argument("--sans-pupille", action="store_true",
+                    help="l'Œil sans sa fente : le jeu la dessine par-dessus, et elle suit la souris")
     a = ap.parse_args(argv)
+    global SANS_PUPILLE
+    SANS_PUPILLE = a.sans_pupille
     sortie = Path(a.sortie)
     sortie.mkdir(parents=True, exist_ok=True)
     cadres = ["portrait", "paysage"] if a.cadre == "tous" else [a.cadre]

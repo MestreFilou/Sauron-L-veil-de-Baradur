@@ -3,6 +3,10 @@ Finition des rendus de Barad-dûr : halo lumineux (bloom) autour des feux,
 vignettage, léger grain, puis export WebP pour le jeu.
 
     python artworks/3d/finition.py rendus/barad_dur_portrait.png sortie.webp
+    python artworks/3d/finition.py --planche dossier/f_*.png artworks/3d/regard/oeil_regard.webp
+
+La planche assemble les images de l'Œil de l'interface (--cadre regard) en
+une grille de 8 colonnes, fond noir changé en transparence.
 
 Il suffit de Pillow et numpy (pas besoin de Blender).
 """
@@ -42,5 +46,24 @@ def finir(entree, sortie, qualite=90):
         out.save(sortie)
 
 
+def planche(images, sortie, colonnes=8):
+    """Assemble les images en grille ; le noir devient transparent (le feu garde sa lumière)."""
+    ims = [np.asarray(Image.open(f).convert("RGB"), dtype=np.float32) / 255 for f in sorted(images)]
+    h, w, _ = ims[0].shape
+    lignes = (len(ims) + colonnes - 1) // colonnes
+    out = np.zeros((h * lignes, w * colonnes, 4), dtype=np.float32)
+    for i, a in enumerate(ims):
+        alpha = np.clip(a.max(axis=2, keepdims=True) * 1.25, 0, 1)
+        rgb = np.where(alpha > 1e-4, np.clip(a / np.maximum(alpha, 1e-4), 0, 1), 0)
+        y, x = (i // colonnes) * h, (i % colonnes) * w
+        out[y:y + h, x:x + w, :3] = rgb
+        out[y:y + h, x:x + w, 3:] = alpha
+    Image.fromarray((out * 255 + 0.5).astype(np.uint8), "RGBA").save(sortie, "WEBP", quality=86, method=6)
+    print(f"{len(ims)} images de {w}×{h}, {colonnes} colonnes → {sortie}")
+
+
 if __name__ == "__main__":
-    finir(sys.argv[1], sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else 90)
+    if sys.argv[1] == "--planche":
+        planche(sys.argv[2:-1], sys.argv[-1])
+    else:
+        finir(sys.argv[1], sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else 90)

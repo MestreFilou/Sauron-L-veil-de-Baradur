@@ -45,6 +45,9 @@
   background:radial-gradient(circle,rgba(255,190,90,.5) 0%,rgba(255,90,20,.24) 32%,rgba(160,30,5,.08) 55%,transparent 70%);
   transform:translate(-50%,-50%);animation:oeil-palpite 4.8s ease-in-out infinite}
 @keyframes oeil-palpite{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.9)}45%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}60%{opacity:.8}}
+.pupille-titre{position:absolute;left:var(--oeil-x,56.25%);top:var(--oeil-y,15%);width:var(--pupille-l,.55%);height:var(--pupille-h,6.6%);overflow:visible;pointer-events:none;
+  transform:translate(-50%,-50%);filter:drop-shadow(0 0 .35vh rgba(255,80,10,.95)) drop-shadow(0 0 .9vh rgba(255,40,0,.6))}
+.pupille-titre path{fill:#060101}
 .fond-titre-voile{position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(90deg,rgba(5,3,2,.82) 0%,rgba(5,3,2,.5) 30%,rgba(5,3,2,0) 52%),radial-gradient(ellipse at 60% 45%,transparent 45%,rgba(4,2,2,.6) 100%)}
 @media (prefers-reduced-motion:reduce){.fond-titre-image,.lueur-oeil{animation:none}}

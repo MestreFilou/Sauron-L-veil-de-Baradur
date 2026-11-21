@@ -5,7 +5,7 @@
  * La musique de Barad-dûr joue si une piste est installée
  * (audio/musique/pistes.json).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Oeil } from '../Oeil';
 import { aReprendre, etatDe, listerSauvegardes, quand, type Enveloppe } from '../partie/sauvegardes';
 import { romain } from '../panneaux/Haut';
@@ -53,14 +53,71 @@ function useEchelleOeil(): number {
   return e;
 }
 
+/**
+ * La fente de l'Œil de la Tour, dessinée par-dessus le rendu (rendu sans
+ * pupille) : elle glisse dans l'iris vers la souris, et s'amincit quand on
+ * s'approche.
+ */
+function PupilleTitre() {
+  const ref = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const el = ref.current!;
+    const cible = { x: -1, y: -1 };
+    const pos = { x: 0, y: 0, l: 1 };
+    let raf = 0,
+      dernier = performance.now();
+    const bouge = (e: PointerEvent) => {
+      cible.x = e.clientX;
+      cible.y = e.clientY;
+    };
+    const image = (t: number) => {
+      const dt = Math.min(50, t - dernier);
+      dernier = t;
+      const r = el.getBoundingClientRect(),
+        cx = r.left + r.width / 2,
+        cy = r.top + r.height / 2;
+      let vx = 0,
+        vy = 0,
+        largeur = 1;
+      if (cible.x >= 0) {
+        const dx = cible.x - cx,
+          dy = cible.y - cy,
+          d = Math.hypot(dx, dy),
+          k = Math.min(1, d / 600);
+        vx = (dx / (d || 1)) * k;
+        vy = (dy / (d || 1)) * k;
+        largeur = 0.7 + 0.5 * Math.min(1, d / 400); // plus fine quand la souris approche
+      }
+      const a = Math.min(1, dt * 0.006);
+      pos.x += (vx - pos.x) * a;
+      pos.y += (vy - pos.y) * a;
+      pos.l += (largeur - pos.l) * a;
+      el.style.transform = `translate(calc(-50% + ${pos.x * 1.4}vh), calc(-50% + ${pos.y * 0.9}vh)) scaleX(${pos.l})`;
+      raf = requestAnimationFrame(image);
+    };
+    window.addEventListener('pointermove', bouge);
+    raf = requestAnimationFrame(image);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('pointermove', bouge);
+    };
+  }, []);
+  return (
+    <svg ref={ref} className="pupille-titre" viewBox="-10 -100 20 200" preserveAspectRatio="none">
+      <path d="M0,-100 Q9,0 0,100 Q-9,0 0,-100 Z" />
+    </svg>
+  );
+}
+
 /** Le rendu 3D en plein écran, qui dérive lentement ; l'Œil y palpite et des braises montent. */
-function FondTitre({ url, onErreur }: { url: string; onErreur: () => void }) {
+function FondTitre({ url, pupille, onErreur }: { url: string; pupille: boolean; onErreur: () => void }) {
   const [vu, setVu] = useState(false);
   return (
     <div className="fond-titre" aria-hidden="true">
       <div className="fond-titre-image">
         <img src={url} alt="" className={vu ? 'vu' : ''} onLoad={() => setVu(true)} onError={onErreur} />
         <div className="lueur-oeil" />
+        {pupille && vu && <PupilleTitre />}
       </div>
       <Braises n={26} />
       <div className="fond-titre-voile" />
@@ -124,7 +181,7 @@ export function Titre() {
   return (
     <div id="titre">
       {rendu && FOND_TITRE ? (
-        <FondTitre url={FOND_TITRE} onErreur={() => setRendu(false)} />
+        <FondTitre url={FOND_TITRE.url} pupille={FOND_TITRE.pupille} onErreur={() => setRendu(false)} />
       ) : webgl ? (
         <SceneTitre key={version} version={version} onEchec={repli} />
       ) : (

@@ -56,7 +56,8 @@ export function associer(entrees: EntreeManifeste[], urls: Map<string, string>):
     });
   }
   for (const [fichier, url] of [...urls].sort(([a], [b]) => a.localeCompare(b))) {
-    if (!vues.has(fichier)) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center', fond: null });
+    // les rendus 3D (fonds, écran titre, Œil de l'interface) n'entrent que par le manifeste
+    if (!vues.has(fichier) && !fichier.startsWith('3d/')) r.push({ fichier, url, titre: null, artiste: null, source: null, licence: null, cadrage: 'center', fond: null });
   }
   return r;
 }
@@ -66,10 +67,16 @@ const URLS = indexer(fichiers, '/artworks/');
 export const ARTWORKS: Artwork[] = associer((manifeste as { ecrans: EntreeManifeste[] }).ecrans, URLS);
 
 /**
- * Le fond de l'écran titre : le rendu 3D large de la Tour (artworks/3d/), ou
- * null s'il manque, et l'écran titre reprend alors sa scène WebGL.
+ * Le fond de l'écran titre : le rendu 3D large de la Tour. De préférence la
+ * version sans pupille (artworks/3d/titre/), sur laquelle le jeu dessine une
+ * fente qui suit la souris ; sinon le paysage de l'écran de chargement ; sinon
+ * null, et l'écran titre reprend sa scène WebGL.
  */
-export const FOND_TITRE: string | null = URLS.get('3d/fonds/barad_dur_paysage.webp') ?? null;
+export const FOND_TITRE: { url: string; pupille: boolean } | null = URLS.has('3d/titre/barad_dur_titre.webp')
+  ? { url: URLS.get('3d/titre/barad_dur_titre.webp')!, pupille: true }
+  : URLS.has('3d/fonds/barad_dur_paysage.webp')
+    ? { url: URLS.get('3d/fonds/barad_dur_paysage.webp')!, pupille: false }
+    : null;
 
 const CLE = 'oeil-de-barad-dur/dernier-artwork';
 

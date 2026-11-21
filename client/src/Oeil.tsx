@@ -1,13 +1,27 @@
 /**
- * L'Œil : champ de feu calculé par pixel, pupille fendue vectorielle, braises
- * (direction artistique, 5 bis). Portage direct de eyeField / drawEye de la
- * maquette. Le champ est petit (176 × 110) : le calcul tient sur le CPU et se
- * portera tel quel en shader.
+ * L'Œil : un iris de feu, pupille fendue vectorielle qui suit le Regard ou la
+ * souris, braises (direction artistique, 5 bis).
+ *
+ * Le feu vient de Blender : 32 images de l'Œil rendues sans pupille
+ * (artworks/3d/regard/oeil_regard.webp, voir artworks/3d/LISEZMOI.md), jouées
+ * en boucle. Si la planche manque, il est calculé par pixel comme dans la
+ * maquette (eyeField), sur un petit champ de 176 × 110.
  */
 import { useEffect, useRef } from 'react';
 import { bus, regard } from './bus';
 import { cl, fbm, smooth, toile } from './carte/bruit';
 import { useJeu } from './store';
+
+/** La planche Blender : 32 images de 432 × 272 en 8 colonnes, ou rien. */
+const planches = import.meta.glob('../../artworks/3d/regard/oeil_regard.webp', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
+const URL_PLANCHE = Object.values(planches)[0];
+const PL = { w: 432, h: 272, colonnes: 8, n: 32, ips: 12 };
+let planche: HTMLImageElement | null = null;
+if (URL_PLANCHE && typeof Image !== 'undefined') {
+  const im = new Image();
+  im.onload = () => (planche = im);
+  im.src = URL_PLANCHE;
+}
 
 const EW = 216,
   EH = 136,
@@ -127,24 +141,41 @@ export function Oeil({ echelle = 1, suivre = 'regard', libelle: avecLibelle = tr
       flare = Math.max(0, flare - dt * 0.0009);
       const tw = (suivre === 'regard' && regard.verrouille ? 0.032 : 0.075) * (1 + 0.1 * Math.sin(t * 0.0021)) * (1 + flare * 0.5);
       pupW += (tw - pupW) * Math.min(1, dt * 0.006);
-      champ(t);
-
       ex.setTransform(1, 0, 0, 1, 0, 0);
       ex.clearRect(0, 0, w, h);
-      const S2 = w / FW;
       ex.imageSmoothingEnabled = true;
       ex.imageSmoothingQuality = 'high';
-      ex.globalCompositeOperation = 'lighter';
-      ex.globalAlpha = 0.45;
-      ex.filter = `blur(${5 * dpr}px)`;
-      ex.drawImage(EF, 0, (h - FH * S2) / 2, w, FH * S2);
-      ex.filter = 'none';
-      ex.globalCompositeOperation = 'source-over';
-      ex.globalAlpha = 1;
-      ex.drawImage(EF, 0, (h - FH * S2) / 2, w, FH * S2);
+      const U = w / 2;
+      if (planche) {
+        // l'image Blender du moment ; l'iris glisse à peine vers ce qu'il regarde
+        const f = Math.floor((t / 1000) * PL.ips) % PL.n,
+          sx = (f % PL.colonnes) * PL.w,
+          sy = Math.floor(f / PL.colonnes) * PL.h,
+          dx = g.x * 0.03 * U,
+          dy = g.y * 0.02 * U;
+        ex.globalCompositeOperation = 'lighter';
+        ex.globalAlpha = 0.35 + flare * 0.3;
+        ex.filter = `blur(${6 * dpr}px)`;
+        ex.drawImage(planche, sx, sy, PL.w, PL.h, dx, dy, w, h);
+        ex.filter = flare > 0.01 ? `brightness(${1 + flare * 0.6})` : 'none';
+        ex.globalCompositeOperation = 'source-over';
+        ex.globalAlpha = 1;
+        ex.drawImage(planche, sx, sy, PL.w, PL.h, dx, dy, w, h);
+        ex.filter = 'none';
+      } else {
+        champ(t);
+        const S2 = w / FW;
+        ex.globalCompositeOperation = 'lighter';
+        ex.globalAlpha = 0.45;
+        ex.filter = `blur(${5 * dpr}px)`;
+        ex.drawImage(EF, 0, (h - FH * S2) / 2, w, FH * S2);
+        ex.filter = 'none';
+        ex.globalCompositeOperation = 'source-over';
+        ex.globalAlpha = 1;
+        ex.drawImage(EF, 0, (h - FH * S2) / 2, w, FH * S2);
+      }
       // pupille fendue, vectorielle et nette
-      const U = w / 2,
-        cx = w / 2 + g.x * 0.11 * U,
+      const cx = w / 2 + g.x * 0.11 * U,
         cy = h / 2 + g.y * 0.05 * U,
         ph = EB * U * 1.02,
         pw = pupW * U;
