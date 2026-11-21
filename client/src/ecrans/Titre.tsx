@@ -4,7 +4,7 @@
  * le menu. La musique de Barad-dûr joue si une piste est installée
  * (audio/musique/pistes.json).
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Oeil } from '../Oeil';
 import { aReprendre, etatDe, listerSauvegardes, quand, type Enveloppe } from '../partie/sauvegardes';
 import { romain } from '../panneaux/Haut';
@@ -79,6 +79,9 @@ export function Titre() {
   const nouvellePartie = useJeu((s) => s.nouvellePartie);
   const lancer = useJeu((s) => s.lancer);
   const [webgl, sansWebgl] = useWebGL2();
+  // la 3D d'abord ; si la machine ne suit pas, la scène 2D ; sans WebGL, le décor SVG
+  const [version, setVersion] = useState<'3d' | '2d'>('3d');
+  const repli = useCallback(() => (version === '3d' ? setVersion('2d') : sansWebgl()), [version, sansWebgl]);
 
   useEffect(() => {
     let vivant = true;
@@ -102,7 +105,7 @@ export function Titre() {
 
   return (
     <div id="titre">
-      {webgl ? <SceneTitre onEchec={sansWebgl} /> : <DecorMordor />}
+      {webgl ? <SceneTitre key={version} version={version} onEchec={repli} /> : <DecorMordor />}
       <div className="titre-colonne">
         <div className="titre-nom">
           <div className="sur-titre">Acte I · L’Eriador · automne 3018</div>
