@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Carte } from './Carte';
+import { Cour } from './cour/Cour';
 import { Oeil } from './Oeil';
 import { Fiche, Modes, Ordres } from './panneaux/Commandes';
 import { Haut } from './panneaux/Haut';
@@ -133,6 +134,7 @@ export function App() {
       <Fiche />
       <Toast />
       <Duel />
+      <Cour />
       <Fin />
       <Son />
       <Intro />
