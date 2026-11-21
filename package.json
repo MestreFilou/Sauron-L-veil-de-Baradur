@@ -7,7 +7,8 @@
     "world",
     "narrative",
     "audio",
-    "client"
+    "client",
+    "desktop"
   ],
   "scripts": {
     "dev": "npm run dev -w @sauron/client",
@@ -15,7 +16,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "banc": "vitest run -c vitest.banc.config.ts --silent=false",
-    "typecheck": "tsc -p tsconfig.json && tsc -p client"
+    "typecheck": "tsc -p tsconfig.json && tsc -p client",
+    "app": "npm run build && npm start -w @sauron/desktop",
+    "app:dev": "npm run dev -w @sauron/desktop",
+    "app:paquet": "npm run build && npm run paquet -w @sauron/desktop"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

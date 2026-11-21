@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 import { useJeu } from '../store';
 import { ambianceDuJeu } from './ambiance';
+import { cibleSurvol, effetDuClic, effetsDuChangement } from './effets';
 import { moteurSon, type Parole } from './moteur';
 import { useReglagesSon } from './reglages';
 import { choisirReplique, registreDeLOrdre } from './repliques';
@@ -65,6 +66,27 @@ export function Son() {
 
   useEffect(() => moteurSon.regler(reglages), [reglages]);
 
+  // Les sons d'interface : un souffle au survol d'un bouton, un déclic au clic.
+  useEffect(() => {
+    let survole: Element | null = null;
+    const survol = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
+      const c = cibleSurvol(e.target as Element);
+      if (c && c !== survole) moteurSon.effet('ui_survol');
+      survole = c;
+    };
+    const clic = (e: MouseEvent) => {
+      const id = effetDuClic(e.target as Element);
+      if (id) moteurSon.effet(id);
+    };
+    window.addEventListener('pointerover', survol, true);
+    window.addEventListener('click', clic, true);
+    return () => {
+      window.removeEventListener('pointerover', survol, true);
+      window.removeEventListener('click', clic, true);
+    };
+  }, []);
+
   // M : couper ou rendre le son.
   useEffect(() => {
     const clavier = (e: KeyboardEvent) => {
@@ -87,6 +109,7 @@ export function Son() {
           moteurSon.debloquer();
           dire('inscription');
         }
+        for (const e of effetsDuChangement(avant, s)) moteurSon.effet(e.id, { retard: e.retard });
         if (s.etat.tour === avant.etat.tour && s.etat.ordres.length > avant.etat.ordres.length) {
           const registre = registreDeLOrdre(s.etat.ordres.at(-1)!);
           if (registre) dire(registre);
@@ -113,6 +136,9 @@ export function Son() {
   useEffect(() => {
     moteurSon.ambiance(ambianceDuJeu({ issue, duel, voix, mode, ordres }), tour);
   }, [issue, duel, voix, mode, ordres, tour]);
+
+  // Sous la musique, le fond : la forge de la Tour, ou le vent du Monde de l'Ombre.
+  useEffect(() => moteurSon.fond(issue ? null : mode), [mode, issue]);
 
   return reglages.sousTitres ? <SousTitres glose={reglages.glose} /> : null;
 }

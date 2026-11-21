@@ -2,6 +2,7 @@ import { cheminNazgul } from '@sauron/engine';
 import { geographieEriador } from '@sauron/world';
 import { useEffect, useRef } from 'react';
 import { atteignablesCeSoir, libelleTrajet, trajet } from './carte/marche';
+import { useMontDoom } from './montdoom/etat';
 import { SceneCarte } from './carte/scene';
 import { monde, useJeu } from './store';
 
@@ -86,11 +87,22 @@ export function Carte() {
       const j = useJeu.getState();
       s.maj({ vue: j.vue, mode: j.mode, nazgulChoisi: j.nazgulChoisi, groupe: j.groupe, caps: j.caps, regionChoisie: j.regionChoisie, murmureSurvole: j.murmureSurvole });
     };
-    void s.monter(hote.current!).then(() => {
-      if (annule) s.detruire();
-      else pousser();
-    });
-    const desabonner = useJeu.subscribe(pousser);
+    // Le montage part au tour suivant : en mode strict, React monte, démonte et
+    // remonte aussitôt ; une seule scène est alors créée (deux applications PixiJS
+    // qui s'initialisent en même temps, dont l'une détruite, cassent l'autre).
+    // On ne pousse rien à la scène tant qu'elle n'est pas montée (le parchemin
+    // cuit pendant l'écran de chargement).
+    let desabonner = () => {};
+    let monte = false;
+    const depart = setTimeout(() => {
+      monte = true;
+      void s.monter(hote.current!).then(() => {
+        if (annule) return s.detruire();
+        pousser();
+        desabonner = useJeu.subscribe(pousser);
+        useJeu.setState({ cartePrete: true });
+      });
+    }, 0);
 
     // Touches 1 à 9 : choisir un des Neuf (Maj : l'ajouter au groupe), deux fois : centrer la carte dessus. Tab : le suivant.
     let dernier = { id: '', t: 0 };
@@ -98,6 +110,8 @@ export function Carte() {
       const cible = e.target as HTMLElement;
       if (cible.tagName === 'TEXTAREA' || cible.tagName === 'SELECT' || cible.tagName === 'INPUT') return;
       const j = useJeu.getState();
+      // Pas de raccourci de carte sous un menu (pause, Cour, Mont Destin) ni avant que la carte soit prête.
+      if (j.ecran !== 'jeu' || j.pause || j.cour || !j.cartePrete || useMontDoom.getState().ouvert) return;
       const dispo = j.vue.nazgul.filter((n) => n.disponible);
       let id: string | undefined;
       const chiffre = /^Digit([1-9])$/.exec(e.code);
@@ -125,9 +139,11 @@ export function Carte() {
 
     return () => {
       annule = true;
+      clearTimeout(depart);
       desabonner();
       window.removeEventListener('keydown', clavier);
-      if (s.app.renderer) s.detruire();
+      useJeu.setState({ cartePrete: false });
+      if (monte && s.app.renderer) s.detruire();
     };
   }, []);
 

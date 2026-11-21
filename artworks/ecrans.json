@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "_note": "Artworks des écrans de chargement. Les images de ce dossier ne sont pas versionnées (usage privé) ; ce manifeste, lui, l'est, pour garder les crédits. Une image présente mais absente du manifeste s'affiche quand même, sans crédit.",
+  "_format": {
+    "fichier": "Chemin relatif à artworks/.",
+    "titre": "Ce que montre l'image (affiché en légende).",
+    "artiste": "Auteur, s'il est connu ; null sinon.",
+    "source": "D'où vient l'image (lien ou description).",
+    "licence": "Droits connus. « usage privé » pour une image protégée gardée hors du dépôt.",
+    "cadrage": "Optionnel : position CSS de l'image dans son cadre (object-position), par défaut « center ».",
+    "fond": "Optionnel : une image large affichée nette derrière le cadre (sinon, la même image floutée). Elle ne sert alors que de fond."
+  },
+  "ecrans": [
+    {
+      "fichier": "3d/rendus/barad_dur_portrait.webp",
+      "titre": "Barad-dûr, la Tour et l'Œil",
+      "artiste": "Blender, pour le jeu",
+      "source": "Rendu Cycles du script artworks/3d/barad_dur.py",
+      "licence": "Création originale du projet, versionnée",
+      "cadrage": "center 40%",
+      "fond": "3d/fonds/barad_dur_paysage.webp"
+    },
+    {
+      "fichier": "barad_dur_bielaczyc.webp",
+      "titre": "Barad-dûr",
+      "artiste": "Michael Bielaczyc",
+      "source": "Fournie par Lucas (nom de fichier d'origine : Barad-Dur-by-Michael-Bielaczyc.webp)",
+      "licence": "Œuvre protégée, usage privé uniquement",
+      "cadrage": "center top"
+    },
+    {
+      "fichier": "oeil_barad_dur.webp",
+      "titre": "L'Œil au-dessus de Barad-dûr",
+      "artiste": null,
+      "source": "Fournie par Lucas (oeil_barad_dur.webp)",
+      "licence": "Auteur inconnu, usage privé uniquement",
+      "cadrage": "center top"
+    },
+    {
+      "fichier": "sauron_armure.webp",
+      "titre": "Sauron en armure devant le Mordor en feu",
+      "artiste": null,
+      "source": "Fournie par Lucas (sauron_armure.webp)",
+      "licence": "Auteur inconnu, usage privé uniquement",
+      "cadrage": "center 30%"
+    },
+    {
+      "fichier": "sauron_comics.webp",
+      "titre": "Sauron devant la Tour",
+      "artiste": null,
+      "source": "Fournie par Lucas (sauron_comics.webp)",
+      "licence": "Auteur inconnu, usage privé uniquement",
+      "cadrage": "center 20%"
+    }
+  ]
+}

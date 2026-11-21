@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleAudio, courbeSaturation, decomposer, LEXIQUE, minuterSousTitre, MUSIQUE, pisteAmbiance, REPLIQUES, repliqueFixe, repliquePour, verifierBanqueVoix, verifierLigne } from '../src';
+import { cleAudio, courbeSaturation, decomposer, EFFETS, LEXIQUE, minuterSousTitre, MUSIQUE, pisteAmbiance, REPLIQUES, repliqueFixe, repliquePour, verifierBanqueVoix, verifierEffets, verifierLigne, vitesseEffet } from '../src';
 import type { Replique } from '../src';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -63,7 +63,7 @@ describe('Banque audio', () => {
   });
 
   it('signale une incohérence (fichier mal nommé, Noir Parler hors lexique, durée absente)', () => {
-    const r: Replique = { id: 'x', registre: 'fer', methode: 'noir_parler', lu: '', noir_parler: 'Ash elendil', sous_titre: 'x', fichier: 'voix/y.mp3', statut: 'enregistre', duree_s: null, reperes: null };
+    const r: Replique = { id: 'x', registre: 'fer', methode: 'noir_parler', lu: '', noir_parler: 'Ash elendil', sous_titre: 'x', intention: 'x', seance: 1, fichier: 'voix/y.mp3', statut: 'enregistre', duree_s: null, reperes: null };
     expect(verifierBanqueVoix([r]).length).toBe(3);
   });
 
@@ -77,8 +77,37 @@ describe('Banque audio', () => {
 
   it('la musique est rangée par ambiance ; une ambiance vide reste silencieuse', () => {
     expect(Object.keys(MUSIQUE.ambiances).sort()).toEqual(['barad_dur', 'defaite', 'duel', 'traque', 'victoire', 'voix']);
-    const m = { version: 1 as const, ambiances: { ...MUSIQUE.ambiances, duel: [{ fichier: 'duel/a.mp3', boucle: true, volume_db: 0, fondu_s: 2 }] } };
+    const m = { version: 1 as const, ambiances: { ...MUSIQUE.ambiances, victoire: [], duel: [{ fichier: 'duel/a.mp3', boucle: true, volume_db: 0, fondu_s: 2 }] } };
     expect(pisteAmbiance('duel', 5, m)?.fichier).toBe('duel/a.mp3');
     expect(pisteAmbiance('victoire', 0, m)).toBeUndefined();
+  });
+});
+
+describe('Musique libre et effets', () => {
+  const audio = fileURLToPath(new URL('..', import.meta.url));
+
+  it('chaque ambiance a sa piste originale, présente sur le disque', () => {
+    for (const [ambiance, pistes] of Object.entries(MUSIQUE.ambiances)) {
+      expect(pistes.length, ambiance).toBeGreaterThan(0);
+      for (const p of pistes) expect(existsSync(`${audio}musique/${p.fichier}`), p.fichier).toBe(true);
+    }
+  });
+
+  it('le manifeste des effets est cohérent et ses fichiers existent', () => {
+    expect(verifierEffets(EFFETS, (f) => existsSync(`${audio}effets/${f}`))).toEqual([]);
+    expect(Object.keys(EFFETS.fonds).sort()).toEqual(['oeil', 'ombre']);
+  });
+
+  it('la variation de vitesse reste dans ses bornes', () => {
+    const e = { variation: 0.05 };
+    expect(vitesseEffet(e, 0.5)).toBeCloseTo(1);
+    expect(vitesseEffet(e, 0)).toBeCloseTo(0.95);
+    expect(vitesseEffet(e, 1)).toBeCloseTo(1.05);
+    expect(vitesseEffet(e, 7)).toBeCloseTo(1.05);
+  });
+
+  it('signale un effet mal décrit', () => {
+    const m = { ...EFFETS, effets: { ...EFFETS.effets, ui_clic: { fichier: '', volume_db: 20, variation: 2, intervalle_s: -1 } } };
+    expect(verifierEffets(m).length).toBe(4);
   });
 });

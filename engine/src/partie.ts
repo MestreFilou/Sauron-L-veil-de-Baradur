@@ -1,10 +1,14 @@
-import { etatInitial, nazgulDisponibles } from './etat';
+import { etatInitial, evenement, nazgulDisponibles } from './etat';
 import type { Monde } from './monde';
 import { indexerMonde, nazgulDef, personnage, region } from './monde';
 import { poserOeil } from './oeil';
+import { chantierCeTour, coutOuvrage, niveauOuvrage, NOMS_OUVRAGES } from './ouvrages';
 import { cloner } from './outils';
 import { REGLES } from './regles';
 import { recoitOrdres } from './signal';
+import { appliquerAffectations, validerAffectation } from './affectations';
+import { coutGeste, empechementCapture, validerGeste } from './cachots';
+import { coutDecision, validerDecision } from './decisions';
 import { aube, crepuscule, estActionNazgul, nuit, phaseMurmures, rngPhase } from './tour';
 import type { Action, DonneesMonde, EtatJeu, Ordre } from './types';
 import { ErreurRegle } from './types';
@@ -41,6 +45,12 @@ export function coutOrdre(etat: EtatJeu, o: Ordre): { pa: number; essence: numbe
       return { pa: REGLES.agent.pa, essence: 0 };
     case 'corruption':
       return { pa: REGLES.corruption.pa, essence: REGLES.corruption.essence };
+    case 'nazgul_capturer':
+      return { pa: REGLES.cachots.capture.pa, essence: 0 };
+    case 'cachot':
+      return coutGeste(o.geste);
+    case 'decision':
+      return coutDecision(o.decision);
   }
 }
 
@@ -55,6 +65,9 @@ export function essenceRestante(etat: EtatJeu): number {
 /** Lève une ErreurRegle si l'ordre est impossible ; ne modifie rien. */
 export function validerOrdre(monde: Monde, etat: EtatJeu, o: Ordre): void {
   if (etat.phase !== 'ordres') throw new ErreurRegle('Les ordres se donnent après les Murmures.');
+  // Conditions propres aux cachots et aux décisions d'abord : elles disent mieux ce qui manque que le coût.
+  if (o.type === 'cachot') validerGeste(monde, etat, o.geste, o.pnj);
+  if (o.type === 'decision') validerDecision(monde, etat, o.decision);
   const cout = coutOrdre(etat, o);
   if (cout.pa > paRestants(etat)) throw new ErreurRegle(`Il ne reste que ${paRestants(etat)} PA (il en faut ${cout.pa}).`);
   if (cout.essence > essenceRestante(etat)) throw new ErreurRegle(`Il faut ${cout.essence} Essence (il en reste ${essenceRestante(etat)}).`);
@@ -80,6 +93,15 @@ export function validerOrdre(monde: Monde, etat: EtatJeu, o: Ordre): void {
       }
       if (o.type === 'nazgul_fleau' && n.posture !== 'ombre_ailee') throw new ErreurRegle('Le Fléau demande les montures ailées (Acte II).');
       if (o.type === 'nazgul_interroger') personnage(monde, o.pnj);
+      if (o.type === 'nazgul_capturer') {
+        // Un PNJ ne se capture qu'une fois par tour, et seulement s'il est là au début du tour.
+        const raison = empechementCapture(monde, etat, o.nazgul, o.pnj);
+        if (raison) throw new ErreurRegle(raison);
+        if (etat.ordres.some((x) => x.type === 'nazgul_capturer' && x.pnj === o.pnj)) throw new ErreurRegle(`${personnage(monde, o.pnj).nom} est déjà promis aux cachots.`);
+        if (etat.ordres.some((x) => x.type === 'nazgul_deplacer' && x.nazgul === o.nazgul && x.destination !== n.region)) {
+          throw new ErreurRegle(`${def.nom} chevauche ce tour : il ne peut enlever que quelqu’un qui se tient près de lui.`);
+        }
+      }
     }
     return;
   }
@@ -102,6 +124,7 @@ export function validerOrdre(monde: Monde, etat: EtatJeu, o: Ordre): void {
     if (etat.personnages[o.pnj]!.agent) throw new ErreurRegle(`${personnage(monde, o.pnj).nom} sert déjà la Tour.`);
     return;
   }
+  if (o.type === 'cachot' || o.type === 'decision') return;
   if (o.type === 'corruption') {
     region(monde, o.region);
     if (etat.regions[o.region]!.corrompue) throw new ErreurRegle(`${region(monde, o.region).nom} est déjà Corrompue.`);
@@ -125,6 +148,7 @@ export function appliquer(monde: Monde, etatEntree: EtatJeu, action: Action): Et
       if (etat.phase !== 'oeil') throw new ErreurRegle('L’Œil s’est déjà posé ce tour.');
       poserOeil(monde, etat, action.cible, action.approche, rngPhase(etat, 'oeil'));
       phaseMurmures(monde, etat);
+      appliquerAffectations(monde, etat, (o) => validerOrdre(monde, etat, o));
       return etat;
     }
     case 'rituel_forme': {
@@ -137,6 +161,24 @@ export function appliquer(monde: Monde, etatEntree: EtatJeu, action: Action): Et
       etat.jauges.pa = 0;
       etat.rituel = true;
       phaseMurmures(monde, etat);
+      appliquerAffectations(monde, etat, (o) => validerOrdre(monde, etat, o));
+      return etat;
+    }
+    case 'batir_ouvrage': {
+      const def = REGLES.ouvrages[action.ouvrage];
+      if (!def) throw new ErreurRegle('Ouvrage inconnu.');
+      const cout = coutOuvrage(etat, action.ouvrage);
+      if (cout === null) throw new ErreurRegle('Cet ouvrage est achevé.');
+      if (chantierCeTour(etat)) throw new ErreurRegle('Les esclaves de l’Orodruin ne tiennent qu’un chantier par tour.');
+      const reste = essenceRestante(etat);
+      if (cout > reste) throw new ErreurRegle(`Le chantier demande ${cout} Essence (il en reste ${reste}).`);
+      const niveau = niveauOuvrage(etat, action.ouvrage) + 1;
+      etat.jauges.essence -= cout;
+      etat.ouvrages = { ...etat.ouvrages, [action.ouvrage]: niveau };
+      etat.dernierChantier = etat.tour;
+      evenement(etat, 'ouvrage', `Chantier achevé au Mont Destin : ${NOMS_OUVRAGES[action.ouvrage]}, niveau ${niveau}.`, {
+        donnees: { ouvrage: action.ouvrage, niveau, cout },
+      });
       return etat;
     }
     case 'classer_murmure': {
@@ -155,6 +197,13 @@ export function appliquer(monde: Monde, etatEntree: EtatJeu, action: Action): Et
     case 'annuler_ordre': {
       if (etat.phase !== 'ordres') throw new ErreurRegle('Aucun ordre à annuler.');
       etat.ordres.splice(action.index, 1);
+      return etat;
+    }
+    case 'affecter': {
+      validerAffectation(monde, etat, action.nazgul, action.affectation);
+      etat.nazgul[action.nazgul]!.affectation = action.affectation;
+      // Pendant les ordres, la nouvelle mission prend effet tout de suite si le Nazgûl n'a encore rien reçu.
+      appliquerAffectations(monde, etat, (o) => validerOrdre(monde, etat, o), action.nazgul);
       return etat;
     }
     case 'fin_des_ordres': {

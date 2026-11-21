@@ -156,7 +156,7 @@ export class SceneCarte {
 
     // les polices doivent être là avant de cuire les étiquettes
     await Promise.race([
-      Promise.all(['italic 13px "IM Fell English"', '13px "IM Fell English"', '600 14px Cinzel', '14px Cinzel'].map((f) => document.fonts.load(f))),
+      Promise.all(['italic 13px Fondamento', '13px Fondamento', '700 14px Almendra', '14px Almendra'].map((f) => document.fonts.load(f))),
       new Promise((r) => setTimeout(r, 2500)),
     ]);
 
@@ -336,7 +336,7 @@ export class SceneCarte {
     });
     window.addEventListener('mouseup', () => {
       glisse = null;
-      cv.style.cursor = 'crosshair';
+      cv.style.cursor = '';
     });
     cv.addEventListener('mousemove', (e) => {
       const w = this.versMonde(e.clientX, e.clientY);
@@ -359,7 +359,7 @@ export class SceneCarte {
       } else if (actif()) {
         const pion = this.pions.sous(w.x, w.y, this.tolerance());
         this.pions.survoler(pion, this.regionEn(w.x, w.y));
-        cv.style.cursor = pion ? 'pointer' : 'crosshair';
+        cv.style.cursor = pion ? 'var(--curseur-anneau-feu)' : '';
       }
       this.souris = this.borner(w);
     });

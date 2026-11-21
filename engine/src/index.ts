@@ -16,6 +16,11 @@ export { profilVerite, nombreMurmures, texteFait, classementJuste } from './murm
 export { estIsole, forceSignal } from './signal';
 export { estimerPiste } from './piste';
 export type { EstimationPiste } from './piste';
+export { OUVRAGES, NOMS_OUVRAGES, niveauOuvrage, niveauMaxOuvrage, coutOuvrage, chantierCeTour } from './ouvrages';
 export { vueJoueur } from './vue';
 export type { VueJoueur } from './vue';
 export { sauvegarder, charger } from './sauvegarde';
+export { LIBELLES_AFFECTATION, ordresAffectation, regionVisee } from './affectations';
+export { empechementCapture, coutGeste } from './cachots';
+export { DECISIONS, coutDecision, rechargeDecision } from './decisions';
+export type { Condition, DecisionDef } from './decisions';
