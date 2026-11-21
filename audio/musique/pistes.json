@@ -1,19 +1,74 @@
 {
  "version": 1,
- "_note": "Musique par ambiance (mécaniques 10.3 bis). Ce dossier est remplaçable : changer de musique = remplacer les fichiers et ce manifeste, sans toucher au code. Les fichiers audio de ce dossier ne sont pas versionnés.",
+ "_note": "Musique par ambiance (mécaniques 10.3 bis). Ce dossier est remplaçable : changer de musique = remplacer les fichiers et ce manifeste, sans toucher au code. Les pistes de libre/ sont des créations originales du projet (audio/outils/generer_sons/), versionnées ; tout autre fichier audio de ce dossier reste hors de git.",
  "_format": {
   "fichier": "Chemin relatif à audio/musique/.",
   "titre": "Pour mémoire (crédits, sélection).",
   "boucle": "true : la piste boucle tant que l’ambiance dure.",
   "volume_db": "Gain appliqué à la lecture (0 = tel quel).",
-  "fondu_s": "Fondu enchaîné en entrée et en sortie."
+  "fondu_s": "Fondu enchaîné en entrée et en sortie.",
+  "sans_coupure": "true : décodée en mémoire et bouclée sans aucun blanc (pistes courtes faites pour boucler)."
  },
  "ambiances": {
-  "barad_dur": [],
-  "traque": [],
-  "voix": [],
-  "duel": [],
-  "victoire": [],
-  "defaite": []
+  "barad_dur": [
+   {
+    "fichier": "libre/barad_dur.mp3",
+    "titre": "La Tour veille (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": 0,
+    "fondu_s": 3,
+    "sans_coupure": true
+   }
+  ],
+  "traque": [
+   {
+    "fichier": "libre/traque.mp3",
+    "titre": "Sur la piste (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": 0,
+    "fondu_s": 2,
+    "sans_coupure": true
+   }
+  ],
+  "voix": [
+   {
+    "fichier": "libre/voix.mp3",
+    "titre": "La Voix dans la nuit (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": -1,
+    "fondu_s": 3,
+    "sans_coupure": true
+   }
+  ],
+  "duel": [
+   {
+    "fichier": "libre/duel.mp3",
+    "titre": "Deux volontés (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": 0,
+    "fondu_s": 2,
+    "sans_coupure": true
+   }
+  ],
+  "victoire": [
+   {
+    "fichier": "libre/victoire.mp3",
+    "titre": "L’Ombre s’étend (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": 0,
+    "fondu_s": 2,
+    "sans_coupure": true
+   }
+  ],
+  "defaite": [
+   {
+    "fichier": "libre/defaite.mp3",
+    "titre": "Le vent tourne (originale, générée par synthèse)",
+    "boucle": true,
+    "volume_db": -1,
+    "fondu_s": 3,
+    "sans_coupure": true
+   }
+  ]
  }
 }

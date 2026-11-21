@@ -72,6 +72,7 @@ export function Options({ onFermer }: { onFermer: () => void }) {
         <Curseur nom="Général" cle="general" />
         <Curseur nom="Musique" cle="musique" />
         <Curseur nom="Voix" cle="voix" />
+        <Curseur nom="Effets" cle="effets" />
         <Case nom="Couper le son (M)" cle="coupe" />
         <div className="section">Lecture</div>
         <Case nom="Sous-titres" cle="sousTitres" />
@@ -260,7 +261,7 @@ export function Credits({ onFermer }: { onFermer: () => void }) {
       <div className="section">Polices</div>
       <p>Uncial Antiqua (Astigmatic), Almendra (Ana Sanfelippo), Fondamento (Astigmatic), sous licence SIL Open Font License. Noir Parler, écriture dessinée pour le jeu, dans le domaine public (CC0).</p>
       <div className="section">Voix et musique</div>
-      <p>Voix de Sauron : Lucas, traitées par la chaîne « légion ». Musique : pistes choisies par le joueur dans audio/musique/, pour un usage privé.</p>
+      <p>Voix de Sauron : Lucas, traitées par la chaîne « légion ». Musique et effets : six pistes originales et des bruitages créés par synthèse pour le jeu (audio/musique/libre/, audio/effets/), auxquels le joueur peut ajouter ses propres pistes dans audio/musique/, pour un usage privé.</p>
     </Fenetre>
   );
 }

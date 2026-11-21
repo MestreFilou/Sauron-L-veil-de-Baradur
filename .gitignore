@@ -13,6 +13,10 @@ audio/musique/**/*.wav
 audio/musique/**/*.flac
 audio/musique/**/*.m4a
 audio/musique/**/*.opus
+# … sauf les pistes originales générées par synthèse (audio/outils/generer_sons/)
+!audio/musique/libre/
+!audio/musique/libre/*.mp3
+__pycache__/
 
 # Artworks des écrans de chargement : usage privé, jamais versionnés (artworks/LISEZMOI.md)
 artworks/**/*.webp
