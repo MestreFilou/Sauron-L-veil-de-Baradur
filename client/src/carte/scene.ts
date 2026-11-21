@@ -22,6 +22,8 @@ import {
 } from 'pixi.js';
 import { OEIL_Y, regard } from '../bus';
 import { CINZ, FELL, lerp, toile } from './bruit';
+import type { OutilsPions } from './pions';
+import { Pions } from './pions';
 import { cuireBrume, cuireHalo, cuireLisiere, cuireParchemin, cuireSpectral, H, S, SiteCorruption, W } from './parchemin';
 
 /** Demi-axes de l'ellipse du Regard, en unités monde. */
@@ -32,6 +34,10 @@ export interface EtatScene {
   vue: VueJoueur;
   mode: 'oeil' | 'ombre';
   nazgulChoisi: string | null;
+  /** Les autres Nazgûl choisis avec Maj+clic. */
+  groupe: string[];
+  /** Destinations lointaines des marches au long cours. */
+  caps: Record<string, string>;
   regionChoisie: string | null;
   murmureSurvole: string | null;
 }
@@ -39,6 +45,14 @@ export interface EtatScene {
 export interface Rappels {
   /** Clic sur la carte (hors glisser) : région la plus proche, si elle est assez près. */
   clic(region: string | null): void;
+  /** Clic sur un pion des Neuf (`ajouter` : Maj enfoncée). */
+  clicPion(id: string, ajouter: boolean): void;
+  /** Clic droit : marche vers la région, comme dans un jeu de stratégie. */
+  clicDroit(region: string | null): void;
+  /** Le pion peut-il être saisi pour un glisser-déposer ? */
+  peutSaisir(id: string): boolean;
+  /** Pion lâché sur une région. */
+  deposer(id: string, region: string | null): void;
 }
 
 /** Ancre de la fiche de région, en pixels d'écran (lue par le panneau React). */
@@ -98,7 +112,7 @@ export class SceneCarte {
   private pointilles = new Graphics();
   private ressenti = new Graphics();
   private sceaux = new Container();
-  private jetons = new Container();
+  private pions: Pions;
   private figures = new Container();
   private revelations = new Container();
   private brumes: Sprite[] = [];
@@ -121,9 +135,10 @@ export class SceneCarte {
   private etat: EtatScene | null = null;
   private pretes = false;
 
-  constructor(geo: Geographie, rappels: Rappels) {
+  constructor(geo: Geographie, rappels: Rappels, outils: OutilsPions) {
     this.geo = geo;
     this.rappels = rappels;
+    this.pions = new Pions(geo, outils);
   }
 
   async monter(hote: HTMLElement) {
@@ -199,7 +214,7 @@ export class SceneCarte {
     this.cone.anchor.set(0, 0.5);
     this.cone.blendMode = 'screen';
     this.rayons.blendMode = 'add';
-    this.physique.addChild(this.lisiere, this.gardeLumiere, this.pointilles, this.cone, this.rayons, this.revelations, this.figures, this.sceaux, this.jetons, this.ressenti);
+    this.physique.addChild(this.lisiere, this.gardeLumiere, this.pointilles, this.cone, this.rayons, this.revelations, this.figures, this.sceaux, this.pions.calque, this.ressenti);
 
     // sites de corruption, un par région jouable
     for (const [id, r] of Object.entries(this.geo.regions)) {
@@ -278,33 +293,77 @@ export class SceneCarte {
     y: Math.max(ERY * 1.3, Math.min(H - ERY * 1.3, p.y)),
   });
 
+  /** Centre la caméra sur un point du monde (double appui sur la touche d'un Nazgûl). */
+  centrerSur(x: number, y: number) {
+    this.cam.x = x;
+    this.cam.y = y;
+    this.placer();
+  }
+
+  /** Position affichée du pion d'un Nazgûl, en unités monde. */
+  positionPion(id: string) {
+    return this.pions.position(id);
+  }
+
+  private regionEn(x: number, y: number): string | null {
+    const r = regionSous(this.geo, x, y);
+    return r.distance < 2.5 ? r.id : null;
+  }
+
+  /** Tolérance de saisie d'un pion : au moins 16 px à l'écran. */
+  private tolerance = () => Math.max(14, 16 / this.sc);
+
   private brancher(cv: HTMLCanvasElement) {
-    let glisse: { x: number; y: number; cx: number; cy: number } | null = null;
+    let glisse: { x: number; y: number; cx: number; cy: number; pion: string | null } | null = null;
     let deplace = false;
+    let tenu = false;
+    const actif = () => this.etat?.mode !== 'ombre';
     cv.addEventListener('mousedown', (e) => {
-      glisse = { x: e.clientX, y: e.clientY, cx: this.cam.x, cy: this.cam.y };
+      if (e.button !== 0) return;
+      const w = this.versMonde(e.clientX, e.clientY);
+      const pion = actif() ? this.pions.sous(w.x, w.y, this.tolerance()) : null;
+      glisse = { x: e.clientX, y: e.clientY, cx: this.cam.x, cy: this.cam.y, pion: pion && this.rappels.peutSaisir(pion) ? pion : null };
       deplace = false;
+      tenu = false;
+    });
+    // Pion lâché : déposé avant que le glisser ne soit oublié (écouteur enregistré en premier).
+    window.addEventListener('mouseup', (e) => {
+      if (!glisse?.pion || !tenu) return;
+      const w = this.versMonde(e.clientX, e.clientY);
+      this.pions.tenir(null);
+      this.rappels.deposer(glisse.pion, this.regionEn(w.x, w.y));
+      tenu = false;
     });
     window.addEventListener('mouseup', () => {
       glisse = null;
       cv.style.cursor = '';
     });
     cv.addEventListener('mousemove', (e) => {
+      const w = this.versMonde(e.clientX, e.clientY);
       if (glisse) {
         const dx = e.clientX - glisse.x,
           dy = e.clientY - glisse.y;
         if (Math.hypot(dx, dy) > 5) {
           deplace = true;
+          tenu = Boolean(glisse.pion);
           cv.style.cursor = 'grabbing';
         }
-        if (deplace) {
+        if (tenu) {
+          // On emporte le pion : il suit la souris, l'aperçu montre la marche.
+          this.pions.tenir({ id: glisse.pion!, x: w.x, y: w.y, region: this.regionEn(w.x, w.y) });
+        } else if (deplace) {
           this.cam.x = glisse.cx - dx / this.sc;
           this.cam.y = glisse.cy - dy / this.sc;
           this.placer();
         }
+      } else if (actif()) {
+        const pion = this.pions.sous(w.x, w.y, this.tolerance());
+        this.pions.survoler(pion, this.regionEn(w.x, w.y));
+        cv.style.cursor = pion ? 'var(--curseur-anneau-feu)' : '';
       }
-      this.souris = this.borner(this.versMonde(e.clientX, e.clientY));
+      this.souris = this.borner(w);
     });
+    cv.addEventListener('mouseleave', () => this.pions.survoler(null, null));
     cv.addEventListener(
       'wheel',
       (e) => {
@@ -322,8 +381,14 @@ export class SceneCarte {
     cv.addEventListener('click', (e) => {
       if (deplace) return;
       const w = this.versMonde(e.clientX, e.clientY);
-      const r = regionSous(this.geo, w.x, w.y);
-      this.rappels.clic(r.distance < 2.5 ? r.id : null);
+      const pion = actif() ? this.pions.sous(w.x, w.y, this.tolerance()) : null;
+      if (pion) this.rappels.clicPion(pion, e.shiftKey);
+      else this.rappels.clic(this.regionEn(w.x, w.y));
+    });
+    cv.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const w = this.versMonde(e.clientX, e.clientY);
+      this.rappels.clicDroit(this.regionEn(w.x, w.y));
     });
   }
 
@@ -366,57 +431,10 @@ export class SceneCarte {
     this.verrou = c ? { ...this.borner(c), garde: Boolean(oeil?.repousse && !e.regionChoisie) } : null;
     if (c && oeil && !e.regionChoisie) this.felt = 1;
 
-    this.dessinerJetons(v, e.nazgulChoisi);
+    this.pions.maj({ vue: v, choisis: e.nazgulChoisi ? [e.nazgulChoisi, ...e.groupe] : [], caps: e.caps });
     this.dessinerSceaux(v, e.murmureSurvole);
     this.dessinerFigures(v);
     this.dessinerOmbre(v, e.nazgulChoisi);
-  }
-
-  private dessinerJetons(v: VueJoueur, choisi: string | null) {
-    this.jetons.removeChildren().forEach((c) => c.destroy({ children: true }));
-    const parRegion = new Map<string, number>();
-    for (const n of v.nazgul) {
-      if (!n.disponible) continue;
-      const c = this.centre(n.region);
-      if (!c) continue;
-      const k = parRegion.get(n.region) ?? 0;
-      parRegion.set(n.region, k + 1);
-      const an = k * 2.39996 - 0.6,
-        rr = k ? 14 + 5 * Math.sqrt(k) : 0;
-      const j = new Container();
-      j.position.set(c.x + Math.cos(an) * rr, c.y + 14 + Math.sin(an) * rr * 0.7);
-      j.label = n.id;
-      const g = new Graphics();
-      const sel = n.id === choisi;
-      if (sel) g.circle(0, 0, 15).stroke({ width: 1.2, color: 0xffdcaa, alpha: 0.9 });
-      g.circle(0, 0, 9).fill(0x1a1816).stroke({ width: 1.2, color: 0xa17c48 });
-      g.circle(-2.5, -2.5, 5).fill({ color: 0x4a443e, alpha: 0.6 });
-      if (n.posture === 'traque') {
-        for (let i = 0; i < 12; i++) {
-          const a = (i / 12) * Math.PI * 2;
-          g.circle(Math.cos(a) * 12, Math.sin(a) * 12, 0.7).fill({ color: 0xc9a46a, alpha: 0.6 });
-        }
-      }
-      if (n.roiSorcier) {
-        g.poly([-5, -1, -3.4, -5, -1.6, -2, 0, -6, 1.6, -2, 3.4, -5, 5, -1, 4, 4.5, -4, 4.5]).fill(0xd6b47c);
-      } else {
-        g.moveTo(0, -6).bezierCurveTo(-4, -6, -4.5, -1, -5, 5.5).lineTo(5, 5.5).bezierCurveTo(4.5, -1, 4, -6, 0, -6).closePath().fill(0xd6b47c);
-        g.ellipse(0, -1.5, 1.9, 2.4).fill(0x0a0908);
-      }
-      j.addChild(g);
-      if (n.roiSorcier || sel || n.nom.startsWith('Khamûl')) {
-        const t = new Text({
-          text: n.roiSorcier ? 'Le Roi-Sorcier' : n.nom,
-          style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: 0xf0dfc0 },
-          resolution: 3,
-        });
-        t.anchor.set(0.5, 0);
-        t.position.set(0, 11);
-        t.alpha = 0.95;
-        j.addChild(t);
-      }
-      this.jetons.addChild(j);
-    }
   }
 
   private dessinerSceaux(v: VueJoueur, survole: string | null) {
@@ -652,6 +670,7 @@ export class SceneCarte {
           a = 0.05 + 0.05 * Math.sin(t * 0.003 + k);
         this.rayons.moveTo(E.x, E.y).lineTo(f.x + nx * ER * o, f.y + ny * ERY * o).stroke({ width: 1 + (k % 3), color: 0xff7832, alpha: Math.max(0, a) });
       }
+      this.pions.image(t, dt);
       this.ressenti.clear();
       if (this.felt > 0) {
         const r = ER * (1.05 + (1 - this.felt) * 0.5);
