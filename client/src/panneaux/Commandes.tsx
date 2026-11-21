@@ -98,7 +98,9 @@ export function Modes() {
           </>
         ) : (
           <>
-            <kbd>Clic</kbd> choisir une région · <kbd>Échap</kbd> relâcher
+            <kbd>Clic</kbd> un pion ou <kbd>1</kbd>–<kbd>9</kbd> choisir un des Neuf · <kbd>Maj</kbd> en ajouter
+            <br />
+            <kbd>Clic droit</kbd> ou glisser le pion : marcher · <kbd>Échap</kbd> relâcher
           </>
         )}
         <br />
