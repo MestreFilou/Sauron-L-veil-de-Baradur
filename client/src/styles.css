@@ -90,7 +90,7 @@ body.ombre .btn.on{border-color:var(--spectre);color:#eaf6ff;box-shadow:inset 0 
 .trace .bar i{position:absolute;left:0;top:0;bottom:0;width:62%;background:linear-gradient(90deg,#7a5a1c,var(--anneau));box-shadow:0 0 10px var(--anneau)}
 #rlist{overflow:auto;padding:6px 0 10px;flex:1}
 .rum{padding:14px 16px 14px 18px;border-bottom:1px solid rgba(140,106,63,.12);border-left:2px solid transparent;cursor:var(--curseur-anneau);transition:background .25s,border-color .25s;position:relative}
-.rum:hover{background:linear-gradient(90deg,rgba(140,106,63,.12),transparent);border-left-color:var(--bronze-clair)}
+.rum:hover,.rum.vise{background:linear-gradient(90deg,rgba(140,106,63,.12),transparent);border-left-color:var(--bronze-clair)}
 body.ombre .rum:hover{background:linear-gradient(90deg,rgba(110,163,199,.1),transparent);border-left-color:var(--spectre)}
 .rum .src{font-family:var(--police-titre);font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#d8b47a;line-height:1.25;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .rum .src em{font-family:var(--police-texte);font-style:italic;text-transform:none;letter-spacing:0;font-size:13.5px;color:#b9a789;white-space:nowrap}
@@ -100,7 +100,7 @@ body.ombre .rum:hover{background:linear-gradient(90deg,rgba(110,163,199,.1),tran
 .rum .txt .g{opacity:.45;color:#cdb89a}
 .rum .txt .blot{color:rgba(243,231,208,.42);background:radial-gradient(ellipse at 50% 55%,rgba(5,3,2,.9) 30%,rgba(5,3,2,.0) 75%);text-shadow:none}
 .rum .txt span{transition:opacity .25s,color .25s}
-.rum:hover .txt .f,.rum:hover .txt .g{opacity:1;color:inherit}
+.rum:hover .txt .f,.rum:hover .txt .g,.rum.vise .txt .f,.rum.vise .txt .g{opacity:1;color:inherit}
 .rum:hover .txt .blot{color:rgba(243,231,208,.9)}
 .rum .rel{display:flex;gap:3px;margin-top:9px;align-items:center;font-size:13.5px;font-style:italic;color:var(--texte-2)}
 .rum .rel b{width:10px;height:3px;background:#4a3a2a}

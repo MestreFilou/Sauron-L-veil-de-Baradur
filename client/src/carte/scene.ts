@@ -11,7 +11,6 @@ import type { Geographie } from '@sauron/world';
 import { regionSous } from '@sauron/world';
 import {
   Application,
-  BlurFilter,
   ColorMatrixFilter,
   Container,
   Graphics,
@@ -19,10 +18,16 @@ import {
   Sprite,
   Text,
   Texture,
+  TilingSprite,
 } from 'pixi.js';
 import { OEIL_Y, regard } from '../bus';
 import { CINZ, FELL, lerp, toile } from './bruit';
-import { cuireBrume, cuireHalo, cuireLisiere, cuireParchemin, cuireSpectral, H, S, SiteCorruption, W } from './parchemin';
+import type { OutilsPions } from './pions';
+import { Pions } from './pions';
+import type { EtatSceau, Figure } from './encre';
+import { ANCRE_FIGURINE, cuireBrumePointillee, cuireCercleEncre, cuireFigurine, cuireHachures, cuireMasqueRegard, cuireSceau, figurePour, HAUTEUR_FIGURINE } from './encre';
+import { Vie } from './vie';
+import { cuireHalo, cuireParchemin, cuireSpectral, H, S, SiteCorruption, W } from './parchemin';
 
 /** Demi-axes de l'ellipse du Regard, en unités monde. */
 export const ER = 118;
@@ -32,6 +37,10 @@ export interface EtatScene {
   vue: VueJoueur;
   mode: 'oeil' | 'ombre';
   nazgulChoisi: string | null;
+  /** Les autres Nazgûl choisis avec Maj+clic. */
+  groupe: string[];
+  /** Destinations lointaines des marches au long cours. */
+  caps: Record<string, string>;
   regionChoisie: string | null;
   murmureSurvole: string | null;
 }
@@ -39,6 +48,18 @@ export interface EtatScene {
 export interface Rappels {
   /** Clic sur la carte (hors glisser) : région la plus proche, si elle est assez près. */
   clic(region: string | null): void;
+  /** Clic sur un pion des Neuf (`ajouter` : Maj enfoncée). */
+  clicPion(id: string, ajouter: boolean): void;
+  /** Clic droit : marche vers la région, comme dans un jeu de stratégie. */
+  clicDroit(region: string | null): void;
+  /** Le pion peut-il être saisi pour un glisser-déposer ? */
+  peutSaisir(id: string): boolean;
+  /** Pion lâché sur une région. */
+  deposer(id: string, region: string | null): void;
+  /** Survol d'un sceau de murmure sur la carte (`null` en sortant). */
+  survolMurmure?(id: string | null): void;
+  /** Clic sur un sceau de murmure. */
+  clicMurmure?(id: string): void;
 }
 
 /** Ancre de la fiche de région, en pixels d'écran (lue par le panneau React). */
@@ -98,7 +119,7 @@ export class SceneCarte {
   private pointilles = new Graphics();
   private ressenti = new Graphics();
   private sceaux = new Container();
-  private jetons = new Container();
+  private pions: Pions;
   private figures = new Container();
   private revelations = new Container();
   private brumes: Sprite[] = [];
@@ -108,6 +129,19 @@ export class SceneCarte {
   private visionRT!: RenderTexture;
   private vision = new Container();
   private texHalo!: Texture;
+  private texSceaux = new Map<string, Texture>();
+  private texFigures = new Map<Figure, Texture>();
+  /** Les sceaux posés : position, et l'instant où ils sont tombés (pour l'animation). */
+  private poses = new Map<string, { x: number; y: number; t0: number; texte: string; entete: string }>();
+  private sceauSurvole: string | null = null;
+  private billet = new Container();
+  private enquete = new Container();
+  private vie!: Vie;
+  private lumiere = new Graphics();
+  private teinteLumiere = { r: 1, g: 1, b: 1, a: 0 };
+  /** Le jour affiché : quand il change, la nuit passe sur la carte avant l'aube. */
+  private tourVu = 0;
+  private nuitJusqua = 0;
 
   // corruption
   private sites = new Map<string, { site: SiteCorruption; tex: Texture; cv: number; cible: number; de: number; t0: number }>();
@@ -121,9 +155,10 @@ export class SceneCarte {
   private etat: EtatScene | null = null;
   private pretes = false;
 
-  constructor(geo: Geographie, rappels: Rappels) {
+  constructor(geo: Geographie, rappels: Rappels, outils: OutilsPions) {
     this.geo = geo;
     this.rappels = rappels;
+    this.pions = new Pions(geo, outils);
   }
 
   async monter(hote: HTMLElement) {
@@ -161,17 +196,21 @@ export class SceneCarte {
     const cm = new ColorMatrixFilter();
     // lerp vers la luminance (45 %), puis assombri et réchauffé, comme buildDim
     cm.matrix = [
-      0.4521, 0.17523, 0.03267, 0, 0.0314,
-      0.081, 0.4893, 0.0297, 0, 0.0157,
-      0.0729, 0.14337, 0.32373, 0, 0.0078,
+      0.6045, 0.1972, 0.0383, 0, 0.012,
+      0.0957, 0.6678, 0.0365, 0, 0.006,
+      0.0861, 0.1691, 0.4648, 0, 0,
       0, 0, 0, 1, 0,
     ];
-    const blur = new BlurFilter({ strength: 2.5, quality: 2 });
-    this.flou.filters = [cm, blur];
+    // Hors du Regard, la carte reste lisible : éteinte et couverte de hachures à la plume, jamais floue.
+    this.flou.filters = [cm];
+    const hachures = new TilingSprite({ texture: Texture.from(cuireHachures()), width: W * 2, height: H * 2 });
+    hachures.scale.set(0.5);
+    hachures.alpha = 0.75;
+    this.flou.addChild(hachures);
     this.physique.addChild(this.flou);
 
-    const brume = Texture.from(cuireBrume());
-    for (const a of [0.4, 0.22]) {
+    const brume = Texture.from(cuireBrumePointillee());
+    for (const a of [0.55, 0.3]) {
       const b = new Sprite(brume);
       b.alpha = a;
       b.width = W * 1.2;
@@ -184,22 +223,27 @@ export class SceneCarte {
     const fondNet = new Sprite(texBase);
     fondNet.scale.set(1 / S);
     this.net.addChild(fondNet, sitesNet);
-    this.masqueRegard = new Sprite(Texture.from(cuireHalo(256, 0.68)));
+    this.masqueRegard = new Sprite(Texture.from(cuireMasqueRegard()));
     this.masqueRegard.anchor.set(0.5);
     this.net.mask = this.masqueRegard;
     this.physique.addChild(this.net, this.masqueRegard);
 
-    this.lisiere = new Sprite(Texture.from(cuireLisiere()));
+    this.lisiere = new Sprite(Texture.from(cuireCercleEncre()));
     this.lisiere.anchor.set(0.5);
-    this.lisiere.blendMode = 'screen';
     this.gardeLumiere = teinte(0xe6f0ff, new Sprite(this.texHalo));
     this.gardeLumiere.anchor.set(0.5);
     this.gardeLumiere.blendMode = 'screen';
     this.cone = new Sprite(Texture.from(cuireCone()));
     this.cone.anchor.set(0, 0.5);
     this.cone.blendMode = 'screen';
+    this.cone.alpha = 0.55;
     this.rayons.blendMode = 'add';
-    this.physique.addChild(this.lisiere, this.gardeLumiere, this.pointilles, this.cone, this.rayons, this.revelations, this.figures, this.sceaux, this.jetons, this.ressenti);
+    this.vie = new Vie(this.geo);
+    this.physique.addChild(this.vie.sol, this.enquete, this.lisiere, this.gardeLumiere, this.pointilles, this.cone, this.rayons, this.revelations, this.figures, this.pions.calque, this.sceaux, this.ressenti, this.vie.ciel, this.lumiere, this.billet);
+    this.lumiere.rect(-50, -50, W + 100, H + 100).fill(0xffffff);
+    this.lumiere.blendMode = 'multiply';
+    this.lumiere.alpha = 0;
+    for (const f of ['nazgul', 'roi', 'hobbit', 'homme', 'rodeur', 'mage', 'elfe'] as Figure[]) this.texFigures.set(f, Texture.from(cuireFigurine(f)));
 
     // sites de corruption, un par région jouable
     for (const [id, r] of Object.entries(this.geo.regions)) {
@@ -278,32 +322,81 @@ export class SceneCarte {
     y: Math.max(ERY * 1.3, Math.min(H - ERY * 1.3, p.y)),
   });
 
+  /** Centre la caméra sur un point du monde (double appui sur la touche d'un Nazgûl). */
+  centrerSur(x: number, y: number) {
+    this.cam.x = x;
+    this.cam.y = y;
+    this.placer();
+  }
+
+  /** Position affichée du pion d'un Nazgûl, en unités monde. */
+  positionPion(id: string) {
+    return this.pions.position(id);
+  }
+
+  private regionEn(x: number, y: number): string | null {
+    const r = regionSous(this.geo, x, y);
+    return r.distance < 2.5 ? r.id : null;
+  }
+
+  /** Tolérance de saisie d'un pion : au moins 16 px à l'écran. */
+  private tolerance = () => Math.max(14, 16 / this.sc);
+
   private brancher(cv: HTMLCanvasElement) {
-    let glisse: { x: number; y: number; cx: number; cy: number } | null = null;
+    let glisse: { x: number; y: number; cx: number; cy: number; pion: string | null } | null = null;
     let deplace = false;
+    let tenu = false;
+    const actif = () => this.etat?.mode !== 'ombre';
     cv.addEventListener('mousedown', (e) => {
-      glisse = { x: e.clientX, y: e.clientY, cx: this.cam.x, cy: this.cam.y };
+      if (e.button !== 0) return;
+      const w = this.versMonde(e.clientX, e.clientY);
+      const pion = actif() ? this.pions.sous(w.x, w.y, this.tolerance()) : null;
+      glisse = { x: e.clientX, y: e.clientY, cx: this.cam.x, cy: this.cam.y, pion: pion && this.rappels.peutSaisir(pion) ? pion : null };
       deplace = false;
+      tenu = false;
+    });
+    // Pion lâché : déposé avant que le glisser ne soit oublié (écouteur enregistré en premier).
+    window.addEventListener('mouseup', (e) => {
+      if (!glisse?.pion || !tenu) return;
+      const w = this.versMonde(e.clientX, e.clientY);
+      this.pions.tenir(null);
+      this.rappels.deposer(glisse.pion, this.regionEn(w.x, w.y));
+      tenu = false;
     });
     window.addEventListener('mouseup', () => {
       glisse = null;
       cv.style.cursor = '';
     });
     cv.addEventListener('mousemove', (e) => {
+      const w = this.versMonde(e.clientX, e.clientY);
       if (glisse) {
         const dx = e.clientX - glisse.x,
           dy = e.clientY - glisse.y;
         if (Math.hypot(dx, dy) > 5) {
           deplace = true;
+          tenu = Boolean(glisse.pion);
           cv.style.cursor = 'grabbing';
         }
-        if (deplace) {
+        if (tenu) {
+          // On emporte le pion : il suit la souris, l'aperçu montre la marche.
+          this.pions.tenir({ id: glisse.pion!, x: w.x, y: w.y, region: this.regionEn(w.x, w.y) });
+        } else if (deplace) {
           this.cam.x = glisse.cx - dx / this.sc;
           this.cam.y = glisse.cy - dy / this.sc;
           this.placer();
         }
+      } else if (actif()) {
+        const sceau = this.sceauSous(w.x, w.y);
+        const pion = sceau ? null : this.pions.sous(w.x, w.y, this.tolerance());
+        this.pions.survoler(pion, this.regionEn(w.x, w.y));
+        this.survolerSceau(sceau);
+        cv.style.cursor = pion || sceau ? 'var(--curseur-anneau-feu)' : '';
       }
-      this.souris = this.borner(this.versMonde(e.clientX, e.clientY));
+      this.souris = this.borner(w);
+    });
+    cv.addEventListener('mouseleave', () => {
+      this.pions.survoler(null, null);
+      this.survolerSceau(null);
     });
     cv.addEventListener(
       'wheel',
@@ -322,8 +415,16 @@ export class SceneCarte {
     cv.addEventListener('click', (e) => {
       if (deplace) return;
       const w = this.versMonde(e.clientX, e.clientY);
-      const r = regionSous(this.geo, w.x, w.y);
-      this.rappels.clic(r.distance < 2.5 ? r.id : null);
+      const sceau = actif() ? this.sceauSous(w.x, w.y) : null;
+      if (sceau && this.rappels.clicMurmure) return this.rappels.clicMurmure(sceau);
+      const pion = actif() ? this.pions.sous(w.x, w.y, this.tolerance()) : null;
+      if (pion) this.rappels.clicPion(pion, e.shiftKey);
+      else this.rappels.clic(this.regionEn(w.x, w.y));
+    });
+    cv.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const w = this.versMonde(e.clientX, e.clientY);
+      this.rappels.clicDroit(this.regionEn(w.x, w.y));
     });
   }
 
@@ -366,117 +467,243 @@ export class SceneCarte {
     this.verrou = c ? { ...this.borner(c), garde: Boolean(oeil?.repousse && !e.regionChoisie) } : null;
     if (c && oeil && !e.regionChoisie) this.felt = 1;
 
-    this.dessinerJetons(v, e.nazgulChoisi);
+    this.pions.maj({ vue: v, choisis: e.nazgulChoisi ? [e.nazgulChoisi, ...e.groupe] : [], caps: e.caps });
     this.dessinerSceaux(v, e.murmureSurvole);
     this.dessinerFigures(v);
+    this.dessinerEnquete(v);
+    // lumière du jour : l'aube est fraîche, le crépuscule ambré, la nuit bleue
+    const L: Record<string, [number, number, number, number]> = {
+      oeil: [1, 0.96, 0.92, 0.12],
+      ordres: [1, 0.86, 0.68, 0.32],
+      fin: [0.55, 0.6, 0.78, 0.6],
+    };
+    const [r, g, b, a] = L[v.phase] ?? L.oeil!;
+    this.teinteLumiere = { r, g, b, a };
+    if (this.tourVu && v.tour > this.tourVu) this.nuitJusqua = t0 + 3200;
+    this.tourVu = v.tour;
     this.dessinerOmbre(v, e.nazgulChoisi);
   }
 
-  private dessinerJetons(v: VueJoueur, choisi: string | null) {
-    this.jetons.removeChildren().forEach((c) => c.destroy({ children: true }));
-    const parRegion = new Map<string, number>();
-    for (const n of v.nazgul) {
-      if (!n.disponible) continue;
-      const c = this.centre(n.region);
-      if (!c) continue;
-      const k = parRegion.get(n.region) ?? 0;
-      parRegion.set(n.region, k + 1);
-      const an = k * 2.39996 - 0.6,
-        rr = k ? 14 + 5 * Math.sqrt(k) : 0;
-      const j = new Container();
-      j.position.set(c.x + Math.cos(an) * rr, c.y + 14 + Math.sin(an) * rr * 0.7);
-      j.label = n.id;
-      const g = new Graphics();
-      const sel = n.id === choisi;
-      if (sel) g.circle(0, 0, 15).stroke({ width: 1.2, color: 0xffdcaa, alpha: 0.9 });
-      g.circle(0, 0, 9).fill(0x1a1816).stroke({ width: 1.2, color: 0xa17c48 });
-      g.circle(-2.5, -2.5, 5).fill({ color: 0x4a443e, alpha: 0.6 });
-      if (n.posture === 'traque') {
-        for (let i = 0; i < 12; i++) {
-          const a = (i / 12) * Math.PI * 2;
-          g.circle(Math.cos(a) * 12, Math.sin(a) * 12, 0.7).fill({ color: 0xc9a46a, alpha: 0.6 });
-        }
-      }
-      if (n.roiSorcier) {
-        g.poly([-5, -1, -3.4, -5, -1.6, -2, 0, -6, 1.6, -2, 3.4, -5, 5, -1, 4, 4.5, -4, 4.5]).fill(0xd6b47c);
-      } else {
-        g.moveTo(0, -6).bezierCurveTo(-4, -6, -4.5, -1, -5, 5.5).lineTo(5, 5.5).bezierCurveTo(4.5, -1, 4, -6, 0, -6).closePath().fill(0xd6b47c);
-        g.ellipse(0, -1.5, 1.9, 2.4).fill(0x0a0908);
-      }
-      j.addChild(g);
-      if (n.roiSorcier || sel || n.nom.startsWith('Khamûl')) {
-        const t = new Text({
-          text: n.roiSorcier ? 'Le Roi-Sorcier' : n.nom,
-          style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: 0xf0dfc0 },
-          resolution: 3,
-        });
-        t.anchor.set(0.5, 0);
-        t.position.set(0, 11);
-        t.alpha = 0.95;
-        j.addChild(t);
-      }
-      this.jetons.addChild(j);
+  /** La texture d'un sceau (source × état), cuite à la demande. */
+  private texSceau(source: VueJoueur['murmures'][number]['source'], etat: EtatSceau) {
+    const cle = `${source}|${etat}`;
+    let t = this.texSceaux.get(cle);
+    if (!t) {
+      t = Texture.from(cuireSceau(source, etat));
+      this.texSceaux.set(cle, t);
     }
+    return t;
   }
 
+  /**
+   * Les murmures du jour, en sceaux de cire posés sur leur région. Un sceau
+   * clos attend d'être classé ; classé vrai, il reçoit une coche à l'encre ;
+   * faux ou démenti, la cire est brisée.
+   */
   private dessinerSceaux(v: VueJoueur, survole: string | null) {
     this.sceaux.removeChildren().forEach((c) => c.destroy({ children: true }));
     const recents = v.murmures.filter((m) => m.tour === v.tour);
     const parRegion = new Map<string, number>();
+    const maintenant = performance.now();
+    const vus = new Set<string>();
     for (const m of recents) {
       const c = this.centre(m.region);
       if (!c) continue;
       const k = parRegion.get(m.region) ?? 0;
       parRegion.set(m.region, k + 1);
+      const x = c.x + 14 + k * 13,
+        y = c.y - 22 + (k % 2) * 5;
+      vus.add(m.id);
+      const deja = this.poses.get(m.id);
+      // un sceau nouveau tombe sur le papier, l'un après l'autre
+      const t0 = deja?.t0 ?? maintenant + this.poses.size * 140;
+      const nomSource: Record<string, string> = { espion: 'Espion', crebain: 'Crébains', rumeur: 'Taverne', nazgul: 'Les Neuf', agent: 'Agent' };
+      this.poses.set(m.id, {
+        x,
+        y,
+        t0,
+        texte: m.texte ?? m.faitTexte,
+        entete: `${nomSource[m.source] ?? m.emetteur} · ${(v.regions.find((r) => r.id === m.region)?.nom ?? m.region).split(' · ')[0]} · sûr à ${Math.round(m.fiabilite * 100)} %`,
+      });
+
+      const brise = m.verite === 'faux' || m.contredit || m.classement === 'faux';
+      const etat: EtatSceau = brise ? 'brise' : m.verite === 'vrai' || m.classement === 'vrai' ? 'vrai' : 'clos';
       const s = new Container();
       s.label = m.id;
-      s.position.set(c.x + 10 + k * 15, c.y - 18);
-      const g = new Graphics();
-      const pts: number[] = [];
-      for (let i = 0; i < 14; i++) {
-        const a = (i / 14) * 6.283,
-          rr = 6.5 + (i % 2 ? 0.8 : -0.3);
-        pts.push(Math.cos(a) * rr, Math.sin(a) * rr);
+      s.position.set(x, y);
+      const sp = new Sprite(this.texSceau(m.source, etat));
+      sp.anchor.set(0.5);
+      sp.scale.set(21 / 96);
+      sp.rotation = ((k * 37 + m.id.length * 11) % 30) / 100 - 0.15;
+      s.addChild(sp);
+      if (etat === 'vrai') {
+        // coche à l'encre, tracée à côté du sceau
+        const g = new Graphics();
+        g.moveTo(6, 2).quadraticCurveTo(8, 5, 9, 7).quadraticCurveTo(12, 0, 17, -5).stroke({ width: 1.3, color: 0x3a2a1c, alpha: 0.9 });
+        s.addChild(g);
       }
-      const couleur = m.verite === 'faux' || m.contredit ? 0x4b4440 : m.verite ? 0x6b5a1c : 0x8e1d10;
-      g.poly(pts).fill(couleur).stroke({ width: 0.8, color: 0x000000, alpha: 0.4 });
-      if (m.id === survole) g.circle(0, 0, 13).stroke({ width: 1.3, color: 0xf2c14e, alpha: 0.9 });
-      const t = new Text({ text: m.verite ? (m.verite === 'faux' ? '✕' : '✓') : '?', style: { fontFamily: CINZ, fontWeight: '600', fontSize: 9, fill: 0xffdcbe }, resolution: 3 });
-      t.anchor.set(0.5);
-      t.position.set(0, 0.5);
-      s.addChild(g, t);
+      if (m.classement === 'incertain' && !m.verite) {
+        const t = new Text({ text: '?', style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 12, fill: 0x7d2414 }, resolution: 3 });
+        t.position.set(7, -12);
+        s.addChild(t);
+      }
+      if (m.id === survole || m.id === this.sceauSurvole) {
+        // souligné à la plume, comme on entoure une note
+        const g = new Graphics();
+        g.ellipse(0, 1, 12, 11).stroke({ width: 1.1, color: 0x7d2414, alpha: 0.85 });
+        s.addChildAt(g, 0);
+      }
       this.sceaux.addChild(s);
     }
+    for (const id of [...this.poses.keys()]) if (!vus.has(id)) this.poses.delete(id);
+    this.dessinerBillet();
   }
 
-  /** Les personnages dont Sauron connaît la position récente (vue par l'Œil, un Nazgûl ou un murmure vérifié). */
+  private sceauSous(x: number, y: number): string | null {
+    let best: string | null = null,
+      d = Math.max(9, 12 / this.sc);
+    for (const [id, p] of this.poses) {
+      const dd = Math.hypot(p.x - x, p.y - y);
+      if (dd < d) {
+        d = dd;
+        best = id;
+      }
+    }
+    return best;
+  }
+
+  private survolerSceau(id: string | null) {
+    if (id === this.sceauSurvole) return;
+    this.sceauSurvole = id;
+    this.rappels.survolMurmure?.(id);
+    if (this.etat) this.dessinerSceaux(this.etat.vue, this.etat.murmureSurvole);
+  }
+
+  /** Le billet de papier qui s'ouvre au survol d'un sceau : la source, puis le murmure lui-même. */
+  private dessinerBillet() {
+    this.billet.removeChildren().forEach((c) => c.destroy({ children: true }));
+    const id = this.sceauSurvole ?? this.etat?.murmureSurvole ?? null;
+    const p = id ? this.poses.get(id) : null;
+    if (!p) return;
+    const largeur = 190;
+    const entete = new Text({ text: p.entete.toUpperCase(), style: { fontFamily: CINZ, fontWeight: '600', fontSize: 7.5, letterSpacing: 1.2, fill: 0x7d2414 }, resolution: 4 });
+    const corps = new Text({
+      text: p.texte,
+      style: { fontFamily: FELL, fontSize: 11.5, lineHeight: 14, fill: 0x2e2015, wordWrap: true, wordWrapWidth: largeur - 18 },
+      resolution: 4,
+    });
+    entete.position.set(9, 7);
+    corps.position.set(9, 19);
+    const h = corps.height + 27;
+    const g = new Graphics();
+    // un bout de papier découpé, un peu de travers, avec son ombre
+    const bord = (dx: number, dy: number) => {
+      g.moveTo(dx + 1, dy)
+        .lineTo(dx + largeur * 0.4, dy + 1.2)
+        .lineTo(dx + largeur - 1, dy - 0.5)
+        .lineTo(dx + largeur, dy + h * 0.6)
+        .lineTo(dx + largeur - 2, dy + h)
+        .lineTo(dx + largeur * 0.55, dy + h + 1)
+        .lineTo(dx, dy + h - 0.5)
+        .lineTo(dx - 1, dy + h * 0.4)
+        .closePath();
+    };
+    bord(3, 4);
+    g.fill({ color: 0x281a10, alpha: 0.3 });
+    bord(0, 0);
+    g.fill(0xeadcb6).stroke({ width: 0.8, color: 0x6b5236, alpha: 0.9 });
+    const b = new Container();
+    b.addChild(g, entete, corps);
+    const versDroite = p.x + largeur + 20 < this.cam.x + window.innerWidth / (2 * this.sc);
+    b.position.set(versDroite ? p.x + 13 : p.x - largeur - 13, p.y - 10);
+    b.rotation = versDroite ? -0.015 : 0.015;
+    this.billet.addChild(b);
+  }
+
+  /** Les personnages dont Sauron connaît la position récente : des figurines peintes, posées sur la carte. */
   private dessinerFigures(v: VueJoueur) {
     this.figures.removeChildren().forEach((c) => c.destroy({ children: true }));
-    const parRegion = new Map<string, string[]>();
+    const parRegion = new Map<string, { id: string; nom: string }[]>();
     for (const p of v.personnages) {
       if (!p.position || p.position.tour < v.tour - 1) continue;
       const l = parRegion.get(p.position.region) ?? [];
-      l.push(p.nom.replace(/^(Le|La|Les) /, '').split(' ')[0]!);
+      l.push({ id: p.id, nom: p.nom.replace(/^(Le|La|Les) /, '').split(' ')[0]! });
       parRegion.set(p.position.region, l);
     }
-    for (const [id, noms] of parRegion) {
+    for (const [id, gens] of parRegion) {
       const c = this.centre(id);
       if (!c) continue;
       const f = new Container();
-      f.position.set(c.x - 24, c.y - 4);
-      const g = new Graphics();
-      noms.slice(0, 6).forEach((_, k) => {
-        const x = k * 5.5,
-          y = (k % 2) * 2;
-        g.circle(x, y - 6, 1.5).fill(0x1a0c06);
-        g.rect(x - 1.2, y - 4.8, 2.4, 4.8).fill(0x1a0c06);
+      f.position.set(c.x - 30, c.y + 2);
+      const liste = gens.slice(0, 5);
+      // de l'arrière vers l'avant, pour que les socles se recouvrent bien
+      liste.forEach((p, k) => {
+        const sp = new Sprite(this.texFigures.get(figurePour(p.id))!);
+        sp.anchor.set(ANCRE_FIGURINE.x, ANCRE_FIGURINE.y);
+        sp.scale.set(30 / HAUTEUR_FIGURINE);
+        sp.position.set(k * 8, (k % 2) * 3);
+        f.addChild(sp);
       });
-      const t = new Text({ text: noms.join(', '), style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: 0x7d2414, stroke: { color: 0xe8d8b2, width: 3, alpha: 0.8 } }, resolution: 3 });
-      t.anchor.set(0, 0.5);
-      t.position.set(noms.length * 5.5 + 3, -3);
-      f.addChild(g, t);
+      const t = new Text({
+        text: gens.map((p) => p.nom).join(', '),
+        style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 11, fill: 0x5a1a0e, stroke: { color: 0xe8d8b2, width: 3, alpha: 0.75 } },
+        resolution: 3,
+      });
+      t.anchor.set(0.5, 0);
+      t.position.set(((liste.length - 1) * 8) / 2, 7);
+      f.addChild(t);
       this.figures.addChild(f);
     }
+  }
+
+  /**
+   * La piste de l'Anneau sur le parchemin : ce que la Tour en déduit, noté à
+   * l'encre rouge comme sur une carte d'enquête. Un cercle en pointillé autour
+   * de la région probable (plus large quand la piste est incertaine), et les
+   * autres régions possibles marquées d'un simple point d'interrogation.
+   */
+  private dessinerEnquete(v: VueJoueur) {
+    this.enquete.removeChildren().forEach((c) => c.destroy({ children: true }));
+    const p = v.piste;
+    const g = new Graphics();
+    const rp = this.centre(p.regionProbable);
+    const geo = this.geo.regions[p.regionProbable];
+    if (rp && geo) {
+      const etale = p.precision === 'diffuse' ? 1.15 : p.precision === 'region_a_1_pres' ? 0.95 : 0.7;
+      const r = geo.rayon * etale;
+      // pointillé à la main : des tirets de longueur inégale
+      const n = Math.round(r * 0.55);
+      for (let k = 0; k < n; k++) {
+        const a0 = (k / n) * 6.283 + Math.sin(k * 3.1) * 0.02,
+          a1 = a0 + (6.283 / n) * (0.45 + 0.15 * Math.sin(k * 1.7));
+        const rr = r * (1 + 0.025 * Math.sin(k * 0.9));
+        g.moveTo(rp.x + Math.cos(a0) * rr, rp.y + Math.sin(a0) * rr * 0.72).lineTo(rp.x + Math.cos(a1) * rr, rp.y + Math.sin(a1) * rr * 0.72);
+      }
+      g.stroke({ width: 1.2, color: 0x7d2414, alpha: 0.85 });
+      // l'Anneau, dessiné d'un trait d'or terni
+      const ax = rp.x + r * 0.62,
+        ay = rp.y + r * 0.62;
+      g.ellipse(ax, ay, 5.2, 4.2).stroke({ width: 1.6, color: 0x8a6a1c, alpha: 0.95 });
+      g.ellipse(ax - 0.6, ay - 0.6, 5.2, 4.2).stroke({ width: 0.6, color: 0xe9cf86, alpha: 0.8 });
+      const t = new Text({
+        text: `l'Anneau ? ${Math.round(p.certitude * 100)} %`,
+        style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 12, fill: 0x7d2414, stroke: { color: 0xe8d8b2, width: 3, alpha: 0.7 } },
+        resolution: 3,
+      });
+      t.position.set(ax + 8, ay - 9);
+      this.enquete.addChild(t);
+    }
+    for (const [id, prob] of Object.entries(p.probabilites)) {
+      if (id === p.regionProbable || prob < 0.12) continue;
+      const c = this.centre(id);
+      if (!c) continue;
+      const t = new Text({ text: '?', style: { fontFamily: FELL, fontStyle: 'italic', fontSize: 10 + prob * 18, fill: 0x7d2414 }, resolution: 3 });
+      t.alpha = 0.55 + prob;
+      t.anchor.set(0.5);
+      t.position.set(c.x - 18, c.y - 16);
+      this.enquete.addChild(t);
+    }
+    this.enquete.addChildAt(g, 0);
   }
 
   private halo(x: number, y: number, r: number, couleur: number, alpha: number) {
@@ -618,22 +845,12 @@ export class SceneCarte {
       this.masqueRegard.height = ERY * 2;
       this.net.alpha = garde ? 0.35 : 1;
       this.lisiere.position.set(f.x, f.y);
-      this.lisiere.width = ER * 2.1;
-      this.lisiere.height = ERY * 2.1;
-      this.gardeLumiere.visible = garde;
-      if (garde) {
-        this.gardeLumiere.position.set(f.x, f.y);
-        this.gardeLumiere.width = this.gardeLumiere.height = ER * 2.2;
-        this.gardeLumiere.alpha = 0.55 + 0.1 * Math.sin(t * 0.004);
-      }
-      // pointillés tournants de la lisière
-      this.pointilles.clear();
-      const aP = 0.35 + 0.15 * Math.sin(t * 0.003);
-      for (let i = 0; i < 64; i++) {
-        const a = (i / 64) * Math.PI * 2 + t * 0.00004;
-        this.pointilles.circle(f.x + Math.cos(a) * ER * 0.96, f.y + Math.sin(a) * ERY * 0.96, 0.6);
-      }
-      this.pointilles.fill({ color: 0xff5a1e, alpha: aP });
+      this.lisiere.width = ER * 2.02;
+      this.lisiere.height = ERY * 2.02;
+      // Repoussé : le cercle pâlit, l'encre bleuit comme sous une lumière froide.
+      this.gardeLumiere.visible = false;
+      this.lisiere.tint = garde ? 0x8aa6c8 : 0xffffff;
+      this.lisiere.alpha = garde ? 0.6 : 0.95;
 
       // le cône : de l'Œil (y = 40 px à l'écran) jusqu'à l'ellipse
       const E = this.versMonde(window.innerWidth / 2, OEIL_Y);
@@ -646,16 +863,42 @@ export class SceneCarte {
       this.cone.position.set(E.x, E.y);
       this.cone.rotation = Math.atan2(dy, dx);
       this.cone.scale.set(L / 512, (demiFin * 2) / 256);
-      this.rayons.clear();
-      for (let k = 0; k < 6; k++) {
-        const o = Math.sin(t * 0.0007 * (k + 1) + k * 2) * 0.85,
-          a = 0.05 + 0.05 * Math.sin(t * 0.003 + k);
-        this.rayons.moveTo(E.x, E.y).lineTo(f.x + nx * ER * o, f.y + ny * ERY * o).stroke({ width: 1 + (k % 3), color: 0xff7832, alpha: Math.max(0, a) });
+      this.pions.image(t, dt);
+
+      // les sceaux tombent sur le papier : un peu gros d'abord, puis écrasés
+      for (const s of this.sceaux.children) {
+        const p = this.poses.get(s.label);
+        if (!p) continue;
+        const u = (t - p.t0) / 320;
+        if (u >= 1) {
+          if (s.scale.x !== 1) s.scale.set(1);
+          s.alpha = 1;
+          continue;
+        }
+        s.alpha = u <= 0 ? 0 : 1;
+        const e = Math.max(0, u);
+        s.scale.set(1 + (1 - e) * (1 - e) * 0.9);
       }
+
+      // lumière du jour et vie du monde
+      const nuitPasse = t < this.nuitJusqua;
+      const lum = nuitPasse ? { r: 0.46, g: 0.52, b: 0.74, a: 0.72 } : this.teinteLumiere;
+      const k = Math.min(1, dt * 0.002);
+      const cur = this.lumiere.tint as number;
+      const cr = ((cur >> 16) & 255) / 255,
+        cg = ((cur >> 8) & 255) / 255,
+        cb = (cur & 255) / 255;
+      const nr = cr + (lum.r - cr) * k,
+        ng = cg + (lum.g - cg) * k,
+        nb = cb + (lum.b - cb) * k;
+      this.lumiere.tint = (Math.round(nr * 255) << 16) | (Math.round(ng * 255) << 8) | Math.round(nb * 255);
+      this.lumiere.alpha += (lum.a - this.lumiere.alpha) * k;
+      const nuit = nuitPasse || this.etat?.vue.phase === 'fin' ? 1 : this.etat?.vue.phase === 'ordres' ? 0.55 : 0;
+      this.vie.image(t, nuit);
       this.ressenti.clear();
       if (this.felt > 0) {
         const r = ER * (1.05 + (1 - this.felt) * 0.5);
-        this.ressenti.ellipse(f.x, f.y, r, (r * ERY) / ER).stroke({ width: 2, color: 0xff501e, alpha: this.felt * 0.6 });
+        this.ressenti.ellipse(f.x, f.y, r, (r * ERY) / ER).stroke({ width: 1.4, color: 0x7d2414, alpha: this.felt * 0.7 });
       }
     }
 

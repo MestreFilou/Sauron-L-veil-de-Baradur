@@ -56,6 +56,7 @@ export function Murmures() {
     .slice(0, 80);
   const agir = useJeu((s) => s.agir);
   const survoler = useJeu((s) => s.survolerMurmure);
+  const vise = useJeu((s) => s.murmureSurvole);
   const [onglet, setOnglet] = useState<'murmures' | 'chronique'>('murmures');
   const liste = v.murmures.filter((m) => m.tour >= v.tour - 1).sort((a, b) => b.tour - a.tour || b.fiabilite - a.fiabilite);
   const p = v.piste;
@@ -91,7 +92,7 @@ export function Murmures() {
             liste.map((m, i) => {
               const texte = m.texte ?? textes[m.id] ?? m.faitTexte;
               return (
-                <div key={m.id} className={`rum ${m.tour < v.tour ? 'ancien' : ''}`} onMouseEnter={() => survoler(m.id)} onMouseLeave={() => survoler(null)}>
+                <div key={m.id} data-murmure={m.id} className={`rum ${m.tour < v.tour ? 'ancien' : ''} ${vise === m.id ? 'vise' : ''}`} onMouseEnter={() => survoler(m.id)} onMouseLeave={() => survoler(null)}>
                   <div className="src">
                     {m.emetteur}
                     <em>{m.tour === v.tour ? 'ce tour' : 'il y a 1 tour'}</em>
